@@ -1,0 +1,105 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal {
+    width: 800px;
+    max-width: 95%;
+    max-height: 80vh;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background-color: #e4e2dc;
+    border-bottom: 1px solid #eee;
+    border-radius: 16px 16px 0 0;
+    font-weight: bold;
+}
+
+.body {
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.footer {
+    padding: 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #eee;
+    background-color: #e4e2dc;
+    border-radius: 0 0 16px 16px;
+}
+
+.section {
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f5f4f2;
+    border: 1px solid #f2e5bd;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.input {
+    border-radius: 10px !important;
+    padding: 6px 8px;
+}
+
+.btnSave {
+    background: #FF8C00;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.btnCancel {
+    background: #ddd;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.emojiHome {
+    font-size: 28px;
+    margin-left: 6px;
+}
+
+.emojiLocation {
+    font-size: 28px;
+    margin-left: 6px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

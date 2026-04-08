@@ -1,0 +1,82 @@
+.card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    min-height: 260px;
+
+    border: 1px solid rgba(255,140,0,0.3);
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+
+    transition: all 300ms ease;
+    cursor: pointer;
+
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 500ms ease forwards;
+}
+
+.card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ffedd5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.badge {
+    font-size: 12px;
+    background: #FFE0B2;
+    color: #FF8C00;
+    padding: 3px 8px;
+    border-radius: 999px;
+}
+
+/* BODY */
+.body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.infoItem {
+    display: flex;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: #444;
+    align-items: center;
+}
+
+/* ANIMATION */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

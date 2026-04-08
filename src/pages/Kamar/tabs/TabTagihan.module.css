@@ -1,0 +1,424 @@
+.container {
+    width: 100%;
+    animation: fadeIn 0.3s ease;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    min-height: 300px;
+    color: #999;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f0f0f0;
+    border-top: 4px solid #FF8C00;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* EMPTY STATE */
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    padding: 60px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(255, 140, 0, 0.05), rgba(255, 159, 28, 0.05));
+    border-radius: 16px;
+    border: 2px dashed #FFD4A3;
+}
+
+.emptyIcon {
+    font-size: 56px;
+    line-height: 1;
+}
+
+.emptyTitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #222;
+}
+
+.emptySubtitle {
+    margin: 0;
+    font-size: 14px;
+    color: #999;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+/* SUMMARY GRID */
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.summaryCard {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border: 2px solid #f2e5bd;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.3s ease;
+}
+
+.summaryCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(255, 140, 0, 0.15);
+}
+
+.summaryIcon {
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.summaryContent {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.summaryLabel {
+    font-size: 12px;
+    color: #999;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summaryValue {
+    font-size: 18px;
+    color: #FF8C00;
+    font-weight: 700;
+}
+
+/* TAGIHAN LIST CONTAINER */
+.tagihanListContainer {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border: 2px solid #f2e5bd;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.08);
+}
+
+.listHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f5f4f2;
+}
+
+.listTitle {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #222;
+}
+
+.itemCount {
+    font-size: 12px;
+    color: #999;
+    font-weight: 600;
+    background: #f5f4f2;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+/* TAGIHAN LIST */
+.tagihanList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tagihanItem {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: #f9f8f6;
+    border-radius: 12px;
+    border-left: 4px solid #FF8C00;
+    transition: all 0.3s ease;
+}
+
+.tagihanItem:hover {
+    background: #fffaf5;
+    box-shadow: inset 0 0 0 1px #FFD4A3;
+}
+
+.itemNumber {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #FF8C00, #ff9f1c);
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.itemContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.itemHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.itemTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.statusLunas {
+    background: #d4f4dd;
+    color: #155724;
+}
+
+.statusBelumLunas {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.itemDetails {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.detailItem {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0dbd3;
+}
+
+.detailLabel {
+    font-size: 11px;
+    color: #999;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.detailValue {
+    font-size: 13px;
+    color: #222;
+    font-weight: 700;
+}
+
+.tagihanCatatan {
+    display: flex;
+    gap: 8px;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 8px;
+    border-left: 2px solid #FFD4A3;
+}
+
+.catatanLabel {
+    font-size: 12px;
+    color: #999;
+    font-weight: 600;
+}
+
+.catatanValue {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .summaryGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .tagihanListContainer {
+        padding: 16px;
+    }
+
+    .tagihanItem {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .itemNumber {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .itemDetails {
+        grid-template-columns: 1fr;
+    }
+
+    .itemHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .statusBadge {
+        align-self: flex-start;
+    }
+}
+
+/* ACTION CONTAINER */
+.actionContainer {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* BUTTON BAYAR */
+.btnBayar {
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #FF8C00, #ff9f1c);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btnBayar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 140, 0, 0.3);
+}
+
+.btnBayar:active {
+    transform: translateY(0);
+}
+
+/* ROW: label kiri + button kanan */
+.detailItemRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+/* BUTTON KECIL (INLINE) */
+.btnBayarSmall {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, #FF8C00, #ff9f1c);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btnBayarSmall:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(255, 140, 0, 0.25);
+}
+
+.btnBayarSmall:active {
+    transform: translateY(0);
+}
+
+/* WRAPPER STATUS + ICON */
+.statusAction {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.iconBayar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+
+    background: rgba(33, 150, 243, 0.1); /* biru soft */
+    color: #1976d2;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+}
+
+.iconBayar:hover {
+    background: rgba(33, 150, 243, 0.2);
+    transform: scale(1.1);
+}
+
+.tagihanId {
+    font-size: 12px;
+    color: black;
+    font-family: monospace;
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 6px;
+    letter-spacing: 0.3px;
+}
