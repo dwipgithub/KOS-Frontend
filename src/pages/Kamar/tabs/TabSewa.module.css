@@ -425,10 +425,29 @@
     }  
 }
 
+.autoHint {
+    font-weight: 400;
+    color: #888;
+    font-size: 11px;
+}
+
 /* DATE INPUT MODERN */
 .dateInput {
     position: relative;
     cursor: pointer;
+}
+
+.dateInputReadonly {
+    cursor: default;
+    background: #f0f0f0;
+    color: #444;
+    border-style: dashed;
+}
+
+.dateInputReadonly::-webkit-calendar-picker-indicator {
+    opacity: 0.25;
+    cursor: default;
+    pointer-events: none;
 }
 
 /* icon calendar */

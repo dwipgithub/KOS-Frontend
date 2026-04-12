@@ -3,68 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FaUserCircle, FaSignInAlt, FaEnvelope, FaLock } from "react-icons/fa";
 import { loginUser } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
-
-// Style constants
-const styles = {
-    container: {
-        backgroundColor: "white",
-        fontFamily: "'Pacifico', cursive",
-    },
-    card: {
-        width: "350px",
-        backgroundColor: "white",
-        padding: "20px 25px",
-    },
-    icon: {
-        fontSize: "3.5rem",
-        color: "#555",
-        marginBottom: "10px",
-    },
-    title: {
-        fontSize: "1.8rem",
-    },
-    label: {
-        fontSize: "1rem",
-        marginBottom: "0.2rem",
-        fontFamily: '"Times New Roman", serif',
-    },
-    inputIcon: {
-        position: "absolute",
-        left: "10px",
-        color: "#aaa",
-        fontSize: "1rem",
-    },
-    input: {
-        border: "none",
-        borderBottom: "2px solid #ddd",
-        outline: "none",
-        boxShadow: "none",
-        backgroundColor: "white",
-        borderRadius: "0",
-        fontSize: "1rem",
-        fontFamily: '"Times New Roman", serif',
-        padding: "8px 5px 8px 35px",
-    },
-    button: {
-        backgroundColor: "#444",
-        color: "white",
-        border: "none",
-        borderRadius: "20px",
-        fontSize: "1rem",
-        padding: "8px",
-        transition: "background-color 0.3s ease",
-    },
-    buttonHover: {
-        backgroundColor: "#555",
-    },
-    buttonDisabled: {
-        backgroundColor: "#999",
-        cursor: "not-allowed",
-    },
-    error: {
-        fontSize: "0.9rem",
-    },
-};
+import styles from "./Login.module.css";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -117,121 +56,102 @@ const Login = () => {
     };
 
     return (
-        <div
-            className="d-flex justify-content-center align-items-center vh-100"
-            style={styles.container}
-        >
-            <div className="text-center" style={styles.card}>
-                <FaUserCircle style={styles.icon} aria-hidden="true" />
-
-                <h2 className="mb-3" style={styles.title}>
-                    Selamat Datang
-                </h2>
-
-                <form onSubmit={handleSubmit} noValidate>
-                    <div className="mb-2 text-start position-relative">
-                        <label
-                            htmlFor="email"
-                            className="form-label"
-                            style={styles.label}
-                        >
-                            Email
-                        </label>
-                        <div className="d-flex align-items-center">
-                            <FaEnvelope
-                                style={styles.inputIcon}
-                                aria-hidden="true"
-                            />
-                            <input
-                                type="email"
-                                id="email"
-                                value={email}
-                                onChange={handleInputChange(setEmail)}
-                                className="form-control"
-                                style={styles.input}
-                                disabled={isLoading}
-                                required
-                                aria-describedby={error ? "error-message" : undefined}
-                            />
-                        </div>
+        <div className={styles.page}>
+            <div className={styles.glassCard}>
+                <div className={styles.inner}>
+                    <div className={styles.iconWrap} aria-hidden="true">
+                        <FaUserCircle />
                     </div>
 
-                    <div className="mb-3 text-start position-relative">
-                        <label
-                            htmlFor="password"
-                            className="form-label"
-                            style={styles.label}
-                        >
-                            Password
-                        </label>
-                        <div className="d-flex align-items-center">
-                            <FaLock
-                                style={styles.inputIcon}
-                                aria-hidden="true"
-                            />
-                            <input
-                                type="password"
-                                id="password"
-                                value={password}
-                                onChange={handleInputChange(setPassword)}
-                                className="form-control"
-                                style={styles.input}
-                                disabled={isLoading}
-                                required
-                                aria-describedby={error ? "error-message" : undefined}
-                            />
-                        </div>
-                    </div>
+                    <h1 className={styles.title}>Selamat Datang</h1>
+                    <p className={styles.subtitle}>
+                        Masuk untuk mengelola kos Anda
+                    </p>
 
-                    {error && (
-                        <div
-                            id="error-message"
-                            className="text-danger mb-3"
-                            style={styles.error}
-                            role="alert"
-                        >
-                            {error}
-                        </div>
-                    )}
-
-                    <button
-                        type="submit"
-                        className="btn w-100 d-flex justify-content-center align-items-center gap-2"
-                        style={{
-                            ...styles.button,
-                            ...(isLoading && styles.buttonDisabled),
-                        }}
-                        disabled={isLoading}
-                        onMouseEnter={(e) => {
-                            if (!isLoading) {
-                                e.target.style.backgroundColor =
-                                    styles.buttonHover.backgroundColor;
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (!isLoading) {
-                                e.target.style.backgroundColor =
-                                    styles.button.backgroundColor;
-                            }
-                        }}
-                    >
-                        {isLoading ? (
-                            <>
-                                <span
-                                    className="spinner-border spinner-border-sm"
-                                    role="status"
+                    <form className={styles.form} onSubmit={handleSubmit} noValidate>
+                        <div className={styles.field}>
+                            <label htmlFor="email" className={styles.label}>
+                                Email
+                            </label>
+                            <div className={styles.inputWrap}>
+                                <FaEnvelope
+                                    className={styles.inputIcon}
                                     aria-hidden="true"
                                 />
-                                Memproses...
-                            </>
-                        ) : (
-                            <>
-                                <FaSignInAlt aria-hidden="true" />
-                                Masuk
-                            </>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    value={email}
+                                    onChange={handleInputChange(setEmail)}
+                                    className={styles.input}
+                                    placeholder="nama@email.com"
+                                    disabled={isLoading}
+                                    required
+                                    aria-describedby={
+                                        error ? "error-message" : undefined
+                                    }
+                                />
+                            </div>
+                        </div>
+
+                        <div className={styles.field}>
+                            <label htmlFor="password" className={styles.label}>
+                                Password
+                            </label>
+                            <div className={styles.inputWrap}>
+                                <FaLock
+                                    className={styles.inputIcon}
+                                    aria-hidden="true"
+                                />
+                                <input
+                                    type="password"
+                                    id="password"
+                                    value={password}
+                                    onChange={handleInputChange(setPassword)}
+                                    className={styles.input}
+                                    placeholder="••••••••"
+                                    disabled={isLoading}
+                                    required
+                                    aria-describedby={
+                                        error ? "error-message" : undefined
+                                    }
+                                />
+                            </div>
+                        </div>
+
+                        {error && (
+                            <div
+                                id="error-message"
+                                className={styles.error}
+                                role="alert"
+                            >
+                                {error}
+                            </div>
                         )}
-                    </button>
-                </form>
+
+                        <button
+                            type="submit"
+                            className={styles.submitBtn}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <span
+                                        className="spinner-border spinner-border-sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    />
+                                    Memproses...
+                                </>
+                            ) : (
+                                <>
+                                    <FaSignInAlt aria-hidden="true" />
+                                    Masuk
+                                </>
+                            )}
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     );

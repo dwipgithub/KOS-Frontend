@@ -18,6 +18,7 @@ axiosJWT.interceptors.request.use(
     }
 )
 
+/** @param {FormData} data — multipart dengan bukti bayar (wajib) */
 export const createPembayaran = async (data) => {
     try {
         const response = await axiosJWT.post(`/api/v1/pembayaran`, data);

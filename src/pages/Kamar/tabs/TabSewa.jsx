@@ -268,19 +268,19 @@ const TabSewa = ({
                                 />
                             </div>
 
-                            {/* TANGGAL KELUAR */}
+                            {/* TANGGAL KELUAR (otomatis) */}
                             <div className={styles.formGroup}>
-                                <label className={styles.label}>Tanggal Keluar</label>
+                                <label className={styles.label}>
+                                    Tanggal Keluar
+                                </label>
                                 <input
                                     type="date"
-                                    className={`${styles.input} ${styles.dateInput}`}
-                                    value={formSewa.tanggalKeluar}
-                                    onChange={(e) =>
-                                        setFormSewa((prev) => ({
-                                            ...prev,
-                                            tanggalKeluar: e.target.value,
-                                        }))
-                                    }
+                                    readOnly
+                                    aria-readonly="true"
+                                    title="Dihitung otomatis dari tanggal masuk, jenis durasi, dan jumlah"
+                                    className={`${styles.input} ${styles.dateInput} ${styles.dateInputReadonly}`}
+                                    value={formSewa.tanggalKeluar || ""}
+                                    tabIndex={-1}
                                 />
                             </div>
                         </div>

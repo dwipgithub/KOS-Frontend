@@ -23,7 +23,8 @@ export const usePenyewa = () => {
         idStatusPernikahan: "",
         noTelp: "",
         alamat: "",
-        email: ""
+        email: "",
+        dokumenFile: null
     });
 
     const fetchJenisKelamin = useCallback(async () => {
@@ -73,9 +74,27 @@ export const usePenyewa = () => {
         fetchPengenal();
     }, [fetchPenyewa, fetchJenisKelamin, fetchStatusPernikahan, fetchPengenal]);
 
+    const buildPenyewaFormData = (f) => {
+        const fd = new FormData();
+        fd.append("nama", f.nama ?? "");
+        fd.append("alamat", f.alamat ?? "");
+        fd.append("noTelp", f.noTelp ?? "");
+        fd.append("email", f.email ?? "");
+        fd.append("idPengenal", f.idPengenal ?? "");
+        fd.append("noPengenal", f.noPengenal ?? "");
+        fd.append("idJenisKelamin", f.idJenisKelamin ?? "");
+        fd.append("idStatusPernikahan", f.idStatusPernikahan ?? "");
+        fd.append("dokumen_pengenal", f.dokumenFile);
+        return fd;
+    };
+
     const handleSave = async () => {
         try {
-            await createPenyewa(form);
+            if (!form.dokumenFile) {
+                toast.error("Dokumen pengenal wajib diunggah", { position: "top-right" });
+                return;
+            }
+            await createPenyewa(buildPenyewaFormData(form));
             toast.success("Penyewa berhasil disimpan", { position: "top-right" });
 
             setShowModal(false);
@@ -88,7 +107,8 @@ export const usePenyewa = () => {
                 idStatusPernikahan: "",
                 noTelp: "",
                 alamat: "",
-                email: ""
+                email: "",
+                dokumenFile: null
             });
         } catch (err) {
             console.error(err);
@@ -99,6 +119,11 @@ export const usePenyewa = () => {
     const filteredPenyewa = penyewaList.filter((item) =>
         item.nama.toLowerCase().includes(search.toLowerCase())
     );
+
+    const closeModal = () => {
+        setShowModal(false);
+        setForm((prev) => ({ ...prev, dokumenFile: null }));
+    };
 
     return {
         filteredPenyewa,
@@ -113,6 +138,7 @@ export const usePenyewa = () => {
         showModal,
         handleSave,
         setShowModal,
+        closeModal,
         setSearch,
     };
 };

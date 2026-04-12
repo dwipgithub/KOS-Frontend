@@ -6,6 +6,38 @@ import { getTagihan } from "../../../api/tagihan";
 import { createPembayaran } from "../../../api/pembayaran";
 import { toast } from "react-toastify";
 
+/**
+ * Tanggal keluar = tanggal masuk + (jumlah × satuan durasi).
+ * Harian: +N hari kalender; Mingguan: +N×7 hari; Bulanan: +N bulan; Tahunan: +N tahun.
+ */
+function computeTanggalKeluarSewa(tanggalMasuk, durasiSewa, jumlahDurasi) {
+    if (!tanggalMasuk || !durasiSewa) return "";
+    const n = Math.max(1, parseInt(String(jumlahDurasi), 10) || 1);
+    const start = new Date(`${tanggalMasuk}T12:00:00`);
+    if (Number.isNaN(start.getTime())) return "";
+    const out = new Date(start);
+    switch (durasiSewa) {
+        case "Harian":
+            out.setDate(out.getDate() + n);
+            break;
+        case "Mingguan":
+            out.setDate(out.getDate() + n * 7);
+            break;
+        case "Bulanan":
+            out.setMonth(out.getMonth() + n);
+            break;
+        case "Tahunan":
+            out.setFullYear(out.getFullYear() + n);
+            break;
+        default:
+            return "";
+    }
+    const y = out.getFullYear();
+    const m = String(out.getMonth() + 1).padStart(2, "0");
+    const d = String(out.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+}
+
 export const usePengelolaanKamar = (idKamar) => {
     // State untuk data kamar
     const [kamarData, setKamarData] = useState(null);
@@ -34,11 +66,14 @@ export const usePengelolaanKamar = (idKamar) => {
     const [formSewa, setFormSewa] = useState({
         idKamar: "",
         idPenyewa: "",
-        idDurasi: "",
+        idDurasi: "DAY",
+        durasiSewa: "Harian",
         tanggalMasuk: "",
         tanggalKeluar: "",
         jumlahDurasi: 1,
         hargaPerDurasi: 0,
+        hargaTotal: 0,
+        catatan: "",
     });
 
     // State untuk form pembayaran tagihan
@@ -46,7 +81,8 @@ export const usePengelolaanKamar = (idKamar) => {
         idTagihan: "",
         tanggalBayar: "",
         idMetodeBayar: "",
-        totalBayar: 0
+        totalBayar: 0,
+        buktiFile: null
     });
 
     // Active tab
@@ -160,6 +196,18 @@ export const usePengelolaanKamar = (idKamar) => {
         fetchPenyewaList
     ]);
 
+    useEffect(() => {
+        setFormSewa((prev) => {
+            const keluar = computeTanggalKeluarSewa(
+                prev.tanggalMasuk,
+                prev.durasiSewa,
+                prev.jumlahDurasi
+            );
+            if (keluar === prev.tanggalKeluar) return prev;
+            return { ...prev, tanggalKeluar: keluar };
+        });
+    }, [formSewa.tanggalMasuk, formSewa.durasiSewa, formSewa.jumlahDurasi]);
+
     // Fetch sewa when active tab is sewa dan ada idSewa
     // useEffect(() => {
     //     if (activeTab === "sewa" && kamarData?.idSewa) {
@@ -200,10 +248,12 @@ export const usePengelolaanKamar = (idKamar) => {
             const config = durasiConfig[durasi] || {};
             const harga = config.harga || 0;
             const idDurasi = config.id || "";
-            const hargaTotal = harga * (prev.jumlahDurasi || 0);
+            const qty = Math.max(1, prev.jumlahDurasi || 1);
+            const hargaTotal = harga * qty;
 
             return {
                 ...prev,
+                durasiSewa: durasi,
                 idDurasi: idDurasi,
                 hargaPerDurasi: harga,
                 hargaTotal,
@@ -213,11 +263,12 @@ export const usePengelolaanKamar = (idKamar) => {
 
     // Handle jumlah durasi perubahan
     const handleJumlahDurasiChange = (jumlah) => {
+        const qty = Math.max(1, jumlah);
         setFormSewa((prev) => {
-            const hargaTotal = prev.hargaPerDurasi * jumlah;
+            const hargaTotal = prev.hargaPerDurasi * qty;
             return {
                 ...prev,
-                jumlahDurasi: jumlah,
+                jumlahDurasi: qty,
                 hargaTotal,
             };
         });
@@ -239,6 +290,14 @@ export const usePengelolaanKamar = (idKamar) => {
         try {
             if (!formSewa.idPenyewa) {
                 toast.error("Pilih penyewa terlebih dahulu");
+                return;
+            }
+            if (!formSewa.tanggalMasuk) {
+                toast.error("Tanggal masuk wajib diisi");
+                return;
+            }
+            if (!formSewa.tanggalKeluar) {
+                toast.error("Tanggal keluar belum terhitung — periksa durasi dan jumlah");
                 return;
             }
 
@@ -263,29 +322,40 @@ export const usePengelolaanKamar = (idKamar) => {
             }
 
             // Reset form
+            const hHarian = Number(kamarData?.hargaPerHari) || 0;
             setFormSewa({
+                idKamar: "",
                 idPenyewa: "",
+                idDurasi: "DAY",
                 durasiSewa: "Harian",
+                tanggalMasuk: "",
+                tanggalKeluar: "",
                 jumlahDurasi: 1,
-                hargaPerDurasi: 0,
-                hargaTotal: 0,
+                hargaPerDurasi: hHarian,
+                hargaTotal: hHarian,
+                catatan: "",
             });
         } catch (err) {
             toast.error(err.message || "Gagal menyimpan data sewa");
         }
     };
 
-    const handleSavePembayaran = async () => {
+    const handleSavePembayaran = async (payload) => {
+        const data = payload || formPembayaran;
         try {
+            if (!data.buktiFile) {
+                toast.error("Bukti bayar wajib diunggah", { position: "top-right" });
+                return false;
+            }
+            const { buktiFile, ...fields } = data;
+            const fd = new FormData();
+            fd.append("idTagihan", fields.idTagihan ?? "");
+            fd.append("tanggalBayar", fields.tanggalBayar ?? "");
+            fd.append("idMetodeBayar", fields.idMetodeBayar ?? "");
+            fd.append("totalBayar", String(fields.totalBayar ?? ""));
+            fd.append("bukti_bayar", buktiFile);
 
-            const dataToSend = {
-                idTagihan: formPembayaran.idTagihan,
-                tanggalBayar: formPembayaran.tanggalBayar,
-                idMetodeBayar: formPembayaran.idMetodeBayar,
-                totalBayar: formPembayaran.totalBayar,
-            };
-
-            await createPembayaran(dataToSend);
+            await createPembayaran(fd);
             toast.success("Pembayaran berhasil disimpan");
 
             await fetchKamarData();
@@ -294,12 +364,14 @@ export const usePengelolaanKamar = (idKamar) => {
                 idTagihan: "",
                 tanggalBayar: "",
                 idMetodeBayar: "",
-                totalBayar: 0
+                totalBayar: 0,
+                buktiFile: null
             });
 
             return true;
         } catch (err) {
             toast.error(err.message || "Gagal menyimpan tagihan");
+            return false;
         }
     };
 

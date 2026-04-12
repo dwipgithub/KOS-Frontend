@@ -14,22 +14,13 @@ const Sidebar = () => {
         { name: "Kamar", path: "/kamar", icon: "🛏️" },
         { name: "Penyewa", path: "/penyewa", icon: "🧑‍💼" },
         {
-            name: "Model Klasfikasi",
-            icon: "🧠",
+            name: "Laporan Keuangan",
+            icon: "📊",
             subMenus: [
-                { name: "Pembersihan Data", path: "/model-klasifikasi/pembersihan-data", icon: "🧹" },
-                {
-                    name: "Dataset",
-                    icon: "📁",
-                    subMenus: [
-                        { name: "Variabel", path: "/dataset/variabel", icon: "🗂️" },
-                        { name: "Distribusi Kelas", path: "/dataset/distribusi-kelas", icon: "📊" },
-                        { name: "Statistik", path: "/dataset/statistik", icon: "📈" },
-                        { name: "Peringkat Fitur", path: "/model-klasifikasi/peringkat-fitur", icon: "⭐" },
-                    ],
-                },
-                { name: "Pelatihan Model", path: "/model-klasifikasi/pelatihan-model", icon: "🎯" },
-                { name: "Evaluasi Model", path: "/model-klasifikasi/evaluasi-model", icon: "📋" },
+                { name: "Arus Kas", path: "/", icon: "💸" },
+                { name: "Rugi Laba", path: "/", icon: "📉" },
+                { name: "Buku Besar", path: "/", icon: "📖" },
+                { name: "Neraca", path: "/", icon: "⚖️" },
             ],
         },
     ], []);
@@ -50,26 +41,31 @@ const Sidebar = () => {
         [pathname]
     );
 
-    const isMenuActive = (menu) => {
+    const isMenuActive = useCallback((menu) => {
         if (menu.path && isPathActive(menu.path)) return true;
+    
         if (menu.subMenus) {
             return menu.subMenus.some((sub) => {
                 if (sub.path && isPathActive(sub.path)) return true;
+    
                 if (sub.subMenus) {
                     return sub.subMenus.some((ss) => isPathActive(ss.path));
                 }
+    
                 return false;
             });
         }
+    
         return false;
-    };
+    }, [isPathActive]);
 
     useEffect(() => {
         const open = {};
         const subOpen = {};
-
+    
         menus.forEach((menu, i) => {
             if (isMenuActive(menu)) open[i] = true;
+    
             menu.subMenus?.forEach((sub, si) => {
                 if (sub.subMenus) {
                     sub.subMenus.forEach((ss) => {
@@ -81,10 +77,10 @@ const Sidebar = () => {
                 }
             });
         });
-
+    
         setOpenMenus(open);
         setOpenSubMenus(subOpen);
-    }, [pathname, menus]);
+    }, [pathname, menus, isMenuActive, isPathActive]);
 
     return (
         <div

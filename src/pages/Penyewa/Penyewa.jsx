@@ -39,7 +39,7 @@ const Penyewa = () => {
 
             <PenyewaModal
                 show={props.showModal}
-                onClose={() => props.setShowModal(false)}
+                onClose={props.closeModal}
                 form={props.form}
                 setForm={props.setForm}
                 jenisKelaminList={props.jenisKelaminList}

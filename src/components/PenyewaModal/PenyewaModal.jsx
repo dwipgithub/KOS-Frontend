@@ -1,4 +1,29 @@
+import { useRef, useState, useEffect, useCallback } from "react";
 import styles from "./PenyewaModal.module.css";
+
+const MAX_BYTES = 10 * 1024 * 1024;
+const ACCEPT = "application/pdf,image/jpeg,image/png,image/webp,image/gif,.pdf,.jpg,.jpeg,.png,.webp,.gif";
+
+const allowedExt = new Set([".pdf", ".jpg", ".jpeg", ".png", ".webp", ".gif"]);
+const allowedMime = new Set([
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif"
+]);
+
+function validateDokumenFile(file) {
+    if (!file) return "Pilih file terlebih dahulu.";
+    if (file.size > MAX_BYTES) return "Ukuran maksimal 10 MB.";
+    const name = file.name || "";
+    const dot = name.lastIndexOf(".");
+    const ext = dot >= 0 ? name.slice(dot).toLowerCase() : "";
+    if (!allowedExt.has(ext) || !allowedMime.has(file.type)) {
+        return "Hanya PDF atau gambar (JPEG, PNG, WebP, GIF).";
+    }
+    return null;
+}
 
 const PenyewaModal = ({
     show,
@@ -10,7 +35,68 @@ const PenyewaModal = ({
     pengenalList,
     onSave
 }) => {
+    const inputRef = useRef(null);
+    const [dragActive, setDragActive] = useState(false);
+    const [fileError, setFileError] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
+
+    const setDokumenFile = useCallback(
+        (file) => {
+            const err = file ? validateDokumenFile(file) : null;
+            setFileError(err);
+            if (err) return;
+            setForm((prev) => ({ ...prev, dokumenFile: file || null }));
+        },
+        [setForm]
+    );
+
+    useEffect(() => {
+        const f = form.dokumenFile;
+        if (!f || !f.type.startsWith("image/")) {
+            setPreviewUrl(null);
+            return;
+        }
+        const url = URL.createObjectURL(f);
+        setPreviewUrl(url);
+        return () => URL.revokeObjectURL(url);
+    }, [form.dokumenFile]);
+
+    const handleFiles = (list) => {
+        const file = list?.[0];
+        if (file) setDokumenFile(file);
+    };
+
+    const onInputChange = (e) => {
+        handleFiles(e.target.files);
+        e.target.value = "";
+    };
+
+    const clearFile = (e) => {
+        e?.stopPropagation();
+        setFileError(null);
+        setForm((prev) => ({ ...prev, dokumenFile: null }));
+    };
+
+    const onDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true);
+        } else if (e.type === "dragleave") {
+            setDragActive(false);
+        }
+    };
+
+    const onDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        handleFiles(e.dataTransfer?.files);
+    };
+
     if (!show) return null;
+
+    const file = form.dokumenFile;
 
     return (
         <div className={styles.overlay}>
@@ -18,8 +104,8 @@ const PenyewaModal = ({
 
                 {/* HEADER */}
                 <div className={styles.header}>
-                    <h5>Tambah Kamar</h5>
-                    <button onClick={onClose}>✖</button>
+                    <h5>Tambah Penyewa</h5>
+                    <button type="button" onClick={onClose}>✖</button>
                 </div>
 
                 {/* BODY */}
@@ -165,16 +251,96 @@ const PenyewaModal = ({
                                 />
                             </div>
 
+                            <div className="col-md-12 mb-1">
+                                <label>
+                                    Dokumen pengenal{" "}
+                                    <span className={styles.requiredMark} title="Wajib">
+                                        *
+                                    </span>
+                                </label>
+                                <p className={styles.dropHint}>
+                                    Wajib — PDF atau gambar (JPEG, PNG, WebP, GIF), maks. 10 MB
+                                </p>
+                                <input
+                                    ref={inputRef}
+                                    type="file"
+                                    accept={ACCEPT}
+                                    className={styles.fileInputHidden}
+                                    onChange={onInputChange}
+                                />
+                                <div
+                                    role="button"
+                                    tabIndex={0}
+                                    className={`${styles.dropZone} ${dragActive ? styles.dropZoneActive : ""} ${file ? styles.dropZoneHasFile : ""}`}
+                                    onClick={() => inputRef.current?.click()}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter" || e.key === " ") {
+                                            e.preventDefault();
+                                            inputRef.current?.click();
+                                        }
+                                    }}
+                                    onDragEnter={onDrag}
+                                    onDragOver={onDrag}
+                                    onDragLeave={onDrag}
+                                    onDrop={onDrop}
+                                >
+                                    {!file ? (
+                                        <div className={styles.dropZoneInner}>
+                                            <span className={styles.dropIcon} aria-hidden>⬆</span>
+                                            <span className={styles.dropTitle}>
+                                                Seret file ke sini atau klik untuk memilih
+                                            </span>
+                                            <span className={styles.dropSub}>
+                                                KTP, SIM, paspor, atau dokumen lain
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <div className={styles.filePicked}>
+                                            {previewUrl ? (
+                                                <img
+                                                    src={previewUrl}
+                                                    alt="Pratinjau dokumen"
+                                                    className={styles.previewImg}
+                                                />
+                                            ) : (
+                                                <div className={styles.pdfBadge}>PDF</div>
+                                            )}
+                                            <div className={styles.fileMeta}>
+                                                <span className={styles.fileName}>{file.name}</span>
+                                                <span className={styles.fileSize}>
+                                                    {(file.size / 1024).toFixed(1)} KB
+                                                </span>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className={styles.btnRemoveFile}
+                                                onClick={clearFile}
+                                            >
+                                                Hapus
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                                {fileError && (
+                                    <p className={styles.fileError}>{fileError}</p>
+                                )}
+                            </div>
+
                         </div>
                     </div>
                 </div>
 
                 {/* FOOTER */}
                 <div className={styles.footer}>
-                    <button className={styles.btnCancel} onClick={onClose}>
+                    <button type="button" className={styles.btnCancel} onClick={onClose}>
                         Batal
                     </button>
-                    <button className={styles.btnSave} onClick={onSave}>
+                    <button
+                        type="button"
+                        className={styles.btnSave}
+                        onClick={onSave}
+                        disabled={!file || !!fileError}
+                    >
                         💾 Simpan
                     </button>
                 </div>

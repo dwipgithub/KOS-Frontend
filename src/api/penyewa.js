@@ -40,12 +40,24 @@ export const showPenyewa = async (id) => {
     }
 }
 
+/** @param {FormData} data — multipart dengan dokumen pengenal (wajib) */
 export const createPenyewa = async (data) => {
     try {
         const response = await axiosJWT.post(`/api/v1/penyewa`, data);
         return response.data;
     } catch (error) {
         console.error("Gagal membuat penyewa:", error);
+        throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
+    }
+}
+
+/** @param {string|number} id @param {FormData|object} data */
+export const updatePenyewa = async (id, data) => {
+    try {
+        const response = await axiosJWT.patch(`/api/v1/penyewa/${id}`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Gagal memperbarui penyewa:", error);
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
     }
 }
