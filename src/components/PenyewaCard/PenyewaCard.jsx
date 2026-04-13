@@ -1,11 +1,21 @@
+import { useNavigate } from "react-router-dom";
 import styles from "./PenyewaCard.module.css";
 
 const PenyewaCard = ({ card, index }) => {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        if (!card?.id) return;
+        navigate(`/penyewa/${card.id}/pengelolaan`);
+    };
+
     return (
         <div className="col-md-4 mb-4">
             <div
                 className={styles.card}
                 style={{ animationDelay: `${index * 100}ms` }}
+                onClick={handleClick}
+                role="presentation"
             >
                 {/* HEADER */}
                 <div className={styles.header}>

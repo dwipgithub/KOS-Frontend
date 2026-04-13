@@ -27,40 +27,9 @@ export const usePenyewa = () => {
         dokumenFile: null
     });
 
-    const fetchJenisKelamin = useCallback(async () => {
-        try {
-            setLoading(true);
-            const data = await getJenisKelamin();
-            setJenisKelaminList(data.data);
-        } catch (err) {
-            setError(err.message || "Gagal memuat data properti");
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    const fetchStatusPernikahan = useCallback(async () => {
-        try {
-            const data = await getStatusPernikahan();
-            setStatusPernikahanList(data.data);
-        } catch (err) {
-            setError(err.message || "Gagal memuat data status pernikahan");
-        }
-    }, []);
-
-    const fetchPengenal = useCallback(async () => {
-        try {
-            const data = await getPengenal();
-            setPengenalList(data.data);
-        } catch (err) {
-            setError(err.message || "Gagal memuat data pengenal");
-        }
-    }, []);
-
-    const fetchPenyewa = useCallback(async () => {
+    const refreshPenyewa = useCallback(async () => {
         try {
             const data = await getPenyewa();
-            console.log("Data penyewa:", data.data);
             setPenyewaList(data.data);
         } catch (err) {
             setError(err.message || "Gagal memuat data penyewa");
@@ -68,11 +37,35 @@ export const usePenyewa = () => {
     }, []);
 
     useEffect(() => {
-        fetchPenyewa();
-        fetchJenisKelamin();
-        fetchStatusPernikahan();
-        fetchPengenal();
-    }, [fetchPenyewa, fetchJenisKelamin, fetchStatusPernikahan, fetchPengenal]);
+        let cancelled = false;
+        (async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const [pRes, jkRes, spRes, pgRes] = await Promise.all([
+                    getPenyewa(),
+                    getJenisKelamin(),
+                    getStatusPernikahan(),
+                    getPengenal()
+                ]);
+                if (!cancelled) {
+                    setPenyewaList(pRes.data);
+                    setJenisKelaminList(jkRes.data);
+                    setStatusPernikahanList(spRes.data);
+                    setPengenalList(pgRes.data);
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setError(err.message || "Gagal memuat data penyewa");
+                }
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     const buildPenyewaFormData = (f) => {
         const fd = new FormData();
@@ -98,7 +91,7 @@ export const usePenyewa = () => {
             toast.success("Penyewa berhasil disimpan", { position: "top-right" });
 
             setShowModal(false);
-            fetchPenyewa();
+            await refreshPenyewa();
             setForm({
                 nama: "",
                 idPengenal: "",

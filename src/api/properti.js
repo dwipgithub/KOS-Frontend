@@ -49,3 +49,13 @@ export const createProperti = async (data) => {
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
     }
 }
+
+export const updateProperti = async (id, data) => {
+    try {
+        const response = await axiosJWT.patch(`/api/v1/properti/${id}`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Gagal memperbarui properti:", error);
+        throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
+    }
+}

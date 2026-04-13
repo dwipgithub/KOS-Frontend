@@ -25,41 +25,36 @@ export const useKamar = () => {
         hargaPerTahun: ""
     });
 
-    const fetchKamar = useCallback(async () => {
+    const refreshKamar = useCallback(async () => {
         try {
-            setLoading(true);
             const data = await getKamar();
             setKamarList(data.data);
         } catch (err) {
-            setError(err.message || "Gagal memuat data properti");
+            console.error(err);
+        }
+    }, []);
+
+    const loadAll = useCallback(async (showLoading) => {
+        if (showLoading) setLoading(true);
+        try {
+            const [kRes, pRes, sRes] = await Promise.all([
+                getKamar(),
+                getProperti(),
+                getStatusKamar()
+            ]);
+            setKamarList(kRes.data);
+            setPropertiList(pRes.data);
+            setStatusKamarList(sRes.data);
+        } catch (err) {
+            setError(err.message || "Gagal memuat data kamar");
         } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    const fetchProperti = useCallback(async () => {
-        try {
-            const data = await getProperti();
-            setPropertiList(data.data);
-        } catch (err) {
-            console.error(err);
-        }
-    }, []);
-
-    const fetchStatusKamar = useCallback(async () => {
-        try {
-            const data = await getStatusKamar();
-            setStatusKamarList(data.data);
-        } catch (err) {
-            console.error(err);
+            if (showLoading) setLoading(false);
         }
     }, []);
 
     useEffect(() => {
-        fetchKamar();
-        fetchProperti();
-        fetchStatusKamar();
-    }, [fetchKamar, fetchProperti, fetchStatusKamar]);
+        loadAll(true);
+    }, [loadAll]);
 
     const handleSave = async () => {
         try {
@@ -67,7 +62,7 @@ export const useKamar = () => {
             toast.success("Kamar berhasil disimpan", { position: "top-right" });
 
             setShowModal(false);
-            fetchKamar();
+            await refreshKamar();
             setForm({
                 nama: "",
                 idProperti: "",

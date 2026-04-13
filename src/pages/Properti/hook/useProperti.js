@@ -30,23 +30,10 @@ export const useProperti = () => {
         idKelurahan: "",
     });
 
-    // API Calls
-    const fetchProperti = useCallback(async () => {
+    const refreshProperti = useCallback(async () => {
         try {
-            setLoading(true);
             const data = await getProperti();
             setPropertiList(data.data);
-        } catch (err) {
-            setError(err.message || "Gagal memuat data properti");
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    const fetchProvinsi = useCallback(async () => {
-        try {
-            const data = await getProvinsi();
-            setProvinsiList(data.data || []);
         } catch (err) {
             console.error(err);
         }
@@ -82,11 +69,32 @@ export const useProperti = () => {
         }
     }, []);
 
-    // Effect
     useEffect(() => {
-        fetchProperti();
-        fetchProvinsi();
-    }, [fetchProperti, fetchProvinsi]);
+        let cancelled = false;
+        (async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const [propRes, provRes] = await Promise.all([
+                    getProperti(),
+                    getProvinsi()
+                ]);
+                if (!cancelled) {
+                    setPropertiList(propRes.data);
+                    setProvinsiList(provRes.data || []);
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setError(err.message || "Gagal memuat data properti");
+                }
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     useEffect(() => {
         if (!form.idProvinsi) {
@@ -125,7 +133,7 @@ export const useProperti = () => {
             toast.success("Properti berhasil disimpan", { position: "top-right" });
 
             setShowModal(false);
-            fetchProperti();
+            await refreshProperti();
             setForm({
                 nama: "",
                 noTelp: "",

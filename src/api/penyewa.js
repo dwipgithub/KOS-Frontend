@@ -61,3 +61,19 @@ export const updatePenyewa = async (id, data) => {
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
     }
 }
+
+/**
+ * Unduh file privat (JWT) — path dari API, contoh: /api/v1/files/penyewa/uuid.pdf
+ * @returns {Promise<Blob|null>}
+ */
+export const fetchPrivateFileBlob = async (pathFromApi) => {
+    if (!pathFromApi) return null;
+    try {
+        const path = pathFromApi.startsWith("/") ? pathFromApi : `/${pathFromApi}`;
+        const response = await axiosJWT.get(path, { responseType: "blob" });
+        return response.data;
+    } catch (error) {
+        console.error("Gagal mengambil file privat:", error);
+        throw error.response?.data || { message: "Gagal mengambil file" };
+    }
+}

@@ -1,6 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import styles from "./PropertiCard.module.css";
 
 const PropertiCard = ({ card, index }) => {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        if (!card?.id) return;
+        navigate(`/properti/${card.id}/pengelolaan`);
+    };
 
     const formatAlamat = (card) => {
         return [
@@ -19,6 +26,8 @@ const PropertiCard = ({ card, index }) => {
             <div
                 className={styles.card}
                 style={{ animationDelay: `${index * 100}ms` }}
+                onClick={handleClick}
+                role="presentation"
             >
                 <div className={styles.header}>
                     <div className={styles.icon}>🏠</div>
