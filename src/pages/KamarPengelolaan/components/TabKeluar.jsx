@@ -1,8 +1,6 @@
 import { LogOut } from "lucide-react";
 import styles from "./TabKeluar.module.css";
 
-
-
 const TabKeluar = ({
     kamarData,
     sewaData,
