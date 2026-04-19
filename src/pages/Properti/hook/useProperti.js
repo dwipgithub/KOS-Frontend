@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { getProperti } from "../../../api/properti";
-import { getProvinsi } from "../../../api/provinsi";
-import { getKabKota } from "../../../api/kab-kota";
-import { getKecamatan } from "../../../api/kecamatan";
-import { getKelurahan } from "../../../api/kelurahan";
-import { createProperti } from "../../../api/properti";
+import { getProvinsi } from "../../../services/provinsiService";
+import { getKabKota } from "../../../services/kabKotaService";
+import { getKecamatan } from "../../../services/kecamatanService";
+import { getKelurahan } from "../../../services/kelurahanService";
+import { getProperti, createProperti } from "../../../services/propertiService";
 import { toast } from "react-toastify";
 
 export const useProperti = () => {

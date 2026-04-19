@@ -1,6 +1,6 @@
 import { usePenyewa } from "./hook/usePenyewa";
-import PenyewaModal from "../../components/PenyewaModal/PenyewaModal";
-import PenyewaCard from "../../components/PenyewaCard/PenyewaCard";
+import PenyewaModal from "./components/PenyewaModal/PenyewaModal";
+import PenyewaCard from "./components/PenyewaCard/PenyewaCard";
 import PageLoading from "../../components/PageLoading/PageLoading";
 import styles from "./Penyewa.module.css";
 
@@ -52,6 +52,7 @@ const Penyewa = () => {
                 jenisKelaminList={props.jenisKelaminList}
                 statusPernikahanList={props.statusPernikahanList}
                 pengenalList={props.pengenalList}
+                profesiList={props.profesiList}
                 onSave={props.handleSave}
             />  
         </div>

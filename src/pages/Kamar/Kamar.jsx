@@ -1,6 +1,7 @@
 import { useKamar } from "./hook/useKamar";
-import KamarModal from "../../components/KamarModal/KamarModal";
-import KamarCard from "../../components/KamarCard/KamarCard";
+import KamarModal from "./components/KamarModal/KamarModal";
+import KamarCard from "./components/KamarCard/KamarCard";
+
 import PageLoading from "../../components/PageLoading/PageLoading";
 import styles from "./Kamar.module.css";
 

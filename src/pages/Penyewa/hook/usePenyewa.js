@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { getPenyewa, createPenyewa } from "../../../api/penyewa";
-import { getJenisKelamin } from "../../../api/jenis-kelamin";
-import { getStatusPernikahan } from "../../../api/status-pernikahan";
-import { getPengenal } from "../../../api/pengenal";
+import { getPenyewa, createPenyewa } from "../../../services/penyewaService";
+import { getJenisKelamin } from "../../../services/jenisKelaminService";
+import { getStatusPernikahan } from "../../../services/statusPernikahanService";
+import { getPengenal } from "../../../services/pengenalService";
+import { getProfesi } from "../../../services/profesiService";
 import { toast } from "react-toastify";
 
 export const usePenyewa = () => {
@@ -10,6 +11,7 @@ export const usePenyewa = () => {
     const [jenisKelaminList, setJenisKelaminList] = useState([]);
     const [statusPernikahanList, setStatusPernikahanList] = useState([]);
     const [pengenalList, setPengenalList] = useState([]);
+    const [profesiList, setProfesiList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
@@ -21,9 +23,13 @@ export const usePenyewa = () => {
         noPengenal: "",
         idJenisKelamin: "",
         idStatusPernikahan: "",
+        idProfesi: "",
         noTelp: "",
         alamat: "",
         email: "",
+        namaInstitusi: "",
+        alamatInstitusi: "",
+        noTelpInstitusi: "",
         dokumenFile: null
     });
 
@@ -42,17 +48,19 @@ export const usePenyewa = () => {
             setLoading(true);
             setError(null);
             try {
-                const [pRes, jkRes, spRes, pgRes] = await Promise.all([
+                const [pRes, jkRes, spRes, pgRes, prRes] = await Promise.all([
                     getPenyewa(),
                     getJenisKelamin(),
                     getStatusPernikahan(),
-                    getPengenal()
+                    getPengenal(),
+                    getProfesi()
                 ]);
                 if (!cancelled) {
                     setPenyewaList(pRes.data);
                     setJenisKelaminList(jkRes.data);
                     setStatusPernikahanList(spRes.data);
                     setPengenalList(pgRes.data);
+                    setProfesiList(prRes.data);
                 }
             } catch (err) {
                 if (!cancelled) {
@@ -77,6 +85,10 @@ export const usePenyewa = () => {
         fd.append("noPengenal", f.noPengenal ?? "");
         fd.append("idJenisKelamin", f.idJenisKelamin ?? "");
         fd.append("idStatusPernikahan", f.idStatusPernikahan ?? "");
+        fd.append("idProfesi", f.idProfesi ?? "");
+        fd.append("namaInstitusi", f.namaInstitusi ?? "");
+        fd.append("alamatInstitusi", f.alamatInstitusi ?? "");
+        fd.append("noTelpInstitusi", f.noTelpInstitusi ?? "");
         fd.append("dokumen_pengenal", f.dokumenFile);
         return fd;
     };
@@ -98,9 +110,13 @@ export const usePenyewa = () => {
                 noPengenal: "",
                 idJenisKelamin: "",
                 idStatusPernikahan: "",
+                idProfesi: "",
                 noTelp: "",
                 alamat: "",
                 email: "",
+                namaInstitusi: "",
+                alamatInstitusi: "",
+                noTelpInstitusi: "",
                 dokumenFile: null
             });
         } catch (err) {
@@ -128,6 +144,7 @@ export const usePenyewa = () => {
         jenisKelaminList,
         statusPernikahanList,
         pengenalList,
+        profesiList,
         showModal,
         handleSave,
         setShowModal,

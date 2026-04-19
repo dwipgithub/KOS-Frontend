@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { getKamar } from "../../../api/kamar";
-import { getProperti } from "../../../api/properti"
-import { getStatusKamar } from "../../../api/status-kamar";
-import { createKamar } from "../../../api/kamar";
+import { getKamar, createKamar } from "../../../services/kamarService";
+import { getProperti } from "../../../services/propertiService";
+import { getStatusKamar } from "../../../services/statusKamarService";
 import { toast } from "react-toastify";
 
 export const useKamar = () => {
@@ -19,8 +18,8 @@ export const useKamar = () => {
         idProperti: "",
         idStatusKamar: "",
         catatan: "",
-        hargaPerHari: "",
-        hargaPerMinggu: "",
+        hargaPerHari: "0",
+        hargaPerMinggu: "0",
         hargaPerBulan: "",
         hargaPerTahun: ""
     });

@@ -1,6 +1,6 @@
 import { useProperti } from "./hook/useProperti";
-import PropertiModal from "../../components/PropertiModal/PropertiModal";
-import PropertiCard from "../../components/PropertiCard/PropertiCard";
+import PropertiModal from "./components/PropertiModal/PropertiModal";
+import PropertiCard from "./components/PropertiCard/PropertiCard";
 import PageLoading from "../../components/PageLoading/PageLoading";
 import styles from "./Properti.module.css";
 

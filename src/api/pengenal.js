@@ -1,31 +1,42 @@
-import axios from "axios";
-import { tokenUser } from "./auth";
+import axiosJWT from "./axiosJWT";
 
-const axiosJWT = axios.create({
-    baseURL: process.env.REACT_APP_BASE_URL,
-    withCredentials: true
-});
-
-axiosJWT.interceptors.request.use(
-    async (config) => {
-        const response = await tokenUser(); // ✅ tunggu token dulu
-        const token = response.data.data.access_token;
-        config.headers.Authorization = `Bearer ${token}`;
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-)
-
-export const getPengenal = async (filters = {}) => {
+export const getPengenalApi =  async (filters = {}) => {
     try {
-        const response = await axiosJWT.get(`/api/v1/pengenal`, {
-            params: filters,
-        });
-        return response.data;
+        return axiosJWT.get("/api/v1/pengenal", { params: filters });
     } catch (error) {
-        console.error("Gagal mengambil data pengenal:", error);
+        console.error("Gagal mengambil data kelurahan:", error);
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
-    }
+    } 
 }
+
+// import axios from "axios";
+// import { tokenUser } from "./auth";
+
+// const axiosJWT = axios.create({
+//     baseURL: process.env.REACT_APP_BASE_URL,
+//     withCredentials: true
+// });
+
+// axiosJWT.interceptors.request.use(
+//     async (config) => {
+//         const response = await tokenUser(); // ✅ tunggu token dulu
+//         const token = response.data.data.access_token;
+//         config.headers.Authorization = `Bearer ${token}`;
+//         return config;
+//     },
+//     (error) => {
+//         return Promise.reject(error);
+//     }
+// )
+
+// export const getPengenal = async (filters = {}) => {
+//     try {
+//         const response = await axiosJWT.get(`/api/v1/pengenal`, {
+//             params: filters,
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Gagal mengambil data pengenal:", error);
+//         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
+//     }
+// }

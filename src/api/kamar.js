@@ -1,59 +1,35 @@
-import axios from "axios";
-import { tokenUser } from "./auth";
+import axiosJWT from "./axiosJWT";
 
-const axiosJWT = axios.create({
-    baseURL: process.env.REACT_APP_BASE_URL,
-    withCredentials: true
-});
-
-axiosJWT.interceptors.request.use(
-    async (config) => {
-        const response = await tokenUser(); // ✅ tunggu token dulu
-        const token = response.data.data.access_token;
-        config.headers.Authorization = `Bearer ${token}`;
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-)
-
-export const getKamar = async (filters = {}) => {
+export const getKamarApi = (filters) => {
     try {
-        const response = await axiosJWT.get(`/api/v1/kamar`, {
-            params: filters,
-        });
-        return response.data;
+        return axiosJWT.get("/api/v1/kamar", { params: filters });
     } catch (error) {
         console.error("Gagal mengambil data kamar:", error);
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
     }
 }
 
-export const showKamar = async (id) => {
+export const showKamarApi = (id) => {
     try {
-        const response = await axiosJWT.get(`/api/v1/kamar/${id}`);
-        return response.data;
+        return axiosJWT.get(`/api/v1/kamar/${id}`);
     } catch (error) {
         console.error("Gagal mengambil data kamar:", error);
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
     }
 }
 
-export const createKamar = async (data) => {
+export const createKamarApi = (data) => {
     try {
-        const response = await axiosJWT.post(`/api/v1/kamar`, data);
-        return response.data;
+        return axiosJWT.post("/api/v1/kamar", data);
     } catch (error) {
         console.error("Gagal membuat kamar:", error);
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
     }
 }
 
-export const updateKamar = async (id, data) => {
+export const updateKamarApi = (id, data) => {
     try {
-        const response = await axiosJWT.put(`/api/v1/kamar/${id}`, data);
-        return response.data;
+        return axiosJWT.patch(`/api/v1/kamar/${id}`, data);
     } catch (error) {
         console.error("Gagal memperbarui kamar:", error);
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };

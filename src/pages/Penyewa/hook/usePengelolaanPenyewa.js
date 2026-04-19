@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { showPenyewa, updatePenyewa, fetchPrivateFileBlob } from "../../../api/penyewa";
-import { getJenisKelamin } from "../../../api/jenis-kelamin";
-import { getStatusPernikahan } from "../../../api/status-pernikahan";
-import { getPengenal } from "../../../api/pengenal";
+import { showPenyewa, updatePenyewa, fetchPrivateFileBlob } from "../../../services/penyewaService";
+import { getJenisKelamin } from "../../../services/jenisKelaminService";
+import { getStatusPernikahan } from "../../../services/statusPernikahanService";
+import { getPengenal } from "../../../services/pengenalService";
 import { toast } from "react-toastify";
 
 function inferMimeFromPath(path, blobType) {
