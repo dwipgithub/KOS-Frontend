@@ -1,5 +1,61 @@
-import Select from "react-select";
+import { useState, useMemo, useCallback } from "react";
+import { toast } from "react-toastify";
 import styles from "./TabSewa.module.css";
+import PenyewaForm, { SECTION_KEYS, validateDokumenFile } from "./PenyewaForm";
+import SewaForm from "./SewaForm";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validatePenyewaFields(form, readOnly) {
+    const t = (s) => (s || "").trim();
+    if (!t(form.nama)) return { section: "personal", field: "nama", message: "Nama lengkap wajib diisi." };
+    if (!t(form.idPengenal))
+        return { section: "identity", field: "idPengenal", message: "Jenis pengenal wajib dipilih." };
+    if (!t(form.noPengenal))
+        return { section: "identity", field: "noPengenal", message: "Nomor pengenal wajib diisi." };
+    if (!t(form.idJenisKelamin))
+        return { section: "identity", field: "idJenisKelamin", message: "Jenis kelamin wajib dipilih." };
+    if (!t(form.idStatusPernikahan))
+        return {
+            section: "identity",
+            field: "idStatusPernikahan",
+            message: "Status pernikahan wajib dipilih.",
+        };
+    if (!t(form.noTelp))
+        return { section: "identity", field: "noTelp", message: "Nomor telepon wajib diisi." };
+    if (!t(form.email)) return { section: "identity", field: "email", message: "Email wajib diisi." };
+    if (!EMAIL_RE.test(t(form.email)))
+        return { section: "identity", field: "email", message: "Format email tidak valid." };
+    if (!t(form.alamat)) return { section: "identity", field: "alamat", message: "Alamat wajib diisi." };
+    if (!t(form.idProfesi))
+        return { section: "profession", field: "idProfesi", message: "Profesi wajib dipilih." };
+    if (!t(form.namaInstitusi))
+        return { section: "profession", field: "namaInstitusi", message: "Nama institusi wajib diisi." };
+    if (!t(form.noTelpInstitusi))
+        return {
+            section: "profession",
+            field: "noTelpInstitusi",
+            message: "Nomor telepon institusi wajib diisi.",
+        };
+    if (!t(form.alamatInstitusi))
+        return { section: "profession", field: "alamatInstitusi", message: "Alamat institusi wajib diisi." };
+    if (!readOnly) {
+        const docErr = validateDokumenFile(form.dokumenFile);
+        if (docErr)
+            return { section: "document", field: "dokumenFile", message: docErr };
+    }
+    return null;
+}
+
+function validateSewaFields(formSewa) {
+    if (!formSewa.tanggalMasuk)
+        return { field: "tanggalMasuk", message: "Tanggal mulai wajib diisi." };
+    if (!formSewa.tanggalKeluar)
+        return { field: "jumlahDurasi", message: "Lengkapi durasi dan tanggal mulai agar tanggal selesai terhitung." };
+    if (!formSewa.jumlahDurasi || formSewa.jumlahDurasi < 1)
+        return { field: "jumlahDurasi", message: "Jumlah durasi minimal 1." };
+    return null;
+}
 
 const TabSewa = ({
     kamarData,
@@ -7,33 +63,146 @@ const TabSewa = ({
     penyewaData,
     formSewa,
     setFormSewa,
-    penyewaList,
-    onSave,
+    formPenyewaBaru,
+    setFormPenyewaBaru,
+    jenisKelaminList,
+    statusPernikahanList,
+    pengenalList,
+    profesiList,
+    onSimpanTransaksi,
     onDurasiChange,
     onJumlahDurasiChange,
-    loadingPenyewa,
+    loadingMasterPenyewa,
+    savingTransaksiSewa,
 }) => {
-    console.log("📋 TabSewa rendered - sewaData:", sewaData, "kamarData.idSewa:", kamarData?.idSewa);
-
     const isActive = sewaData?.statusSewa?.id === "ACTIVE";
     const isBooked = sewaData?.statusSewa?.id === "BOOKED";
 
-    // Jika kamar sudah disewa, tampilkan info penyewa
+    const [penyewaReadOnly, setPenyewaReadOnly] = useState(false);
+    const [existingDokumenHint, setExistingDokumenHint] = useState("");
+    const [openSections, setOpenSections] = useState({
+        personal: true,
+        identity: false,
+        profession: false,
+        document: false,
+    });
+    const [sewaSectionOpen, setSewaSectionOpen] = useState(true);
+    const [penyewaFocus, setPenyewaFocus] = useState({ key: null, nonce: 0 });
+    const [sewaFocus, setSewaFocus] = useState({ key: null, nonce: 0 });
+
+    const penyewaSectionComplete = useMemo(() => {
+        const f = formPenyewaBaru;
+        const t = (s) => (s || "").trim();
+        return {
+            personal: !!t(f.nama),
+            identity:
+                !!t(f.idPengenal) &&
+                !!t(f.noPengenal) &&
+                !!t(f.idJenisKelamin) &&
+                !!t(f.idStatusPernikahan) &&
+                !!t(f.noTelp) &&
+                !!t(f.email) &&
+                EMAIL_RE.test(t(f.email)) &&
+                !!t(f.alamat),
+            profession:
+                !!t(f.idProfesi) &&
+                !!t(f.namaInstitusi) &&
+                !!t(f.noTelpInstitusi) &&
+                !!t(f.alamatInstitusi),
+            document:
+                penyewaReadOnly || validateDokumenFile(f.dokumenFile) === null,
+        };
+    }, [formPenyewaBaru, penyewaReadOnly]);
+
+    const sewaSectionComplete = useMemo(() => {
+        return (
+            !!formSewa.tanggalMasuk &&
+            !!formSewa.tanggalKeluar &&
+            !!formSewa.jumlahDurasi &&
+            formSewa.jumlahDurasi >= 1
+        );
+    }, [formSewa.tanggalMasuk, formSewa.tanggalKeluar, formSewa.jumlahDurasi]);
+
+    const progressPercent = useMemo(() => {
+        const penyewaDone = SECTION_KEYS.filter((k) => penyewaSectionComplete[k]).length;
+        const sewaDone = sewaSectionComplete ? 1 : 0;
+        const total = SECTION_KEYS.length + 1;
+        return Math.round(((penyewaDone + sewaDone) / total) * 100);
+    }, [penyewaSectionComplete, sewaSectionComplete]);
+
+    const focusPenyewa = useCallback((section, field) => {
+        setOpenSections((prev) => ({ ...prev, [section]: true }));
+        setPenyewaFocus((p) => ({ key: field, nonce: p.nonce + 1 }));
+        requestAnimationFrame(() => {
+            const el = document.querySelector(`[data-penyewa-field="${field}"]`);
+            el?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+        });
+    }, []);
+
+    const focusSewa = useCallback((field) => {
+        setSewaSectionOpen(true);
+        setSewaFocus((p) => ({ key: field, nonce: p.nonce + 1 }));
+        requestAnimationFrame(() => {
+            const el = document.querySelector(`[data-sewa-field="${field}"]`);
+            el?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+        });
+    }, []);
+
+    const handleExistingPenyewaSelected = useCallback(
+        (item) => {
+            setPenyewaReadOnly(true);
+            setFormSewa((prev) => ({ ...prev, idPenyewa: item.id }));
+            setExistingDokumenHint(item.dokumenPengenal ? String(item.dokumenPengenal) : "");
+        },
+        [setFormSewa]
+    );
+
+    const handleRequestManualEntry = useCallback(() => {
+        setPenyewaReadOnly(false);
+        setFormSewa((prev) => ({ ...prev, idPenyewa: "" }));
+        setExistingDokumenHint("");
+        setFormPenyewaBaru({
+            nama: "",
+            idPengenal: "",
+            noPengenal: "",
+            idJenisKelamin: "",
+            idStatusPernikahan: "",
+            idProfesi: "",
+            noTelp: "",
+            alamat: "",
+            email: "",
+            namaInstitusi: "",
+            alamatInstitusi: "",
+            noTelpInstitusi: "",
+            dokumenFile: null,
+        });
+    }, [setFormPenyewaBaru, setFormSewa]);
+
+    const handleSimpanTransaksiClick = async () => {
+        const pErr = validatePenyewaFields(formPenyewaBaru, penyewaReadOnly);
+        if (pErr) {
+            toast.error(pErr.message);
+            focusPenyewa(pErr.section, pErr.field);
+            return;
+        }
+        const sErr = validateSewaFields(formSewa);
+        if (sErr) {
+            toast.error(sErr.message);
+            focusSewa(sErr.field);
+            return;
+        }
+        await onSimpanTransaksi({ isExistingPenyewa: penyewaReadOnly });
+    };
+
     if (isActive || isBooked) {
-        console.log("✅ Showing penyewa info - sewaData.id:", sewaData.id);
-        console.log("📋 Penyewa data:", penyewaData);
         return (
             <div className={styles.container}>
                 <div className={styles.activeSewaContainer}>
                     <div className={styles.statusHeader}>
-                        <span className={styles.statusIcon}>
-                            {isActive ? "✅" : "📅"}
-                        </span>
+                        <span className={styles.statusIcon}>{isActive ? "✅" : "📅"}</span>
                         <div>
                             <h3 className={styles.statusTitle}>
-                                {isActive
-                                    ? "Kamar Sedang Disewa"
-                                    : "Kamar Sudah Dibooking"}
+                                {isActive ? "Kamar Sedang Disewa" : "Kamar Sudah Dibooking"}
                             </h3>
                             <p className={styles.statusSubtitle}>
                                 {isActive
@@ -44,21 +213,22 @@ const TabSewa = ({
                     </div>
 
                     <div className={styles.sewaGrid}>
-                        {/* INFORMASI PENYEWA */}
                         <div className={styles.sewaCardModern}>
                             <div className={styles.cardHeaderModern}>
                                 <div>
                                     <h4 className={styles.cardTitle}>👤 Informasi Penyewa</h4>
-                                    <p className={styles.cardSubtitle}>
-                                        Detail identitas penyewa
-                                    </p>
+                                    <p className={styles.cardSubtitle}>Detail identitas penyewa</p>
                                 </div>
                             </div>
 
                             <div className={styles.infoGridModern}>
                                 <div className={styles.infoBox}>
-                                    <span className={styles.label}>ID {penyewaData?.pengenal.id || "-"}</span>
-                                    <span className={styles.value}>{penyewaData?.pengenal.noPengenal || "-"}</span>
+                                    <span className={styles.label}>
+                                        ID {penyewaData?.pengenal?.id || "-"}
+                                    </span>
+                                    <span className={styles.value}>
+                                        {penyewaData?.pengenal?.noPengenal || "-"}
+                                    </span>
                                 </div>
 
                                 <div className={styles.infoBox}>
@@ -83,14 +253,11 @@ const TabSewa = ({
                             </div>
                         </div>
 
-                        {/* DETAIL SEWA */}
                         <div className={styles.sewaCardModern}>
                             <div className={styles.cardHeaderModern}>
                                 <div>
                                     <h4 className={styles.cardTitle}>📋 Detail Sewa</h4>
-                                    <p className={styles.cardSubtitle}>
-                                        Periode & biaya sewa
-                                    </p>
+                                    <p className={styles.cardSubtitle}>Periode & biaya sewa</p>
                                 </div>
                             </div>
 
@@ -104,9 +271,7 @@ const TabSewa = ({
 
                                 <div className={styles.infoBox}>
                                     <span className={styles.label}>Jumlah</span>
-                                    <span className={styles.value}>
-                                        {sewaData?.jumlahDurasi || "-"}
-                                    </span>
+                                    <span className={styles.value}>{sewaData?.jumlahDurasi || "-"}</span>
                                 </div>
 
                                 <div className={styles.infoBox}>
@@ -114,10 +279,10 @@ const TabSewa = ({
                                     <span className={styles.value}>
                                         {sewaData?.tanggalMasuk
                                             ? new Date(sewaData.tanggalMasuk).toLocaleDateString("id-ID", {
-                                                day: "numeric",
-                                                month: "short",
-                                                year: "numeric",
-                                            })
+                                                  day: "numeric",
+                                                  month: "short",
+                                                  year: "numeric",
+                                              })
                                             : "-"}
                                     </span>
                                 </div>
@@ -127,10 +292,10 @@ const TabSewa = ({
                                     <span className={styles.value}>
                                         {sewaData?.tanggalKeluar
                                             ? new Date(sewaData.tanggalKeluar).toLocaleDateString("id-ID", {
-                                                day: "numeric",
-                                                month: "short",
-                                                year: "numeric",
-                                            })
+                                                  day: "numeric",
+                                                  month: "short",
+                                                  year: "numeric",
+                                              })
                                             : "-"}
                                     </span>
                                 </div>
@@ -145,19 +310,16 @@ const TabSewa = ({
                                 <div className={styles.infoBox}>
                                     <span className={styles.label}>Uang Muka</span>
                                     <span className={styles.value}>
-                                        Rp{" "}
-                                        {Number(sewaData?.uangMuka ?? 0).toLocaleString("id-ID")}
+                                        Rp {Number(sewaData?.uangMuka ?? 0).toLocaleString("id-ID")}
                                     </span>
                                 </div>
 
-                                {/* TOTAL HIGHLIGHT */}
-                                <div className={`${styles.infoBox}`}>
+                                <div className={styles.infoBox}>
                                     <span className={styles.label}>Total</span>
                                     <span className={styles.value}>
                                         Rp{" "}
                                         {parseInt(
-                                            sewaData?.hargaPerDurasi *
-                                            parseInt(sewaData?.jumlahDurasi || 0)
+                                            sewaData?.hargaPerDurasi * parseInt(sewaData?.jumlahDurasi || 0)
                                         ).toLocaleString("id-ID")}
                                     </span>
                                 </div>
@@ -169,199 +331,73 @@ const TabSewa = ({
         );
     }
 
-    // Form sewa untuk kamar yang belum disewa
-    console.log("📝 Showing form sewa - no sewaData or no sewaData.id");
     return (
         <div className={styles.container}>
-            <div className={styles.formContainer}>
+            <div className={styles.formContainerWide}>
                 <div className={styles.formHeader}>
                     <span className={styles.formIcon}>📝</span>
                     <div>
-                        <h3 className={styles.formHeaderTitle}>Tambah Sewa Kamar</h3>
+                        <h3 className={styles.formHeaderTitle}>Sewa Baru</h3>
                         <p className={styles.formHeaderSubtitle}>
-                            Isi formulir untuk memasukkan data penyewa
+                            Satu alur untuk data penyewa dan kontrak sewa kamar
                         </p>
                     </div>
                 </div>
 
+                <div className={styles.progressWrap}>
+                    <div className={styles.progressLabels}>
+                        <span>Progress pengisian</span>
+                        <span>{progressPercent}%</span>
+                    </div>
+                    <div className={styles.progressTrack}>
+                        <div
+                            className={styles.progressFill}
+                            style={{ width: `${progressPercent}%` }}
+                        />
+                    </div>
+                </div>
+
                 <div className={styles.formContent}>
-                    {/* PILIH PENYEWA */}
                     <div className={styles.formSection}>
-                        <div className={styles.sectionTitle}>👤 Pilih Penyewa</div>
-                        <div className={styles.formGroup}>
-                            <label className={styles.label}>Nama Penyewa *</label>
-                            <Select
-                                classNamePrefix="custom-select"
-                                options={penyewaList.map((p) => ({
-                                    value: p.id,
-                                    label: `${p.nama} • ${p.noTelp}`,
-                                }))}
-                                value={
-                                    penyewaList
-                                        .map((p) => ({
-                                            value: p.id,
-                                            label: `${p.nama} • ${p.noTelp}`,
-                                        }))
-                                        .find((opt) => opt.value === formSewa.idPenyewa) || null
-                                }
-                                onChange={(selected) =>
-                                    setFormSewa({
-                                        ...formSewa,
-                                        idPenyewa: selected?.value || "",
-                                    })
-                                }
-                                isLoading={loadingPenyewa}
-                                placeholder="-- Pilih Penyewa --"
-                                isClearable
-                            />
-                        </div>
+                        <div className={styles.sectionTitle}>👤 Penyewa</div>
+                        <PenyewaForm
+                            form={formPenyewaBaru}
+                            setForm={setFormPenyewaBaru}
+                            readOnly={penyewaReadOnly}
+                            onExistingPenyewaSelected={handleExistingPenyewaSelected}
+                            onRequestManualEntry={handleRequestManualEntry}
+                            loadingMaster={loadingMasterPenyewa}
+                            jenisKelaminList={jenisKelaminList}
+                            statusPernikahanList={statusPernikahanList}
+                            pengenalList={pengenalList}
+                            profesiList={profesiList}
+                            openSections={openSections}
+                            setOpenSections={setOpenSections}
+                            sectionComplete={penyewaSectionComplete}
+                            focusTrigger={penyewaFocus}
+                            existingDokumenLabel={existingDokumenHint}
+                        />
                     </div>
 
-                    {/* DETAIL DURASI SEWA */}
-                    <div className={styles.formSection}>
-                        <div className={styles.sectionTitle}>⏱️ Durasi Sewa</div>
+                    <SewaForm
+                        kamarData={kamarData}
+                        formSewa={formSewa}
+                        setFormSewa={setFormSewa}
+                        onDurasiChange={onDurasiChange}
+                        onJumlahDurasiChange={onJumlahDurasiChange}
+                        sectionComplete={sewaSectionComplete}
+                        sectionOpen={sewaSectionOpen}
+                        setSectionOpen={setSewaSectionOpen}
+                        focusTrigger={sewaFocus}
+                    />
 
-                        <div className={styles.durasiGrid}>
-                            {["Bulanan", "Tahunan"].map(
-                                (durasi) => (
-                                    <button
-                                        key={durasi}
-                                        className={`${styles.durasiBtn} ${formSewa.durasiSewa === durasi
-                                            ? styles.active
-                                            : ""
-                                            }`}
-                                        onClick={() => onDurasiChange(durasi)}
-                                    >
-                                        <span className={styles.durasisiBtnText}>
-                                            {durasi}
-                                        </span>
-                                        <span className={styles.durasiPrice}>
-                                            Rp{" "}
-                                            {parseInt(
-                                                kamarData?.[
-                                                durasi === "Bulanan"
-                                                    ? "hargaPerBulan"
-                                                    : "hargaPerTahun"
-                                                ] || 0
-                                            ).toLocaleString("id-ID")}
-                                        </span>
-                                    </button>
-                                )
-                            )}
-                        </div>
-                    </div>
-
-                    {/* TANGGAL SEWA */}
-                    <div className={styles.formSection}>
-                        <div className={styles.sectionTitle}>📅 Periode Sewa</div>
-
-                        <div className={styles.calculationGrid}>
-                            {/* TANGGAL MASUK */}
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>Tanggal Masuk *</label>
-                                <input
-                                    type="date"
-                                    className={`${styles.input} ${styles.dateInput}`}
-                                    value={formSewa.tanggalMasuk}
-                                    onChange={(e) =>
-                                        setFormSewa((prev) => ({
-                                            ...prev,
-                                            tanggalMasuk: e.target.value,
-                                        }))
-                                    }
-                                />
-                            </div>
-
-                            {/* TANGGAL KELUAR (otomatis) */}
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>
-                                    Tanggal Keluar
-                                </label>
-                                <input
-                                    type="date"
-                                    readOnly
-                                    aria-readonly="true"
-                                    title="Dihitung otomatis dari tanggal masuk, jenis durasi, dan jumlah"
-                                    className={`${styles.input} ${styles.dateInput} ${styles.dateInputReadonly}`}
-                                    value={formSewa.tanggalKeluar || ""}
-                                    tabIndex={-1}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* DETAIL PERHITUNGAN */}
-                    <div className={styles.formSection}>
-                        <div className={styles.sectionTitle}>💰 Detail Perhitungan</div>
-
-                        <div className={styles.calculationGrid}>
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>
-                                    Jumlah {formSewa.durasiSewa} *
-                                </label>
-                                <input
-                                    type="number"
-                                    className={styles.input}
-                                    value={formSewa.jumlahDurasi}
-                                    onChange={(e) =>
-                                        onJumlahDurasiChange(
-                                            parseInt(e.target.value) || 1
-                                        )
-                                    }
-                                    min="1"
-                                />
-                            </div>
-
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>
-                                    Harga Per {formSewa.durasiSewa}
-                                </label>
-                                <div className={styles.staticValue}>
-                                    Rp{" "}
-                                    {parseInt(
-                                        formSewa.hargaPerDurasi || 0
-                                    ).toLocaleString("id-ID")}
-                                </div>
-                            </div>
-
-                            <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                                <label className={styles.label}>Uang Muka</label>
-                                <input
-                                    type="number"
-                                    className={styles.input}
-                                    min="0"
-                                    step="1000"
-                                    value={formSewa.uangMuka ?? 0}
-                                    onChange={(e) => {
-                                        const v = e.target.value;
-                                        setFormSewa((prev) => ({
-                                            ...prev,
-                                            uangMuka:
-                                                v === ""
-                                                    ? 0
-                                                    : Math.max(0, parseFloat(v) || 0),
-                                        }));
-                                    }}
-                                />
-                            </div>
-                            
-                        </div>
-
-                        {/* HARGA TOTAL */}
-                        <div className={styles.totalPriceSection}>
-                            <span className={styles.totalLabel}>Total Harga</span>
-                            <span className={styles.totalPrice}>
-                                Rp{" "}
-                                {parseInt(
-                                    formSewa.hargaTotal || 0
-                                ).toLocaleString("id-ID")}
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* BUTTON SIMPAN */}
-                    <button className={styles.saveBtn} onClick={onSave}>
-                        💾 Simpan
+                    <button
+                        type="button"
+                        className={styles.saveBtn}
+                        onClick={handleSimpanTransaksiClick}
+                        disabled={savingTransaksiSewa}
+                    >
+                        {savingTransaksiSewa ? "Menyimpan…" : "💾 Simpan"}
                     </button>
                 </div>
             </div>

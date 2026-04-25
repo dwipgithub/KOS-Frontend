@@ -7,6 +7,8 @@ import Kamar from "../pages/Kamar/Kamar";
 import PengelolaanKamar from "../pages/KamarPengelolaan/PengelolaanKamar";
 import Penyewa from "../pages/Penyewa/Penyewa";
 import PengelolaanPenyewa from "../pages/PenyewaPengelola/PengelolaanPenyewa";
+import LaporanArusKas from "../pages/LaporanArusKas/LaporanArusKas";
+import Pengeluaran from "../pages/Pengeluaran/Pengeluaran";
 
 const Content = () => {
     return (
@@ -19,6 +21,8 @@ const Content = () => {
                 <Route path="/kamar-pengelolaan/:id" element={<PengelolaanKamar/>}/>
                 <Route path="/penyewa" element={<Penyewa/>}/>
                 <Route path="/penyewa-pengelolaan/:id" element={<PengelolaanPenyewa/>}/>
+                <Route path="/pengeluaran" element={<Pengeluaran/>}/>
+                <Route path="/laporan-arus-kas" element={<LaporanArusKas/>}/>
             </Routes>
         </div>
     )

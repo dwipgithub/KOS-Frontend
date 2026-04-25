@@ -24,6 +24,11 @@
     font-size: 18px;
 }
 
+.backButton {
+    border-radius: 8px;
+    font-weight: 600;
+}
+
 .search {
     margin-bottom: 12px;
 }
@@ -32,4 +37,86 @@
     text-align: center;
     color: #6c757d;
     margin-top: 20px;
+}
+
+.propertiCard {
+    background: #fff;
+    border-radius: 18px;
+    padding: 18px;
+    min-width: 220px;
+    height: 230px;
+    border: 2px solid rgba(255,140,0,0.5);
+    box-shadow: inset 4px 0 0 rgba(255,140,0,0.4), 0 14px 30px rgba(0,0,0,0.08);
+    transition: transform 300ms cubic-bezier(.25,.46,.45,.94),
+                box-shadow 300ms ease,
+                border-color 300ms ease,
+                background-color 300ms ease;
+    cursor: pointer;
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    animation: fadeInUp 600ms ease forwards;
+}
+
+.propertiHeader {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.propertiIcon {
+    font-size: 32px;
+}
+
+.propertiTitle {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.propertiInfo {
+    margin-top: 12px;
+    display: grid;
+    gap: 8px;
+}
+
+.propertiInfoItem {
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.propertiCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 26px rgba(255, 140, 0, 0.2);
+}
+
+.propertiTitle {
+    margin: 10px 0 6px;
+    font-size: 18px;
+    color: #1f2937;
+    font-weight: 700;
+}
+
+.propertiMeta {
+    margin: 0 0 6px;
+    color: #ff8c00;
+    font-weight: 600;
+}
+
+.propertiAlamat {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

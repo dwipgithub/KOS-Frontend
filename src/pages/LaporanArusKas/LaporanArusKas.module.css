@@ -1,0 +1,147 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.header h2 {
+    margin: 0;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.subtitle {
+    margin: 6px 0 0;
+    color: #6b7280;
+}
+
+.summaryCard {
+    background: linear-gradient(90deg, #ff7a18, #ffb347);
+    color: #fff;
+    padding: 16px 20px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 12px 24px rgba(255, 122, 24, 0.25);
+}
+
+.summaryCard span {
+    font-size: 14px;
+    opacity: 0.95;
+}
+
+.summaryCard strong {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.filterCard {
+    background: #fff;
+    border: 1px solid #eef2f7;
+    border-radius: 14px;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    align-items: end;
+}
+
+.filterField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filterField label {
+    font-size: 13px;
+    color: #475569;
+    font-weight: 600;
+}
+
+.filterButtonWrap {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.filterButtonWrap :global(.btn.btn-primary) {
+    background: linear-gradient(90deg, #ff7a18, #ffb347);
+    border: none;
+    font-weight: 600;
+}
+
+.filterButtonWrap :global(.btn.btn-primary:hover),
+.filterButtonWrap :global(.btn.btn-primary:focus),
+.filterButtonWrap :global(.btn.btn-primary:active) {
+    background: linear-gradient(90deg, #f56b0a, #fca93a);
+    border: none;
+    box-shadow: 0 8px 18px rgba(255, 122, 24, 0.28);
+}
+
+.tableCard {
+    background: #fff;
+    border: 1px solid #eef2f7;
+    border-radius: 14px;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+    padding: 4px;
+}
+
+.table thead th {
+    border-bottom: 1px solid #e5e7eb !important;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+    background: #f8fafc;
+    white-space: nowrap;
+}
+
+.table tbody td {
+    border-color: #f1f5f9;
+    color: #334155;
+    font-size: 14px;
+}
+
+.namaCol {
+    min-width: 230px;
+    font-weight: 600;
+}
+
+.amountCol {
+    white-space: nowrap;
+    font-weight: 700;
+    color: #0f766e;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badgeIn {
+    color: #047857;
+    background: #ecfdf5;
+}
+
+.badgeOut {
+    color: #b91c1c;
+    background: #fef2f2;
+}
+
+.stateText {
+    padding: 28px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.errorText {
+    padding: 28px;
+    text-align: center;
+    color: #dc2626;
+    font-weight: 600;
+}

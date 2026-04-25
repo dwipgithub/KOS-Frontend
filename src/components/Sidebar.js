@@ -13,11 +13,12 @@ const Sidebar = () => {
         { name: "Properti", path: "/properti", icon: "🏠" },
         { name: "Kamar", path: "/kamar", icon: "🛏️" },
         { name: "Penyewa", path: "/penyewa", icon: "🧑‍💼" },
+        { name: "Pengeluaran", path: "/pengeluaran", icon: "🧾" },
         {
             name: "Laporan Keuangan",
             icon: "📊",
             subMenus: [
-                { name: "Arus Kas", path: "/", icon: "💸" },
+                { name: "Arus Kas", path: "/laporan-arus-kas", icon: "💸" },
                 { name: "Rugi Laba", path: "/", icon: "📉" },
                 { name: "Buku Besar", path: "/", icon: "📖" },
                 { name: "Neraca", path: "/", icon: "⚖️" },

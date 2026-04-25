@@ -96,12 +96,17 @@ const PengelolaanKamar = () => {
                             penyewaData={props.penyewaData}
                             formSewa={props.formSewa}
                             setFormSewa={props.setFormSewa}
-                            penyewaList={props.penyewaList}
-                            onSave={props.handleSaveSewa}
+                            formPenyewaBaru={props.formPenyewaBaru}
+                            setFormPenyewaBaru={props.setFormPenyewaBaru}
+                            jenisKelaminList={props.jenisKelaminList}
+                            statusPernikahanList={props.statusPernikahanList}
+                            pengenalList={props.pengenalList}
+                            profesiList={props.profesiList}
+                            onSimpanTransaksi={props.handleSimpanTransaksiSewa}
                             onDurasiChange={props.handleDurasiSewaChange}
                             onJumlahDurasiChange={props.handleJumlahDurasiChange}
-                            loadingSewa={props.loadingSewa}
-                            loadingPenyewa={props.loadingPenyewa}
+                            loadingMasterPenyewa={props.loadingMasterPenyewa}
+                            savingTransaksiSewa={props.savingTransaksiSewa}
                         />
                     )}
 

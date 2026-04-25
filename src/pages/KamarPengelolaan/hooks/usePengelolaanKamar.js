@@ -1,11 +1,15 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { showKamar, updateKamar } from "../../../services/kamarService";
-import { getPenyewa, showPenyewa } from "../../../services/penyewaService";
+import { getPenyewa, showPenyewa, createPenyewa } from "../../../services/penyewaService";
 import { showSewa, createSewa } from "../../../services/sewaService";
 import { getTagihan } from "../../../services/tagihanService";
 import { createPembayaran } from "../../../services/pembayaranService";
 import { createKeluar } from "../../../services/keluarService";
+import { getJenisKelamin } from "../../../services/jenisKelaminService";
+import { getStatusPernikahan } from "../../../services/statusPernikahanService";
+import { getPengenal } from "../../../services/pengenalService";
+import { getProfesi } from "../../../services/profesiService";
 import { toast } from "react-toastify";
 
 function todayDateString() {
@@ -56,12 +60,18 @@ export const usePengelolaanKamar = (idKamar) => {
     const [penyewaData, setPenyewaData] = useState(null);
     const [tagihanList, setTagihanList] = useState([]);
     const [penyewaList, setPenyewaList] = useState([]);
+    const [jenisKelaminList, setJenisKelaminList] = useState([]);
+    const [statusPernikahanList, setStatusPernikahanList] = useState([]);
+    const [pengenalList, setPengenalList] = useState([]);
+    const [profesiList, setProfesiList] = useState([]);
 
     // State untuk loading
     const [loadingKamar, setLoadingKamar] = useState(true);
     const [loadingSewa, setLoadingSewa] = useState(false);
     const [loadingTagihan, setLoadingTagihan] = useState(false);
     const [loadingPenyewa, setLoadingPenyewa] = useState(false);
+    const [loadingMasterPenyewa, setLoadingMasterPenyewa] = useState(false);
+    const [savingTransaksiSewa, setSavingTransaksiSewa] = useState(false);
 
     // State untuk form profil kamar
     const [formProfil, setFormProfil] = useState({
@@ -86,6 +96,21 @@ export const usePengelolaanKamar = (idKamar) => {
         hargaTotal: 0,
         uangMuka: 0,
         catatan: "",
+    });
+    const [formPenyewaBaru, setFormPenyewaBaru] = useState({
+        nama: "",
+        idPengenal: "",
+        noPengenal: "",
+        idJenisKelamin: "",
+        idStatusPernikahan: "",
+        idProfesi: "",
+        noTelp: "",
+        alamat: "",
+        email: "",
+        namaInstitusi: "",
+        alamatInstitusi: "",
+        noTelpInstitusi: "",
+        dokumenFile: null,
     });
 
     // State untuk form pembayaran tagihan
@@ -142,6 +167,26 @@ export const usePengelolaanKamar = (idKamar) => {
             console.error("Gagal memuat daftar penyewa:", err);
         } finally {
             setLoadingPenyewa(false);
+        }
+    }, []);
+
+    const fetchMasterPenyewa = useCallback(async () => {
+        try {
+            setLoadingMasterPenyewa(true);
+            const [jkRes, spRes, pgRes, prRes] = await Promise.all([
+                getJenisKelamin(),
+                getStatusPernikahan(),
+                getPengenal(),
+                getProfesi(),
+            ]);
+            setJenisKelaminList(jkRes.data || []);
+            setStatusPernikahanList(spRes.data || []);
+            setPengenalList(pgRes.data || []);
+            setProfesiList(prRes.data || []);
+        } catch (err) {
+            console.error("Gagal memuat data referensi penyewa:", err);
+        } finally {
+            setLoadingMasterPenyewa(false);
         }
     }, []);
 
@@ -210,9 +255,11 @@ export const usePengelolaanKamar = (idKamar) => {
     useEffect(() => {
         fetchKamarData();
         fetchPenyewaList();
+        fetchMasterPenyewa();
     }, [
         fetchKamarData,
-        fetchPenyewaList
+        fetchPenyewaList,
+        fetchMasterPenyewa,
     ]);
 
     useEffect(() => {
@@ -313,25 +360,40 @@ export const usePengelolaanKamar = (idKamar) => {
         }
     };
 
-    // Handle save sewa
-    const handleSaveSewa = async () => {
+    /**
+     * Simpan transaksi sewa: penyewa baru (multipart) bila perlu, lalu sewa.
+     * Validasi UI dilakukan di TabSewa sebelum memanggil fungsi ini.
+     * @param {{ isExistingPenyewa: boolean }} opts
+     */
+    const handleSimpanTransaksiSewa = async ({ isExistingPenyewa }) => {
         try {
-            if (!formSewa.idPenyewa) {
-                toast.error("Pilih penyewa terlebih dahulu");
+            setSavingTransaksiSewa(true);
+            let idPenyewa = formSewa.idPenyewa;
+
+            if (!isExistingPenyewa) {
+                const response = await createPenyewa(buildPenyewaFormData(formPenyewaBaru));
+                idPenyewa = response?.data?.id ?? response?.id;
+                if (!idPenyewa) {
+                    toast.error("Gagal mendapatkan ID penyewa baru");
+                    return;
+                }
+            } else if (!idPenyewa) {
+                toast.error("Pilih penyewa dari pencarian terlebih dahulu");
                 return;
             }
+
             if (!formSewa.tanggalMasuk) {
-                toast.error("Tanggal masuk wajib diisi");
+                toast.error("Tanggal mulai wajib diisi");
                 return;
             }
             if (!formSewa.tanggalKeluar) {
-                toast.error("Tanggal keluar belum terhitung — periksa durasi dan jumlah");
+                toast.error("Tanggal selesai belum terhitung — periksa durasi dan jumlah");
                 return;
             }
 
             const dataToSend = {
                 idKamar,
-                idPenyewa: formSewa.idPenyewa,
+                idPenyewa,
                 tanggalMasuk: formSewa.tanggalMasuk,
                 tanggalKeluar: formSewa.tanggalKeluar,
                 idDurasi: formSewa.idDurasi,
@@ -342,15 +404,13 @@ export const usePengelolaanKamar = (idKamar) => {
             };
 
             const response = await createSewa(dataToSend);
-            toast.success("Data sewa berhasil disimpan");
-            
-            // Fetch ulang data kamar dan sewa
+            toast.success("Transaksi sewa berhasil disimpan");
+
             await fetchKamarData();
             if (response.data?.id) {
                 await fetchSewaData(response.data.id);
             }
 
-            // Reset form
             const hHarian = Number(kamarData?.hargaPerHari) || 0;
             setFormSewa({
                 idKamar: "",
@@ -365,9 +425,44 @@ export const usePengelolaanKamar = (idKamar) => {
                 uangMuka: 0,
                 catatan: "",
             });
+            setFormPenyewaBaru({
+                nama: "",
+                idPengenal: "",
+                noPengenal: "",
+                idJenisKelamin: "",
+                idStatusPernikahan: "",
+                idProfesi: "",
+                noTelp: "",
+                alamat: "",
+                email: "",
+                namaInstitusi: "",
+                alamatInstitusi: "",
+                noTelpInstitusi: "",
+                dokumenFile: null,
+            });
         } catch (err) {
-            toast.error(err.message || "Gagal menyimpan data sewa");
+            toast.error(err.message || "Gagal menyimpan transaksi sewa");
+        } finally {
+            setSavingTransaksiSewa(false);
         }
+    };
+
+    const buildPenyewaFormData = (f) => {
+        const fd = new FormData();
+        fd.append("nama", f.nama ?? "");
+        fd.append("alamat", f.alamat ?? "");
+        fd.append("noTelp", f.noTelp ?? "");
+        fd.append("email", f.email ?? "");
+        fd.append("idPengenal", f.idPengenal ?? "");
+        fd.append("noPengenal", f.noPengenal ?? "");
+        fd.append("idJenisKelamin", f.idJenisKelamin ?? "");
+        fd.append("idStatusPernikahan", f.idStatusPernikahan ?? "");
+        fd.append("idProfesi", f.idProfesi ?? "");
+        fd.append("namaInstitusi", f.namaInstitusi ?? "");
+        fd.append("alamatInstitusi", f.alamatInstitusi ?? "");
+        fd.append("noTelpInstitusi", f.noTelpInstitusi ?? "");
+        fd.append("dokumen_pengenal", f.dokumenFile);
+        return fd;
     };
 
     const handleKeluar = async () => {
@@ -437,18 +532,26 @@ export const usePengelolaanKamar = (idKamar) => {
         penyewaData,
         tagihanList,
         penyewaList,
+        jenisKelaminList,
+        statusPernikahanList,
+        pengenalList,
+        profesiList,
 
         // Loading states
         loadingKamar,
         loadingSewa,
         loadingTagihan,
         loadingPenyewa,
+        loadingMasterPenyewa,
+        savingTransaksiSewa,
 
         // Forms
         formProfil,
         setFormProfil,
         formSewa,
         setFormSewa,
+        formPenyewaBaru,
+        setFormPenyewaBaru,
         formPembayaran,
         setFormPembayaran,
         formKeluar,
@@ -462,7 +565,7 @@ export const usePengelolaanKamar = (idKamar) => {
         handleDurasiSewaChange,
         handleJumlahDurasiChange,
         handleSaveProfil,
-        handleSaveSewa,
+        handleSimpanTransaksiSewa,
         handleSavePembayaran,
         handleKeluar,
         savingKeluar,

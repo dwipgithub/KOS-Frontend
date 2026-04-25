@@ -12,6 +12,7 @@ export const useKamar = () => {
     const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [selectedProperti, setSelectedProperti] = useState(null);
 
     const [form, setForm] = useState({
         nama: "",
@@ -24,24 +25,23 @@ export const useKamar = () => {
         hargaPerTahun: ""
     });
 
-    const refreshKamar = useCallback(async () => {
+    const refreshKamar = useCallback(async (idProperti) => {
         try {
-            const data = await getKamar();
+            if (!idProperti) {
+                setKamarList([]);
+                return;
+            }
+            const data = await getKamar({ id_properti: idProperti });
             setKamarList(data.data);
         } catch (err) {
             console.error(err);
         }
     }, []);
 
-    const loadAll = useCallback(async (showLoading) => {
+    const loadInitial = useCallback(async (showLoading) => {
         if (showLoading) setLoading(true);
         try {
-            const [kRes, pRes, sRes] = await Promise.all([
-                getKamar(),
-                getProperti(),
-                getStatusKamar()
-            ]);
-            setKamarList(kRes.data);
+            const [pRes, sRes] = await Promise.all([getProperti(), getStatusKamar()]);
             setPropertiList(pRes.data);
             setStatusKamarList(sRes.data);
         } catch (err) {
@@ -52,8 +52,31 @@ export const useKamar = () => {
     }, []);
 
     useEffect(() => {
-        loadAll(true);
-    }, [loadAll]);
+        loadInitial(true);
+    }, [loadInitial]);
+
+    const handleSelectProperti = async (properti) => {
+        setSelectedProperti(properti);
+        setSearch("");
+        setError(null);
+        setLoading(true);
+        try {
+            const kRes = await getKamar({ id_properti: properti.id });
+            setKamarList(kRes.data);
+        } catch (err) {
+            setError(err.message || "Gagal memuat data kamar");
+            setKamarList([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleBackToProperti = () => {
+        setSelectedProperti(null);
+        setSearch("");
+        setError(null);
+        setKamarList([]);
+    };
 
     const handleSave = async () => {
         try {
@@ -61,10 +84,10 @@ export const useKamar = () => {
             toast.success("Kamar berhasil disimpan", { position: "top-right" });
 
             setShowModal(false);
-            await refreshKamar();
+            await refreshKamar(selectedProperti?.id);
             setForm({
                 nama: "",
-                idProperti: "",
+                idProperti: selectedProperti?.id || "",
                 idStatusKamar: "",
                 catatan: "",
                 hargaPerHari: "",
@@ -84,16 +107,19 @@ export const useKamar = () => {
 
     return {
         filteredKamar,
+        selectedProperti,
+        propertiList,
         loading,
         error,
         search,
         form,
         setForm,
-        propertiList,
         statusKamarList,
         showModal,
         handleSave,
         setShowModal,
         setSearch,
+        handleSelectProperti,
+        handleBackToProperti,
     };
 };

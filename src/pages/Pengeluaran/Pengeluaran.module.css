@@ -1,0 +1,325 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.headerRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.title {
+    margin: 0;
+    font-weight: 700;
+}
+
+.subtitle {
+    margin: 0.35rem 0 0;
+    color: #6b7280;
+}
+
+.addButton {
+    border: none;
+    border-radius: 12px;
+    padding: 0.65rem 1rem;
+    background: linear-gradient(135deg, #ff7a18, #ffb347);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 10px 24px rgba(255, 122, 24, 0.25);
+}
+
+.card {
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    padding: 1rem;
+}
+
+.filterGrid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(160px, 1fr));
+    gap: 0.8rem;
+    align-items: end;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.filterAction {
+    align-self: end;
+}
+
+.stateText {
+    text-align: center;
+    color: #6b7280;
+    padding: 2rem 0.5rem;
+}
+
+.errorText {
+    color: #dc2626;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 0.75rem;
+}
+
+.table th {
+    background: #f9fafb;
+    color: #374151;
+    font-size: 0.87rem;
+    white-space: nowrap;
+}
+
+.boldCell {
+    font-weight: 600;
+}
+
+.amountCell {
+    font-weight: 700;
+    color: #111827;
+}
+
+.totalInfo {
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    color: #111827;
+}
+
+.modalBackdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modalPanel {
+    width: min(900px, 100%);
+    max-height: 92vh;
+    overflow: auto;
+    background: linear-gradient(180deg, #fffdf9 0%, #fffaf3 100%);
+    border-radius: 16px;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+    padding: 1rem;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.modalHeader h4 {
+    margin: 0;
+}
+
+.modalHeader button {
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #6b7280;
+}
+
+.modalForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.formCard {
+    border: 2px solid #f2e5bd;
+    border-radius: 14px;
+    padding: 1rem;
+    background: linear-gradient(135deg, #ffffff 0%, #fffaf2 100%);
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.08);
+}
+
+.formCardHeader {
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid #f2e8d7;
+}
+
+.formCardHeader h5 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.formCardHeader p {
+    margin: 0.3rem 0 0;
+    font-size: 0.86rem;
+    color: #6b7280;
+}
+
+.modalGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 0.9rem;
+}
+
+.dropzone {
+    border: 2px dashed #d6cfc4;
+    border-radius: 14px;
+    min-height: 170px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #faf8f5;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.dropzoneActive {
+    border-color: #ff8c00;
+    background: #fff7ed;
+}
+
+.dropPlaceholder {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    color: #6b7280;
+    gap: 0.25rem;
+}
+
+.preview {
+    width: 92px;
+    height: 92px;
+    border-radius: 12px;
+    object-fit: contain;
+    background: #ffffff;
+    border: 1px solid #efe6d4;
+}
+
+.filePicked {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.95rem;
+    border: 1px solid #ebdfc7;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fffdfa, #fff7ec);
+}
+
+.pdfBadge {
+    min-width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: rgba(255, 140, 0, 0.12);
+    color: #b45309;
+    border: 1px solid rgba(255, 140, 0, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.fileInput {
+    display: none;
+}
+
+.fileMeta {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.fileName {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fileSize {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.btnRemoveFile {
+    border: 1px solid #f5c993;
+    background: #fff4e6;
+    color: #b45309;
+    border-radius: 10px;
+    padding: 0.42rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btnRemoveFile:hover {
+    background: #ffe8cc;
+}
+
+.btnRemoveFile:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.hintText {
+    margin-top: 0.25rem;
+    display: block;
+    color: #92400e;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.fieldError {
+    display: flex;
+    margin-top: 0.35rem;
+    color: #dc2626;
+    font-size: 0.8rem;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 992px) {
+    .filterGrid {
+        grid-template-columns: repeat(2, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .headerRow {
+        flex-direction: column;
+    }
+
+    .modalGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .filterGrid {
+        grid-template-columns: 1fr;
+    }
+}
