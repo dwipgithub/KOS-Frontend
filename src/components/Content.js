@@ -10,6 +10,7 @@ import PengelolaanPenyewa from "../pages/PenyewaPengelola/PengelolaanPenyewa";
 import LaporanArusKas from "../pages/LaporanArusKas/LaporanArusKas";
 import Pengeluaran from "../pages/Pengeluaran/Pengeluaran";
 import LaporanLabaRugi from "../pages/LaporanLabaRugi/LaporanLabaRugi";
+import LaporanBukuBesar from "../pages/LaporanBukuBesar/LaporanBukuBesar";
 
 const Content = () => {
     return (
@@ -25,6 +26,7 @@ const Content = () => {
                 <Route path="/pengeluaran" element={<Pengeluaran/>}/>
                 <Route path="/laporan-arus-kas" element={<LaporanArusKas/>}/>
                 <Route path="/laporan-laba-rugi" element={<LaporanLabaRugi/>}/>
+                <Route path="/laporan-buku-besar" element={<LaporanBukuBesar/>}/>
             </Routes>
         </div>
     )

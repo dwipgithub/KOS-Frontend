@@ -364,11 +364,11 @@ const Pengeluaran = () => {
                     <div className={styles.filterAction}>
                         <button
                             type="button"
-                            className="btn btn-primary w-100"
+                            className="btn btn-primary"
                             onClick={runSearch}
                             disabled={loadingTable}
                         >
-                            {loadingTable ? "Memuat..." : "Cari"}
+                            {loadingTable ? "Memuat..." : "🔍 Tampilkan"}
                         </button>
                     </div>
                 </div>

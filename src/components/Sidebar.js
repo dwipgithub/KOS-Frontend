@@ -20,8 +20,7 @@ const Sidebar = () => {
             subMenus: [
                 { name: "Arus Kas", path: "/laporan-arus-kas", icon: "💸" },
                 { name: "Laba Rugi", path: "/laporan-laba-rugi", icon: "📉" },
-                { name: "Buku Besar", path: "/", icon: "📖" },
-                { name: "Neraca", path: "/", icon: "⚖️" },
+                { name: "Buku Besar", path: "/laporan-buku-besar", icon: "📖" },
             ],
         },
     ], []);

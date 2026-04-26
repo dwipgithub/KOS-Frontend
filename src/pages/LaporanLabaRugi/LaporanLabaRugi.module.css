@@ -2,8 +2,13 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
 
+/* ======================
+   HEADER
+====================== */
 .header h2 {
     margin: 0;
     font-weight: 700;
@@ -14,6 +19,9 @@
     color: #6b7280;
 }
 
+/* ======================
+   CARD
+====================== */
 .filterCard,
 .detailCard {
     background: #fff;
@@ -23,6 +31,9 @@
     padding: 1rem;
 }
 
+/* ======================
+   FILTER
+====================== */
 .filterGrid {
     display: grid;
     grid-template-columns: repeat(4, minmax(180px, 1fr));
@@ -46,9 +57,12 @@
     align-self: end;
 }
 
+/* ======================
+   SUMMARY GRID
+====================== */
 .summaryGrid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(180px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.8rem;
 }
 
@@ -74,6 +88,7 @@
     font-weight: 800;
 }
 
+/* warna nilai */
 .summaryIncome .summaryValue {
     color: #15803d;
 }
@@ -94,6 +109,9 @@
     color: #111827;
 }
 
+/* ======================
+   DETAIL HEADER
+====================== */
 .detailHead {
     padding-bottom: 0.7rem;
     margin-bottom: 0.6rem;
@@ -106,22 +124,68 @@
     font-weight: 700;
 }
 
-.detailTable {
-    margin: 0;
+/* ======================
+   TABLE (IMPORTANT FIX)
+   👉 ini inti solusi kamu
+====================== */
+.table {
+    width: 100%;
+    table-layout: fixed;
 }
 
+.detailTable {
+    margin: 0;
+    width: 100%;
+    table-layout: fixed; /* 🔥 KUNCI UTAMA */
+    font-variant-numeric: tabular-nums;
+}
+
+/* header */
 .detailTable th {
     background: #faf8f5;
     color: #4b5563;
     font-size: 0.85rem;
-}
-
-.detailTable td:last-child,
-.detailTable th:last-child {
-    text-align: right;
     white-space: nowrap;
 }
 
+/* ======================
+   FIX KOLOM BIAR SEMUA CARD SEJALAN
+====================== */
+.detailTable th:nth-child(1),
+.detailTable td:nth-child(1) {
+    width: 110px; /* Tanggal */
+}
+
+.detailTable th:nth-child(2),
+.detailTable td:nth-child(2) {
+    width: 260px; /* Keterangan */
+}
+
+.detailTable th:nth-child(3),
+.detailTable td:nth-child(3) {
+    width: 200px; /* Kategori */
+}
+
+.detailTable th:nth-child(4),
+.detailTable td:nth-child(4),
+.detailTable th:nth-child(5),
+.detailTable td:nth-child(5),
+.detailTable th:nth-child(6),
+.detailTable td:nth-child(6) {
+    width: 120px;
+    text-align: right;
+}
+
+/* isi cell */
+.detailTable td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ======================
+   TOTAL / NET ROW
+====================== */
 .totalRow td {
     font-weight: 800;
     border-top-width: 2px;
@@ -132,6 +196,9 @@
     font-size: 1.02rem;
 }
 
+/* ======================
+   COLOR TEXT
+====================== */
 .incomeText {
     color: #15803d;
 }
@@ -140,6 +207,9 @@
     color: #dc2626;
 }
 
+/* ======================
+   STATE
+====================== */
 .stateText {
     text-align: center;
     padding: 1.8rem 0.6rem;
@@ -154,6 +224,9 @@
     padding: 0.8rem;
 }
 
+/* ======================
+   RESPONSIVE
+====================== */
 @media (max-width: 992px) {
     .filterGrid {
         grid-template-columns: repeat(2, minmax(150px, 1fr));

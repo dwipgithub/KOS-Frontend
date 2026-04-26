@@ -178,11 +178,11 @@ const LaporanLabaRugi = () => {
                     <div className={styles.actionWrap}>
                         <button
                             type="button"
-                            className="btn btn-primary w-100"
+                            className="btn btn-primary"
                             onClick={handleCari}
                             disabled={loading}
                         >
-                            {loading ? "Memuat..." : "Cari"}
+                            {loading ? "⏳ Memuat..." : "🔍 Tampilkan"}
                         </button>
                     </div>
                 </div>

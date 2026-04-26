@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { getLaporanArusKas } from "../../services/laporanArusKas";
 import styles from "./LaporanArusKas.module.css";
 
@@ -11,9 +11,7 @@ const formatTanggal = (isoDate) => {
     return new Intl.DateTimeFormat("id-ID", {
         day: "2-digit",
         month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
+        year: "numeric"
     }).format(date);
 };
 
@@ -60,24 +58,11 @@ const LaporanArusKas = () => {
         }
     };
 
-    const totalMasuk = useMemo(
-        () =>
-            records
-                .filter((item) => item?.tipe === "Uang Masuk")
-                .reduce((acc, item) => acc + Number(item?.totalBayar || 0), 0),
-        [records]
-    );
-
     return (
         <div className={styles.page}>
             <div className={styles.header}>
                 <h2>Laporan Arus Kas</h2>
                 <p className={styles.subtitle}>Ringkasan pemasukan dan pengeluaran properti.</p>
-            </div>
-
-            <div className={styles.summaryCard}>
-                <span>Total Uang Masuk</span>
-                <strong>{formatRupiah(totalMasuk)}</strong>
             </div>
 
             <div className={styles.filterCard}>
@@ -101,14 +86,14 @@ const LaporanArusKas = () => {
                         onChange={(e) => setEndDate(e.target.value)}
                     />
                 </div>
-                <div className={styles.filterButtonWrap}>
+                <div className={styles.actionWrap}>
                     <button
                         type="button"
                         className="btn btn-primary"
                         onClick={handleTampilkan}
                         disabled={loading}
                     >
-                        {loading ? "Memuat..." : "Tampilkan"}
+                        {loading ? "Memuat..." : "🔍 Tampilkan"}
                     </button>
                 </div>
             </div>
@@ -148,28 +133,31 @@ const LaporanArusKas = () => {
                                     <tr key={item.id}>
                                         <td>{formatTanggal(item.tanggalBayar)}</td>
                                         <td className={styles.namaCol}>
-                                            {item.nama || `Pembayaran Tagihan ${item.idTagihan || item.id}`}
+                                            {item.nama || (
+                                                <>
+                                                    Pembayaran Tagihan{" "}
+                                                    <small className={styles.subText}>
+                                                        {item.idTagihan || item.id}
+                                                    </small>
+                                                </>
+                                            )}
                                         </td>
                                         <td>{item.properti?.nama || "-"}</td>
                                         <td>{item.kamar?.nama || "-"}</td>
                                         <td>{item.penyewa?.nama || "-"}</td>
                                         <td>
-                                            <span
+                                            {/* <span
                                                 className={`${styles.badge} ${
                                                     item.tipe === "Uang Masuk"
                                                         ? styles.badgeIn
                                                         : styles.badgeOut
                                                 }`}
-                                            >
+                                            > */}
                                                 {item.tipe || "-"}
-                                            </span>
+                                            {/* </span> */}
                                         </td>
                                         <td>
-                                            <div>{item.deskripsiTagihan?.id || "-"}</div>
-                                            <small className="text-muted">
-                                                {item.deskripsiTagihan?.nama || "-"} |{" "}
-                                                {item.metodeBayar?.nama || "-"}
-                                            </small>
+                                            <div>{item.deskripsiTagihan?.nama || "-"}</div>
                                         </td>
                                         <td className={`text-end ${styles.amountCol}`}>
                                             {formatRupiah(item.totalBayar)}
