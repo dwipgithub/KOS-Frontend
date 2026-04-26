@@ -100,7 +100,7 @@
 }
 
 .table tbody td {
-    border-color: #f1f5f9;
+    border-bottom: 1px solid #f3cf98; /* soft orange */
     color: #334155;
     font-size: 14px;
 }

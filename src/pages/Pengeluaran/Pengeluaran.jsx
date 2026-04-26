@@ -351,8 +351,8 @@ const Pengeluaran = () => {
                                 {!filters.idProperti
                                     ? "Pilih properti dahulu"
                                     : loadingFilterKamar
-                                    ? "Memuat kamar..."
-                                    : "Semua kamar"}
+                                        ? "Memuat kamar..."
+                                        : "Semua kamar"}
                             </option>
                             {filterKamarList.map((item) => (
                                 <option key={item.id} value={item.id}>
@@ -425,20 +425,313 @@ const Pengeluaran = () => {
             </div>
 
             {showModal ? (
-                <div
-                    className={styles.modalBackdrop}
-                    role="presentation"
-                    onClick={(e) => e.target === e.currentTarget && !saving && closeModal()}
-                >
-                    <div className={styles.modalPanel} role="dialog" aria-modal="true">
-                        <div className={styles.modalHeader}>
-                            <h4>Tambah Pengeluaran</h4>
-                            <button type="button" onClick={closeModal} disabled={saving} aria-label="Tutup">
-                                ×
-                            </button>
-                        </div>
+                <form onSubmit={handleSubmit} className={styles.modalForm}>
+                    <div
+                        className={styles.overlay}>
+                        <div className={styles.modal}>
+                            <div className={styles.header}>
+                                <h5>Tambah Pengeluaran</h5>
+                                <button type="button" onClick={closeModal}>
+                                    ×
+                                </button>
+                            </div>
 
-                        <form onSubmit={handleSubmit} className={styles.modalForm}>
+                            {/* BODY */}
+                            <div className={styles.body}>
+                                <div className={styles.section}>
+                                    <div className={styles.sectionHeader}>
+                                        <span>Informasi Utama</span>
+                                    </div>
+                                    <p className={styles.sectionDescription}>
+                                        Pilih properti, kamar, kategori, dan tanggal transaksi.
+                                    </p>
+                                    <div className="row">
+                                        <div className="col-md-6 mb-3">
+                                            <label>Pilih Properti *</label>
+                                            <select
+                                                className={`form-select ${formError.idProperti ? "is-invalid" : ""}`}
+                                                value={form.idProperti}
+                                                disabled={saving || loadingMaster}
+                                                onChange={(e) =>
+                                                    setForm((prev) => ({
+                                                        ...prev,
+                                                        idProperti: e.target.value,
+                                                        idKamar: "",
+                                                    }))
+                                                }
+                                            >
+                                                <option value="">-- Pilih properti --</option>
+                                                {propertiList.map((item) => (
+                                                    <option key={item.id} value={item.id}>
+                                                        {item.nama}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {formError.idProperti ? (
+                                                <span className={styles.fieldError}>{formError.idProperti}</span>
+                                            ) : null}
+                                        </div>
+
+                                        <div className="col-md-6 mb-3">
+                                            <label>Pilih Kamar (opsional)</label>
+                                            <select
+                                                className="form-select"
+                                                value={form.idKamar}
+                                                disabled={!form.idProperti || saving || loadingFormKamar}
+                                                onChange={(e) => setForm((prev) => ({ ...prev, idKamar: e.target.value }))}
+                                            >
+                                                <option value="">
+                                                    {!form.idProperti
+                                                        ? "-- Pilih properti dahulu --"
+                                                        : loadingFormKamar
+                                                            ? "Memuat kamar..."
+                                                            : "-- Tanpa kamar --"}
+                                                </option>
+                                                {formKamarList.map((item) => (
+                                                    <option key={item.id} value={item.id}>
+                                                        {item.nama}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div className="col-md-6 mb-3">
+                                            <label>Pilih Kategori Pengeluaran *</label>
+                                            <select
+                                                className={`form-select ${formError.idKategoriPengeluaran ? "is-invalid" : ""
+                                                    }`}
+                                                value={form.idKategoriPengeluaran}
+                                                disabled={saving || loadingMaster}
+                                                onChange={(e) =>
+                                                    setForm((prev) => ({
+                                                        ...prev,
+                                                        idKategoriPengeluaran: e.target.value,
+                                                    }))
+                                                }
+                                            >
+                                                <option value="">-- Pilih kategori --</option>
+                                                {kategoriList.map((item) => (
+                                                    <option key={item.id} value={item.id}>
+                                                        {item.nama}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {formError.idKategoriPengeluaran ? (
+                                                <span className={styles.fieldError}>
+                                                    {formError.idKategoriPengeluaran}
+                                                </span>
+                                            ) : null}
+                                        </div>
+
+                                        <div className="col-md-6 mb-3">
+                                            <label>Tanggal Pengeluaran *</label>
+                                            <input
+                                                type="date"
+                                                className={`form-control ${formError.tanggalPengeluaran ? "is-invalid" : ""
+                                                    }`}
+                                                value={form.tanggalPengeluaran}
+                                                disabled={saving}
+                                                onChange={(e) =>
+                                                    setForm((prev) => ({
+                                                        ...prev,
+                                                        tanggalPengeluaran: e.target.value,
+                                                    }))
+                                                }
+                                            />
+                                            {formError.tanggalPengeluaran ? (
+                                                <span className={styles.fieldError}>{formError.tanggalPengeluaran}</span>
+                                            ) : null}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div className={styles.section}>
+                                    <div className={styles.sectionHeader}>
+                                        <span>Detail Pengeluaran</span>
+                                    </div>
+                                    <p className={styles.sectionDescription}>
+                                        Lengkapi nama, nominal, dan catatan bila diperlukan.
+                                    </p>
+                                    <div className="row">
+                                        <div className="col-md-6 mb-3">
+                                            <label>Nama Pengeluaran *</label>
+                                            <input
+                                                type="text"
+                                                className={`form-control ${formError.nama ? "is-invalid" : ""}`}
+                                                placeholder="Contoh: Perbaikan atap kamar 2A"
+                                                value={form.nama}
+                                                disabled={saving}
+                                                onChange={(e) => setForm((prev) => ({ ...prev, nama: e.target.value }))}
+                                            />
+                                            {formError.nama ? (
+                                                <span className={styles.fieldError}>{formError.nama}</span>
+                                            ) : null}
+                                        </div>
+
+                                        <div className="col-md-6 mb-3">
+                                            <label>Jumlah Pengeluaran *</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                className={`form-control ${formError.total ? "is-invalid" : ""}`}
+                                                placeholder="Masukkan nominal"
+                                                value={form.total}
+                                                disabled={saving}
+                                                onChange={(e) => setForm((prev) => ({ ...prev, total: e.target.value }))}
+                                            />
+                                            {formError.total ? (
+                                                <span className={styles.fieldError}>{formError.total}</span>
+                                            ) : null}
+                                        </div>
+
+                                        <div className="col-md-12 mb-3">
+                                            <label>Catatan (opsional)</label>
+                                            <textarea
+                                                rows={3}
+                                                className="form-control"
+                                                placeholder="Tambahkan catatan bila diperlukan"
+                                                value={form.catatan}
+                                                disabled={saving}
+                                                onChange={(e) => setForm((prev) => ({ ...prev, catatan: e.target.value }))}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={styles.section}>
+                                    <div className={styles.formCardHeader}>
+                                        <h5>Bukti Pengeluaran</h5>
+                                        <p>Wajib upload PDF atau gambar dengan drag & drop.</p>
+                                    </div>
+                                    <div className={styles.field}>
+                                        <label>
+                                            Upload Bukti Pengeluaran *
+                                        </label>
+                                        <p className={styles.hintText}>Wajib — PDF atau gambar, maksimal 10 MB.</p>
+                                        <div
+                                            className={`${styles.dropzone} ${dragOver ? styles.dropzoneActive : ""}`}
+                                            role="button"
+                                            tabIndex={0}
+                                            onClick={() => fileInputRef.current?.click()}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter" || e.key === " ") {
+                                                    e.preventDefault();
+                                                    fileInputRef.current?.click();
+                                                }
+                                            }}
+                                            onDragOver={(e) => {
+                                                e.preventDefault();
+                                                if (!saving) setDragOver(true);
+                                            }}
+                                            onDragLeave={() => setDragOver(false)}
+                                            onDrop={(e) => {
+                                                e.preventDefault();
+                                                setDragOver(false);
+                                                if (saving) return;
+                                                const file = e.dataTransfer.files?.[0];
+                                                handleChooseFile(file || null);
+                                            }}
+                                        >
+                                            {form.buktiPengeluaran && previewUrl ? (
+                                                <div className={styles.filePicked}>
+                                                    <img
+                                                        src={previewUrl}
+                                                        alt="Pratinjau bukti pengeluaran"
+                                                        className={styles.preview}
+                                                    />
+                                                    <div className={styles.fileMeta}>
+                                                        <span className={styles.fileName}>{form.buktiPengeluaran.name}</span>
+                                                        <span className={styles.fileSize}>
+                                                            {(form.buktiPengeluaran.size / 1024).toFixed(1)} KB
+                                                        </span>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className={styles.btnRemoveFile}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setForm((prev) => ({ ...prev, buktiPengeluaran: null }));
+                                                            setFormError((prev) => ({
+                                                                ...prev,
+                                                                buktiPengeluaran: "Bukti pengeluaran wajib diunggah.",
+                                                            }));
+                                                        }}
+                                                    >
+                                                        Hapus
+                                                    </button>
+                                                </div>
+                                            ) : null}
+
+                                            {form.buktiPengeluaran && form.buktiPengeluaran.type === "application/pdf" ? (
+                                                <div className={styles.filePicked}>
+                                                    <div className={styles.pdfBadge}>PDF</div>
+                                                    <div className={styles.fileMeta}>
+                                                        <span className={styles.fileName}>{form.buktiPengeluaran.name}</span>
+                                                        <span className={styles.fileSize}>
+                                                            {(form.buktiPengeluaran.size / 1024).toFixed(1)} KB
+                                                        </span>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className={styles.btnRemoveFile}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setForm((prev) => ({ ...prev, buktiPengeluaran: null }));
+                                                            setFormError((prev) => ({
+                                                                ...prev,
+                                                                buktiPengeluaran: "Bukti pengeluaran wajib diunggah.",
+                                                            }));
+                                                        }}
+                                                    >
+                                                        Hapus
+                                                    </button>
+                                                </div>
+                                            ) : null}
+
+                                            {!form.buktiPengeluaran ? (
+                                                <div className={styles.dropPlaceholder}>
+                                                    <strong>Seret file ke sini</strong>
+                                                    <span>atau klik untuk memilih file</span>
+                                                </div>
+                                            ) : null}
+                                        </div>
+
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept={BUKTI_ACCEPT}
+                                            className={styles.fileInput}
+                                            onChange={(e) => {
+                                                handleChooseFile(e.target.files?.[0] || null);
+                                                e.target.value = "";
+                                            }}
+                                        />
+                                        {formError.buktiPengeluaran ? (
+                                            <span className={styles.fieldError}>{formError.buktiPengeluaran}</span>
+                                        ) : null}
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+
+                            {/* FOOTER */}
+                            <div className={styles.footer}>
+                                <button type="button" className={styles.btnCancel} onClick={closeModal} disabled={saving}>
+                                    Batal
+                                </button>
+                                <button
+                                    type="submit"
+                                    className={styles.btnSave}
+                                    disabled={saving || !form.buktiPengeluaran || !!formError.buktiPengeluaran}
+                                >
+                                    💾 Simpan
+                                </button>
+                            </div>
+
+                            {/* <form onSubmit={handleSubmit} className={styles.modalForm}>
                             <section className={styles.formCard}>
                                 <div className={styles.formCardHeader}>
                                     <h5>Informasi Utama</h5>
@@ -722,9 +1015,10 @@ const Pengeluaran = () => {
                                     {saving ? "Menyimpan..." : "Simpan"}
                                 </button>
                             </div>
-                        </form>
+                        </form> */}
+                        </div>
                     </div>
-                </div>
+                </form>
             ) : null}
         </div>
     );

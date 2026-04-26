@@ -60,30 +60,54 @@
 }
 
 /* ======================
-   SUMMARY (optional mid card)
+   SUMMARY CARD (table version)
 ====================== */
-.summaryCard {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(180px, 1fr));
-    gap: 0.8rem;
+/* header */
+.summaryHeader {
+    font-weight: 700;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid #eee6da;
+    margin-bottom: 0.7rem;
 }
 
-.summaryItem {
-    border: 1px solid #f1ebe2;
-    border-radius: 10px;
-    padding: 0.8rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
+
+
+/* table */
+.summaryTable {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-.summaryItem span {
-    font-size: 0.82rem;
-    color: #6b7280;
+.summaryTable td {
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f1ebe2;
 }
 
-.summaryItem strong {
-    font-size: 0.98rem;
+.summaryTable tr:last-child td {
+    border-bottom: none;
+}
+
+/* alignment */
+.summaryRight {
+    text-align: right;
+}
+
+/* separator */
+.summarySeparator td {
+    border-bottom: none;
+    padding: 0.4rem 0;
+}
+
+/* value styles */
+.positive {
+    color: #15803d;
+    font-weight: 700;
+}
+
+.negative {
+    color: #dc2626;
+    font-weight: 700;
 }
 
 /* ======================
@@ -284,6 +308,7 @@
     gap: 1rem;
     padding: 0.15rem 0;
     white-space: nowrap;
+    border-bottom: 1px solid #e5e7eb; /* garis bawah */
 }
 
 .footerRow span:first-child {

@@ -262,46 +262,59 @@ const LaporanBukuBesar = () => {
                         </section>
                     ))}
 
-                    <section className={styles.footerPlain}>
-                        <div className={styles.footerTitle}>SUMMARY LAPORAN</div>
-
-                        <div className={styles.footerRow}>
-                            <span>Total Debit</span>
-                            <span> {formatRupiah(totals.totalDebit)}</span>
+                    <section className={styles.summaryCard}>
+                        <div className={styles.summaryHeader}>
+                            RINGKASAN LAPORAN
                         </div>
 
-                        <div className={styles.footerRow}>
-                            <span>Total Kredit</span>
-                            <span> {formatRupiah(totals.totalKredit)}</span>
+                        <div className={styles.summaryBody}>
+                            <table className={styles.summaryTable}>
+                                <tbody>
+                                    <tr>
+                                        <td>Total Debit</td>
+                                        <td className={styles.summaryRight}>
+                                            {formatRupiah(totals.totalDebit)}
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Total Kredit</td>
+                                        <td className={styles.summaryRight}>
+                                            {formatRupiah(totals.totalKredit)}
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Net Balance</td>
+                                        <td
+                                            className={`${styles.summaryRight} ${
+                                                totals.netBalance < 0 ? styles.negative : styles.positive
+                                            }`}
+                                        >
+                                            {formatRupiah(totals.netBalance)}
+                                        </td>
+                                    </tr>
+
+                                    <tr className={styles.summarySeparator}>
+                                        <td colSpan="2"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Periode</td>
+                                        <td className={styles.summaryRight}>
+                                            {report?.periode?.startDate} s/d {report?.periode?.endDate}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Properti</td>
+                                        <td className={styles.summaryRight}>{selectedProperti?.label || report?.filter?.idProperti || "-"}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jumlah Akun</td>
+                                        <td className={styles.summaryRight}>{report?.totalAkun || 0}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-
-                        <div className={styles.footerRow}>
-                            <span>Net Balance</span>
-                            <span className={totals.netBalance < 0 ? styles.negative : styles.positive}>
-                                {formatRupiah(totals.netBalance)}
-                            </span>
-                        </div>
-
-                        <div className={styles.footerSpacer} />
-
-                        <div className={styles.footerRow}>
-                            <span>Periode</span>
-                            <span>
-                                {report?.periode?.startDate} s/d {report?.periode?.endDate}
-                            </span>
-                        </div>
-
-                        <div className={styles.footerRow}>
-                            <span>Properti</span>
-                            <span> {selectedProperti?.label || report?.filter?.idProperti || "-"}</span>
-                        </div>
-
-                        <div className={styles.footerRow}>
-                            <span>Jumlah Akun</span>
-                            <span> {report?.totalAkun || 0}</span>
-                        </div>
-
-                        <div className={styles.footerLine} />
                     </section>
                 </>
             ) : null}

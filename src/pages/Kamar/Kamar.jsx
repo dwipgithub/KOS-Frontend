@@ -48,7 +48,7 @@ const Kamar = () => {
                                 props.setShowModal(true);
                             }}
                         >
-                            ➕
+                            ➕ Tambah
                         </button>
                     </div>
                 )}

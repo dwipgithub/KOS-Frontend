@@ -279,7 +279,18 @@
     transform: translateY(-1px);
 }
 
-.input,
+.input {
+    flex: 1;          /* 🔥 ini yang bikin full sisa ruang */
+    min-width: 0;     /* penting supaya tidak overflow */
+    border-radius: 10px;
+    border: 1px solid #e0dbd3;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background: white;
+}
+
 .select {
     border-radius: 10px;
     border: 1px solid #e0dbd3;

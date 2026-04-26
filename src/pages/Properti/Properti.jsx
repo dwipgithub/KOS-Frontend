@@ -16,7 +16,7 @@ const Properti = () => {
                     onClick={() => props.setShowModal(true)}
                     className={styles.addButton}
                 >
-                    ➕
+                    ➕ Tambah
                 </button>
             </div>
 

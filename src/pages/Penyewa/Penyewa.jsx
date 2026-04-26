@@ -15,7 +15,7 @@ const Penyewa = () => {
                     className={styles.addButton}
                     onClick={() => props.setShowModal(true)}
                 >
-                    ➕
+                    ➕ Tambah
                 </button>
             </div>
             {props.loading ? (
