@@ -1,21 +1,46 @@
 import axios from "axios";
-import { tokenUser } from "../services/authService";
+import { getAccessToken, tokenUser } from "../services/authService";
 
 const axiosJWT = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
     withCredentials: true
 });
 
-// interceptor global
+// REQUEST INTERCEPTOR
 axiosJWT.interceptors.request.use(
-    async (config) => {
-        const response = await tokenUser();
-        const token = response.data.data.access_token;
+    (config) => {
+        const token = getAccessToken();
 
-        config.headers.Authorization = `Bearer ${token}`;
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+
         return config;
     },
-    (error) => {
+    (error) => Promise.reject(error)
+);
+
+// interceptor global
+axiosJWT.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+
+        if ([401, 403].includes(error.response?.status) && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            try {
+                const res = await tokenUser();
+                const newToken = res.data.data.access_token;
+
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+                return axiosJWT(originalRequest);
+            } catch (err) {
+                window.location.href = "/";
+            }
+        }
+
         return Promise.reject(error);
     }
 );

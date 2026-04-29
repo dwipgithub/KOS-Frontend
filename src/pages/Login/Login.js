@@ -4,6 +4,7 @@ import { FaUserCircle, FaSignInAlt, FaEnvelope, FaLock } from "react-icons/fa";
 import { loginUser } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
+import { useAuth } from "../../context/auth/AuthContext";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -11,6 +12,8 @@ const Login = () => {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+
+    const { setToken } = useAuth();
 
     const validateForm = () => {
         if (!email.trim()) {
@@ -39,7 +42,10 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            await loginUser(email, password);
+            const token = await loginUser(email, password);
+
+            setToken(token);
+
             navigate("/beranda");
         } catch (err) {
             setError(

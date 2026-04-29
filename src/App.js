@@ -4,15 +4,22 @@ import LayoutAuth from "./components/LayoutAuth"
 import LayoutMain from "./components/LayoutMain"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ProtectedRoute from "./routes/ProtectedRoute";
+import AuthInitializer from "./context/auth/AuthInitializer"
 
 function App() {
     return (
         <BrowserRouter basename="">
-            <Routes>
-                <Route path="/" element={<LayoutAuth/>} />
-                <Route path="/*" element={<LayoutMain/>}/>
-            </Routes>
-
+            <AuthInitializer>
+                <Routes>
+                    <Route path="/" element={<LayoutAuth/>} />
+                    <Route path="/*" element={
+                        <ProtectedRoute>
+                            <LayoutMain/>
+                        </ProtectedRoute>
+                        }/>
+                </Routes>
+            </AuthInitializer>
             <ToastContainer
                 position="top-right"
                 autoClose={3000}
