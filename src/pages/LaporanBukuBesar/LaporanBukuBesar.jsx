@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import Select from "react-select";
 import { getProperti } from "../../services/propertiService";
-import { getLaporanBukuBesar } from "../../services/laporanBukuBesar";
+import { getLaporanBukuBesar, exportPdfBukuBesar } from "../../services/laporanBukuBesar";
 import styles from "./LaporanBukuBesar.module.css";
 
 const formatRupiah = (amount) =>
@@ -50,6 +50,7 @@ const LaporanBukuBesar = () => {
     const [propertiOptions, setPropertiOptions] = useState([]);
     const [loadingProperti, setLoadingProperti] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loadingPdf, setLoadingPdf] = useState(false);
     const [error, setError] = useState("");
     const [hasSearched, setHasSearched] = useState(false);
     const [report, setReport] = useState(null);
@@ -98,6 +99,28 @@ const LaporanBukuBesar = () => {
             setReport(null);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleExportPdf = async () => {
+        if (!startDate || !endDate) {
+            setError("Silakan pilih tanggal mulai dan tanggal akhir.");
+            return;
+        }
+
+        if (new Date(endDate) < new Date(startDate)) {
+            setError("Tanggal akhir tidak boleh lebih kecil dari tanggal mulai.");
+            return;
+        }
+
+        try {
+            setLoadingPdf(true);
+            setError("");
+            await exportPdfBukuBesar({ startDate, endDate, idProperti: selectedProperti?.value || undefined });
+        } catch (err) {
+            setError(err?.message || "Gagal mengexport laporan buku besar ke PDF.");
+        } finally {
+            setLoadingPdf(false);
         }
     };
 
@@ -170,9 +193,17 @@ const LaporanBukuBesar = () => {
                             type="button"
                             className="btn btn-primary"
                             onClick={handleCari}
-                            disabled={loading}
+                            disabled={loading || loadingPdf}
                         >
                             {loading ? "Memuat..." : "🔍 Tampilkan"}
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-success"
+                            onClick={handleExportPdf}
+                            disabled={loading || loadingPdf || !hasSearched}
+                        >
+                            {loadingPdf ? "Membuat PDF..." : "📥 Export PDF"}
                         </button>
                     </div>
                 </div>
@@ -189,7 +220,7 @@ const LaporanBukuBesar = () => {
 
             {!loading && !error && !hasSearched ? (
                 <div className={styles.stateText}>
-                    Pilih filter terlebih dahulu lalu klik tombol Cari untuk menampilkan laporan.
+                    Pilih periode dan properti (opsional), lalu klik tombol Tampilkan.
                 </div>
             ) : null}
 

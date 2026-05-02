@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { getLaporanArusKas } from "../../services/laporanArusKas";
+import Select from "react-select";
+import { getLaporanArusKas, exportPdfArusKas } from "../../services/laporanArusKas";
+import { getProperti } from "../../services/propertiService";
 import styles from "./LaporanArusKas.module.css";
 
 const formatTanggal = (isoDate) => {
@@ -22,13 +24,46 @@ const formatRupiah = (amount) =>
         maximumFractionDigits: 0,
     }).format(Number(amount || 0));
 
+const selectStyles = {
+    control: (base, state) => ({
+        ...base,
+        minHeight: 40,
+        borderColor: state.isFocused ? "#ff8c00" : "#d1d5db",
+        boxShadow: state.isFocused ? "0 0 0 3px rgba(255, 140, 0, 0.15)" : "none",
+        borderRadius: 10,
+        "&:hover": { borderColor: "#ff8c00" },
+    }),
+    menu: (base) => ({ ...base, zIndex: 30 }),
+};
+
 const LaporanArusKas = () => {
     const [loading, setLoading] = useState(false);
+    const [loadingPdf, setLoadingPdf] = useState(false);
     const [error, setError] = useState("");
     const [records, setRecords] = useState([]);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [selectedProperti, setSelectedProperti] = useState(null);
+    const [propertiOptions, setPropertiOptions] = useState([]);
+    const [loadingProperti, setLoadingProperti] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
+
+    const handleFocusProperti = async () => {
+        if (propertiOptions.length > 0 || loadingProperti) return;
+        try {
+            setLoadingProperti(true);
+            const response = await getProperti({ limit: 200 });
+            const options = (response?.data || []).map((item) => ({
+                value: item.id,
+                label: item.nama,
+            }));
+            setPropertiOptions(options);
+        } catch {
+            setPropertiOptions([]);
+        } finally {
+            setLoadingProperti(false);
+        }
+    };
 
     const handleTampilkan = async () => {
         setHasSearched(true);
@@ -48,13 +83,43 @@ const LaporanArusKas = () => {
         try {
             setLoading(true);
             setError("");
-            const response = await getLaporanArusKas({ startDate, endDate });
+            const response = await getLaporanArusKas({
+                startDate,
+                endDate,
+                idProperti: selectedProperti?.value || undefined,
+            });
             setRecords(response?.data || []);
         } catch (err) {
             setError(err?.message || "Gagal memuat laporan arus kas.");
             setRecords([]);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleExportPdf = async () => {
+        if (!startDate || !endDate) {
+            setError("Silakan pilih tanggal mulai dan tanggal akhir.");
+            return;
+        }
+
+        if (new Date(endDate) < new Date(startDate)) {
+            setError("Tanggal akhir tidak boleh lebih kecil dari tanggal mulai.");
+            return;
+        }
+
+        try {
+            setLoadingPdf(true);
+            setError("");
+            await exportPdfArusKas({
+                startDate,
+                endDate,
+                idProperti: selectedProperti?.value || undefined,
+            });
+        } catch (err) {
+            setError(err?.message || "Gagal mengexport laporan arus kas ke PDF.");
+        } finally {
+            setLoadingPdf(false);
         }
     };
 
@@ -66,35 +131,61 @@ const LaporanArusKas = () => {
             </div>
 
             <div className={styles.filterCard}>
-                <div className={styles.filterField}>
-                    <label htmlFor="startDate">Tanggal Mulai</label>
-                    <input
-                        id="startDate"
-                        type="date"
-                        className="form-control"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                    />
-                </div>
-                <div className={styles.filterField}>
-                    <label htmlFor="endDate">Tanggal Akhir</label>
-                    <input
-                        id="endDate"
-                        type="date"
-                        className="form-control"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                    />
-                </div>
-                <div className={styles.actionWrap}>
-                    <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={handleTampilkan}
-                        disabled={loading}
-                    >
-                        {loading ? "Memuat..." : "🔍 Tampilkan"}
-                    </button>
+                <div className={styles.filterGrid}>
+                    <div className={styles.field}>
+                        <label htmlFor="startDate">Tanggal Mulai</label>
+                        <input
+                            id="startDate"
+                            type="date"
+                            className="form-control"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                        />
+                    </div>
+                    <div className={styles.field}>
+                        <label htmlFor="endDate">Tanggal Akhir</label>
+                        <input
+                            id="endDate"
+                            type="date"
+                            className="form-control"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                        />
+                    </div>
+                    <div className={styles.field}>
+                        <label>Properti (opsional)</label>
+                        <Select
+                            placeholder={loadingProperti ? "Memuat properti..." : "Pilih properti"}
+                            options={propertiOptions}
+                            value={selectedProperti}
+                            isClearable
+                            isSearchable
+                            onFocus={handleFocusProperti}
+                            onChange={setSelectedProperti}
+                            styles={selectStyles}
+                            noOptionsMessage={() =>
+                                loadingProperti ? "Memuat..." : "Tidak ada properti"
+                            }
+                        />
+                    </div>
+                    <div className={styles.actionWrap}>
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleTampilkan}
+                            disabled={loading || loadingPdf}
+                        >
+                            {loading ? "Memuat..." : "🔍 Tampilkan"}
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-success"
+                            onClick={handleExportPdf}
+                            disabled={loading || loadingPdf || !hasSearched}
+                        >
+                            {loadingPdf ? "Membuat PDF..." : "📥 Export PDF"}
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -105,7 +196,7 @@ const LaporanArusKas = () => {
 
                 {!loading && !error && !hasSearched && (
                     <div className={styles.stateText}>
-                        Pilih periode tanggal lalu klik tombol Tampilkan.
+                        Pilih periode dan properti (opsional), lalu klik tombol Tampilkan.
                     </div>
                 )}
 

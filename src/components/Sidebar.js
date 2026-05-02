@@ -21,6 +21,7 @@ const Sidebar = () => {
                 { name: "Arus Kas", path: "/laporan-arus-kas", icon: "💸" },
                 { name: "Laba Rugi", path: "/laporan-laba-rugi", icon: "📉" },
                 { name: "Buku Besar", path: "/laporan-buku-besar", icon: "📖" },
+                { name: "Piutang", path: "/laporan-piutang", icon: "💰" },
             ],
         },
     ], []);

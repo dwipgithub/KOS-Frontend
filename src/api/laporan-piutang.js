@@ -1,17 +1,17 @@
 import axiosJWT from "./axiosJWT";
 
-export const getLaporanBukuBesarApi = async (filters = {}) => {
+export const getLaporanPiutangApi = async (filters = {}) => {
     try {
-        return axiosJWT.get(`/api/v1/laporan/buku-besar`, { params: filters });
+        return axiosJWT.get(`/api/v1/laporan/piutang`, { params: filters });
     } catch (error) {
-        console.error("Gagal mengambil data laporan buku besar", error);
+        console.error("Gagal mengambil data laporan piutang:", error);
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
     }
 }
 
-export const exportPdfBukuBesarApi = async (filters = {}) => {
+export const exportPdfPiutangApi = async (filters = {}) => {
     try {
-        const response = await axiosJWT.get(`/api/v1/laporan/buku-besar/export/pdf`, { 
+        const response = await axiosJWT.get(`/api/v1/laporan/piutang/export/pdf`, { 
             params: filters,
             responseType: 'blob'
         });

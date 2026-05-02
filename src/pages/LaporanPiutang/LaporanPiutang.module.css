@@ -1,0 +1,349 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* ======================
+   HEADER
+====================== */
+.header h2 {
+    margin: 0;
+    font-weight: 700;
+}
+
+.subtitle {
+    margin: 0.35rem 0 0;
+    color: #6b7280;
+}
+
+/* ======================
+   CARD
+====================== */
+.filterCard {
+    background: #fff;
+    border: 1px solid #ece7df;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    padding: 1rem;
+}
+
+/* ======================
+   FILTER
+====================== */
+.filterGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr auto;
+    gap: 0.35rem;
+    align-items: end;
+}
+
+input[type="date"] {
+    width: 100%;
+    max-width: 100%;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.actionWrap {
+    align-self: end;
+    display: flex;
+    gap: 8px;
+}
+
+/* ======================
+   SUMMARY GRID
+====================== */
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+}
+
+.summaryCard {
+    border-radius: 14px;
+    border: 1px solid #ece7df;
+    padding: 1rem;
+    background: linear-gradient(180deg, #ffffff, #fbfbfb);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.summaryLabel {
+    font-size: 0.82rem;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.summaryValue {
+    font-size: 1.35rem;
+    line-height: 1.2;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* ======================
+   CONTENT CONTAINER (PENYEWA LIST)
+====================== */
+.contentContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ======================
+   PENYEWA CARD
+====================== */
+.penyewaCard {
+    background: #fff;
+    border: 1px solid #ece7df;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    padding: 1rem;
+    overflow: hidden;
+}
+
+.penyewaHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 0.8rem;
+    margin-bottom: 0.8rem;
+    border-bottom: 2px solid #f3f0eb;
+    gap: 1rem;
+}
+
+.penyewaInfo {
+    flex: 1;
+}
+
+.namaPenyewa {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.totalPiutangText {
+    margin: 0.3rem 0 0;
+    font-size: 0.95rem;
+    color: #6b7280;
+}
+
+.totalPiutangText strong {
+    color: #dc2626;
+    font-weight: 700;
+}
+
+/* ======================
+   STATUS BADGE
+====================== */
+.statusBadge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.statusBelumJatuhTempo {
+    background: #d1d5db;
+    color: #374151;
+}
+
+.statusHampirJatuhTempo {
+    background: #fcd34d;
+    color: #78350f;
+}
+
+.statusJatuhTempoHariIni {
+    background: #fed7aa;
+    color: #92400e;
+}
+
+.statusMenunggak {
+    background: #fca5a5;
+    color: #7f1d1d;
+}
+
+.statusKritis {
+    background: #dc2626;
+    color: #fff;
+}
+
+.statusDefault {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+/* ======================
+   DETAIL TABLE
+====================== */
+.detailTable {
+    margin: 0;
+    width: 100%;
+    table-layout: fixed;
+    font-variant-numeric: tabular-nums;
+}
+
+.detailTable th {
+    background: #faf8f5;
+    color: #4b5563;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.6rem 0.5rem;
+    white-space: nowrap;
+}
+
+.detailTable td {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.detailTable tbody tr:hover {
+    background: #faf8f5;
+}
+
+.detailTable tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* No Tagihan */
+.detailTable th:nth-child(1),
+.detailTable td:nth-child(1) {
+    width: 14%;
+}
+
+/* Tanggal Tagihan (diperkecil) */
+.detailTable th:nth-child(2),
+.detailTable td:nth-child(2) {
+    width: 11%;
+}
+
+/* Jatuh Tempo (diperkecil) */
+.detailTable th:nth-child(3),
+.detailTable td:nth-child(3) {
+    width: 11%;
+}
+
+/* Keterangan (diperkecil) */
+.detailTable th:nth-child(4),
+.detailTable td:nth-child(4) {
+    width: 16%;
+}
+
+/* Piutang */
+.detailTable th:nth-child(5),
+.detailTable td:nth-child(5) {
+    width: 14%;
+}
+
+/* Umur */
+.detailTable th:nth-child(6),
+.detailTable td:nth-child(6) {
+    width: 10%;
+}
+
+/* Status (DIBESARKAN) */
+.detailTable th:nth-child(7),
+.detailTable td:nth-child(7) {
+    width: 24%;
+}
+
+/* ======================
+   UMUR COLOR
+====================== */
+.umurMerah {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+/* ======================
+   EMPTY STATE
+====================== */
+.emptyState {
+    text-align: center;
+    color: #6b7280;
+    padding: 2rem 1rem;
+    background: #fff;
+    border: 1px solid #ece7df;
+    border-radius: 14px;
+    font-size: 0.95rem;
+}
+
+/* ======================
+   STATE TEXT
+====================== */
+.stateText {
+    text-align: center;
+    color: #6b7280;
+    padding: 1.6rem 0.6rem;
+}
+
+.errorText {
+    color: #dc2626;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 0.8rem;
+}
+
+/* ======================
+   RESPONSIVE
+====================== */
+@media (max-width: 992px) {
+    .filterGrid {
+        grid-template-columns: repeat(2, minmax(150px, 1fr));
+    }
+
+    .summaryGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .penyewaHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .filterGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .summaryGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .detailTable {
+        font-size: 0.8rem;
+    }
+
+    .detailTable th,
+    .detailTable td {
+        padding: 0.4rem 0.3rem;
+    }
+
+    .statusBadge {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+}

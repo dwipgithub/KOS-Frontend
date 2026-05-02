@@ -1,18 +1,18 @@
-import { getLaporanArusKasApi, exportPdfArusKasApi } from "../api/laporan-arus-kas"
+import { getLaporanPiutangApi, exportPdfPiutangApi } from "../api/laporan-piutang"
 
-export const getLaporanArusKas = async (filters) => {
+export const getLaporanPiutangKas = async (filters) => {
     try {
-        const response = await getLaporanArusKasApi(filters);
+        const response = await getLaporanPiutangApi(filters);
         return response.data;
     } catch (error) {
-        console.error("Gagal mengambil data laporan arus kas:", error);
+        console.error("Gagal mengambil data laporan piutang:", error);
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
     }
 }
 
-export const exportPdfArusKas = async (filters) => {
+export const exportPdfPiutang = async (filters) => {
     try {
-        const response = await exportPdfArusKasApi(filters);
+        const response = await exportPdfPiutangApi(filters);
         
         console.log('Response status:', response.status)
         console.log('Response headers:', response.headers)
@@ -40,7 +40,7 @@ export const exportPdfArusKas = async (filters) => {
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', `Laporan-Arus-Kas-${new Date().getTime()}.pdf`)
+        link.setAttribute('download', `Laporan-Piutang-${new Date().getTime()}.pdf`)
         document.body.appendChild(link)
         link.click()
         link.parentNode.removeChild(link)
@@ -48,7 +48,7 @@ export const exportPdfArusKas = async (filters) => {
 
         console.log('✅ PDF berhasil diunduh')
     } catch (error) {
-        console.error("Gagal mengexport laporan arus kas ke PDF:", error)
+        console.error("Gagal mengexport laporan piutang ke PDF:", error)
         throw error.response?.data || { message: error.message || "Terjadi kesalahan koneksi" }
     }
 }
