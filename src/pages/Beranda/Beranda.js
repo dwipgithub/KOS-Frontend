@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { tokenUser } from "../../api/auth"
+import { tokenUser } from "../../services/authService"
 import { useNavigate } from 'react-router-dom'
 
 const Beranda = () => {

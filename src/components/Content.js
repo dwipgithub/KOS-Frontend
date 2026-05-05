@@ -12,23 +12,24 @@ import Pengeluaran from "../pages/Pengeluaran/Pengeluaran";
 import LaporanLabaRugi from "../pages/LaporanLabaRugi/LaporanLabaRugi";
 import LaporanBukuBesar from "../pages/LaporanBukuBesar/LaporanBukuBesar";
 import LaporanPiutang from "../pages/LaporanPiutang/LaporanPiutang";
+import PermissionRoute from "../routes/PermissionRoute";
 
 const Content = () => {
     return (
         <div className="container p-4 ">
             <Routes>
                 <Route path="/beranda" element={<Beranda />} />
-                <Route path="/properti" element={<Properti/>}/>
-                <Route path="/properti-pengelolaan/:id" element={<PengelolaanProperti/>}/>
-                <Route path="/kamar" element={<Kamar/>}/>
-                <Route path="/kamar-pengelolaan/:id" element={<PengelolaanKamar/>}/>
-                <Route path="/penyewa" element={<Penyewa/>}/>
-                <Route path="/penyewa-pengelolaan/:id" element={<PengelolaanPenyewa/>}/>
-                <Route path="/pengeluaran" element={<Pengeluaran/>}/>
-                <Route path="/laporan-arus-kas" element={<LaporanArusKas/>}/>
-                <Route path="/laporan-laba-rugi" element={<LaporanLabaRugi/>}/>
-                <Route path="/laporan-buku-besar" element={<LaporanBukuBesar/>}/>
-                <Route path="/laporan-piutang" element={<LaporanPiutang/>}/>
+                <Route path="/properti" element={<PermissionRoute permission="properti"><Properti/></PermissionRoute>} />
+                <Route path="/properti-pengelolaan/:id" element={<PermissionRoute permission="properti"><PengelolaanProperti/></PermissionRoute>} />
+                <Route path="/kamar" element={<PermissionRoute permission="kamar"><Kamar/></PermissionRoute>} />
+                <Route path="/kamar-pengelolaan/:id" element={<PermissionRoute permission="kamar"><PengelolaanKamar/></PermissionRoute>} />
+                <Route path="/penyewa" element={<PermissionRoute permission="penyewa"><Penyewa/></PermissionRoute>} />
+                <Route path="/penyewa-pengelolaan/:id" element={<PermissionRoute permission="penyewa"><PengelolaanPenyewa/></PermissionRoute>} />
+                <Route path="/pengeluaran" element={<PermissionRoute permission="pengeluaran"><Pengeluaran/></PermissionRoute>} />
+                <Route path="/laporan-arus-kas" element={<PermissionRoute permission="laporan_arus_kas"><LaporanArusKas/></PermissionRoute>} />
+                <Route path="/laporan-laba-rugi" element={<PermissionRoute permission="laporan_laba_rugi"><LaporanLabaRugi/></PermissionRoute>} />
+                <Route path="/laporan-buku-besar" element={<PermissionRoute permission="laporan_buku_besar"><LaporanBukuBesar/></PermissionRoute>} />
+                <Route path="/laporan-piutang" element={<PermissionRoute permission="laporan_piutang"><LaporanPiutang/></PermissionRoute>} />
             </Routes>
         </div>
     )

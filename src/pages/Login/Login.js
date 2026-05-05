@@ -42,8 +42,7 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const response = await loginUser(email, password);
-            const userData = response.data;
+            const userData = await loginUser(email, password);
 
             // Simpan token
             setToken(userData.access_token);

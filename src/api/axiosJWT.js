@@ -26,7 +26,10 @@ axiosJWT.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        if ([401, 403].includes(error.response?.status) && !originalRequest._retry) {
+        if ([401, 403].includes(error.response?.status)
+            && !originalRequest._retry
+            && originalRequest.url !== "/api/v1/token"
+        ) {
             originalRequest._retry = true;
 
             try {
