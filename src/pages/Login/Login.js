@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaUserCircle, FaSignInAlt, FaEnvelope, FaLock } from "react-icons/fa";
-import { loginUser } from "../../api/auth";
+import { loginUser } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 import { useAuth } from "../../context/auth/AuthContext";
@@ -13,7 +13,7 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
-    const { setToken } = useAuth();
+    const { setToken, setUser, setPermissions } = useAuth();
 
     const validateForm = () => {
         if (!email.trim()) {
@@ -42,9 +42,20 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const token = await loginUser(email, password);
+            const response = await loginUser(email, password);
+            const userData = response.data;
 
-            setToken(token);
+            // Simpan token
+            setToken(userData.access_token);
+
+            // Simpan user info (name dan role)
+            setUser({
+                name: userData.name,
+                role: userData.role
+            });
+
+            // Simpan permissions
+            setPermissions(userData.permissions || {});
 
             navigate("/beranda");
         } catch (err) {

@@ -1,31 +1,15 @@
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { logoutUser, tokenUser } from '../api/auth';
+import { logoutUser } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
-import { jwtDecode } from "jwt-decode";
+import { useAuth } from '../context/auth/AuthContext';
 
 const Navbar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
-    const [pegawaiNama, setPegawaiNama] = useState("Nama Pengguna");
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-            try {
-                const response = await tokenUser();
-                if (response.data?.data?.access_token) {
-                    const decoded = jwtDecode(response.data.data.access_token);
-                    if (decoded.pegawaiNama) setPegawaiNama(decoded.pegawaiNama);
-                }
-            } catch (err) {
-                console.error("Error fetching user info:", err);
-            }
-        };
-
-        fetchUserInfo();
-    }, []);
+    const { user } = useAuth();
 
     const handleLogout = async () => {
         try {
@@ -36,6 +20,9 @@ const Navbar = () => {
             navigate('/');
         }
     };
+
+    // Fallback ke "Nama Pengguna" jika user.name belum tersedia
+    const displayName = user?.name || "Nama Pengguna";
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
@@ -69,7 +56,7 @@ const Navbar = () => {
                                         <path fillRule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1z" />
                                     </svg>
                                 </span>
-                                {pegawaiNama}
+                                {displayName}
                             </button>
 
                             <ul className="dropdown-menu dropdown-menu-end">

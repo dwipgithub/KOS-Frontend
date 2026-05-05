@@ -2,29 +2,58 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, useLocation } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
+import { useAuth } from "../context/auth/AuthContext";
+import { canAccess, canAccessReport, canAccessAnyReport } from "../helpers/permissionHelper";
 
 const Sidebar = () => {
     const [openMenus, setOpenMenus] = useState({});
     const [openSubMenus, setOpenSubMenus] = useState({});
     const location = useLocation();
     const pathname = location.pathname;
+    const { permissions } = useAuth();
 
-    const menus = useMemo(() => [
-        { name: "Properti", path: "/properti", icon: "🏠" },
-        { name: "Kamar", path: "/kamar", icon: "🛏️" },
-        { name: "Penyewa", path: "/penyewa", icon: "🧑‍💼" },
-        { name: "Pengeluaran", path: "/pengeluaran", icon: "🧾" },
+    const allMenus = useMemo(() => [
+        { name: "Properti", path: "/properti", icon: "🏠", key: "properti" },
+        { name: "Kamar", path: "/kamar", icon: "🛏️", key: "kamar" },
+        { name: "Penyewa", path: "/penyewa", icon: "🧑‍💼", key: "penyewa" },
+        { name: "Pengeluaran", path: "/pengeluaran", icon: "🧾", key: "pengeluaran" },
         {
             name: "Laporan Keuangan",
             icon: "📊",
+            key: "laporan",
             subMenus: [
-                { name: "Arus Kas", path: "/laporan-arus-kas", icon: "💸" },
-                { name: "Laba Rugi", path: "/laporan-laba-rugi", icon: "📉" },
-                { name: "Buku Besar", path: "/laporan-buku-besar", icon: "📖" },
-                { name: "Piutang", path: "/laporan-piutang", icon: "💰" },
+                { name: "Arus Kas", path: "/laporan-arus-kas", icon: "💸", key: "arus_kas" },
+                { name: "Laba Rugi", path: "/laporan-laba-rugi", icon: "📉", key: "laba_rugi" },
+                { name: "Buku Besar", path: "/laporan-buku-besar", icon: "📖", key: "buku_besar" },
+                { name: "Piutang", path: "/laporan-piutang", icon: "💰", key: "piutang" },
             ],
         },
     ], []);
+
+    // Filter menus berdasarkan permissions
+    const menus = useMemo(() => {
+        if (!permissions) return [];
+
+        return allMenus
+            .map(menu => {
+                // Jika menu punya subMenus (seperti Laporan Keuangan)
+                if (menu.subMenus) {
+                    // Filter subMenus berdasarkan permissions
+                    const filteredSubMenus = menu.subMenus.filter(sub =>
+                        canAccessReport(sub.key, permissions)
+                    );
+
+                    // Return menu hanya jika ada subMenus yang accessible
+                    return filteredSubMenus.length > 0
+                        ? { ...menu, subMenus: filteredSubMenus }
+                        : null;
+                }
+
+                // Untuk menu utama (tidak ada subMenus)
+                return canAccess(menu.key, permissions) ? menu : null;
+            })
+            .filter(Boolean); // Remove null values
+    }, [permissions, allMenus]);
 
     const toggleMenu = (i) => {
         setOpenMenus((prev) => ({ ...prev, [i]: !prev[i] }));
