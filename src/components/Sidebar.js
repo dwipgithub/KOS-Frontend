@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, useLocation } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import { useAuth } from "../context/auth/AuthContext";
-import { canAccess, canAccessReport, canAccessAnyReport } from "../helpers/permissionHelper";
+import { canAccess, canAccessReport } from "../helpers/permissionHelper";
 
 const Sidebar = () => {
     const [openMenus, setOpenMenus] = useState({});

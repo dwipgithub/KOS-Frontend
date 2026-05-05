@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { logoutUser } from '../services/authService';
@@ -25,7 +25,17 @@ const Navbar = () => {
     const displayName = user?.name || "Nama Pengguna";
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+        <nav 
+            className="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm"
+            style={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 1050,
+                backdropFilter: 'blur(10px)',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                transition: 'all 0.3s ease'
+            }}
+        >
             <div className="container-fluid">
 
                 {/* Spacer kiri */}
