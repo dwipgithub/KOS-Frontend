@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { logoutUser } from '../services/authService';
@@ -7,9 +6,9 @@ import { toast } from "react-toastify";
 import { useAuth } from '../context/auth/AuthContext';
 
 const Navbar = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
     const navigate = useNavigate();
     const { user } = useAuth();
+    const isLoggedIn = Boolean(user);
 
     const handleLogout = async () => {
         try {
@@ -21,7 +20,6 @@ const Navbar = () => {
         }
     };
 
-    // Fallback ke "Nama Pengguna" jika user.name belum tersedia
     const displayName = user?.name || "Nama Pengguna";
 
     return (
@@ -37,11 +35,7 @@ const Navbar = () => {
             }}
         >
             <div className="container-fluid">
-
-                {/* Spacer kiri */}
                 <div className="flex-grow-1"></div>
-
-                {/* User di kanan */}
                 <div className="d-flex">
                     {isLoggedIn ? (
                         <div className="dropdown">
@@ -70,8 +64,24 @@ const Navbar = () => {
                             </button>
 
                             <ul className="dropdown-menu dropdown-menu-end">
-                                <li><a className="dropdown-item" href="#/profile">Profil Saya</a></li>
-                                <li><a className="dropdown-item" href="#/settings">Pengaturan</a></li>
+                                <li>
+                                    <button
+                                        type="button"
+                                        className="dropdown-item"
+                                        onClick={() => navigate('/change-password')}
+                                    >
+                                        Ganti Password
+                                    </button>
+                                </li>
+                                <li>
+                                    <button
+                                        type="button"
+                                        className="dropdown-item"
+                                        onClick={() => navigate('/tambah-pengguna')}
+                                    >
+                                        Tambah Pengguna
+                                    </button>
+                                </li>
                                 <li><hr className="dropdown-divider" /></li>
                                 <li>
                                     <button className="dropdown-item" onClick={handleLogout}>
@@ -83,7 +93,7 @@ const Navbar = () => {
                     ) : (
                         <button
                             className="btn btn-outline-dark btn-sm rounded-pill"
-                            onClick={() => setIsLoggedIn(true)}
+                            onClick={() => navigate('/')}
                         >
                             Login
                         </button>

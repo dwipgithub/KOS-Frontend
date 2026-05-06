@@ -5,8 +5,6 @@ const PenyewaCard = ({ card, index }) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
-        console.log("🔍 Card clicked - Navigating to kamar:", card.routeId || card.id);
-        
         const routeId = card.routeId || card.id;
 
         if (!routeId) {

@@ -19,6 +19,11 @@ export const canAccess = (menuName, permissions) => {
         return permissions[menuName] === true;
     }
 
+    // Untuk menu change_password dan tambah_pengguna
+    if (menuName === 'change_password' || menuName === 'tambah_pengguna') {
+        return permissions[menuName] === true;
+    }
+
     // Untuk menu laporan, cek jika ada minimal satu submenu yang true
     if (menuName === 'laporan') {
         return canAccessAnyReport(permissions);
@@ -106,6 +111,8 @@ export const getAccessStatus = (permissions) => {
             kamar: false,
             penyewa: false,
             pengeluaran: false,
+            change_password: false,
+            tambah_pengguna: false,
             laporan: false,
             laporan_detail: {
                 arus_kas: false,
@@ -121,6 +128,8 @@ export const getAccessStatus = (permissions) => {
         kamar: permissions.kamar === true,
         penyewa: permissions.penyewa === true,
         pengeluaran: permissions.pengeluaran === true,
+        change_password: permissions.change_password === true,
+        tambah_pengguna: permissions.tambah_pengguna === true,
         laporan: canAccessAnyReport(permissions),
         laporan_detail: {
             arus_kas: canAccessReport('arus_kas', permissions),

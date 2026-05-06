@@ -149,7 +149,6 @@ export const usePengelolaanKamar = (idKamar) => {
     const showPenyewaData = useCallback(async (idPenyewa) => {
         try {
             const response = await showPenyewa(idPenyewa);
-            console.log("✅ Data penyewa berhasil dimuat:", response.data);
             setPenyewaData(response.data);
         } catch (err) {
             console.error("Gagal memuat data penyewa:", err);
@@ -197,7 +196,6 @@ export const usePengelolaanKamar = (idKamar) => {
             const response = await getTagihan({ idSewa });
             const data = response.data;
             setTagihanList(Array.isArray(data) ? data : []);
-            console.log("✅ Daftar tagihan berhasil dimuat:", data);
         } catch (err) {
             console.error("Gagal memuat daftar tagihan:", err);
             setTagihanList([]);

@@ -5,8 +5,6 @@ const KamarCard = ({ card, idx, icon }) => {
     const navigate = useNavigate();
 
     const handleCardClick = () => {
-        console.log("🔍 Card clicked - Navigating to kamar:", card.routeId || card.id);
-        
         const routeId = card.routeId || card.id;
 
         if (!routeId) {

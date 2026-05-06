@@ -12,6 +12,8 @@ import Pengeluaran from "../pages/Pengeluaran/Pengeluaran";
 import LaporanLabaRugi from "../pages/LaporanLabaRugi/LaporanLabaRugi";
 import LaporanBukuBesar from "../pages/LaporanBukuBesar/LaporanBukuBesar";
 import LaporanPiutang from "../pages/LaporanPiutang/LaporanPiutang";
+import ChangePassword from "../pages/Pengguna/ChangePassword";
+import TambahPengguna from "../pages/Pengguna/Pengguna";
 import PermissionRoute from "../routes/PermissionRoute";
 
 const Content = () => {
@@ -30,6 +32,8 @@ const Content = () => {
                 <Route path="/laporan-laba-rugi" element={<PermissionRoute permission="laporan_laba_rugi"><LaporanLabaRugi/></PermissionRoute>} />
                 <Route path="/laporan-buku-besar" element={<PermissionRoute permission="laporan_buku_besar"><LaporanBukuBesar/></PermissionRoute>} />
                 <Route path="/laporan-piutang" element={<PermissionRoute permission="laporan_piutang"><LaporanPiutang/></PermissionRoute>} />
+                <Route path="/change-password" element={<ChangePassword />} />
+                <Route path="/tambah-pengguna" element={<PermissionRoute permission="tambah_pengguna"><TambahPengguna/></PermissionRoute>} />
             </Routes>
         </div>
     )

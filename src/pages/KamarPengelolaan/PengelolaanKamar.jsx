@@ -11,10 +11,6 @@ const PengelolaanKamar = () => {
     const navigate = useNavigate();
     const props = usePengelolaanKamar(id);
 
-    console.log("📋 PengelolaanKamar Page Loaded - ID:", id);
-    console.log("📋 Kamar Data:", props.kamarData);
-    console.log("📋 Loading Status:", { loadingKamar: props.loadingKamar });
-
     const handleBack = () => {
         navigate("/kamar");
     };
