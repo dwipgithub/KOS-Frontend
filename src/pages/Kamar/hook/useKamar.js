@@ -90,10 +90,10 @@ export const useKamar = () => {
                 idProperti: selectedProperti?.id || "",
                 idStatusKamar: "",
                 catatan: "",
-                hargaPerHari: "",
-                hargaPerMinggu: "",
-                hargaPerBulan: "",
-                hargaPertahun: ""
+                hargaPerHari: 0,
+                hargaPerMinggu: 0,
+                hargaPerBulan: 0,
+                hargaPertahun: 0
             });
         } catch (err) {
             console.error(err);
