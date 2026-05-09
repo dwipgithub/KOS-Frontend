@@ -112,6 +112,12 @@ const LaporanLabaRugi = () => {
             return;
         }
 
+        if (!selectedProperti) {
+            setError("Silakan pilih properti.");
+            setReport(null);
+            return;
+        }
+
         try {
             setLoading(true);
             setError("");
@@ -140,6 +146,12 @@ const LaporanLabaRugi = () => {
             return;
         }
 
+        if (!selectedProperti) {
+            setError("Silakan pilih properti.");
+            setReport(null);
+            return;
+        }
+
         try {
             setLoadingPdf(true);
             setError("");
@@ -163,7 +175,7 @@ const LaporanLabaRugi = () => {
             <section className={styles.filterCard}>
                 <div className={styles.filterGrid}>
                     <div className={styles.field}>
-                        <label htmlFor="startDate">Tanggal Mulai</label>
+                        <label htmlFor="startDate">Tanggal Mulai *</label>
                         <input
                             id="startDate"
                             type="date"
@@ -173,7 +185,7 @@ const LaporanLabaRugi = () => {
                         />
                     </div>
                     <div className={styles.field}>
-                        <label htmlFor="endDate">Tanggal Akhir</label>
+                        <label htmlFor="endDate">Tanggal Akhir *</label>
                         <input
                             id="endDate"
                             type="date"
@@ -183,7 +195,7 @@ const LaporanLabaRugi = () => {
                         />
                     </div>
                     <div className={styles.field}>
-                        <label>Properti (opsional)</label>
+                        <label>Properti *</label>
                         <Select
                             placeholder={loadingProperti ? "Memuat properti..." : "Pilih properti"}
                             options={propertiOptions}

@@ -7,7 +7,7 @@
 }
 
 /* ======================
-   HEADER
+    HEADER
 ====================== */
 .header h2 {
     margin: 0;
@@ -20,7 +20,7 @@
 }
 
 /* ======================
-   CARD GENERAL
+    CARD GENERAL
 ====================== */
 .filterCard,
 .summaryCard,
@@ -67,7 +67,7 @@ input[type="date"] {
 }
 
 /* ======================
-   SUMMARY CARD (table version)
+    SUMMARY CARD (table version)
 ====================== */
 /* header */
 .summaryHeader {
@@ -76,8 +76,6 @@ input[type="date"] {
     border-bottom: 1px solid #eee6da;
     margin-bottom: 0.7rem;
 }
-
-
 
 /* table */
 .summaryTable {
@@ -146,14 +144,14 @@ input[type="date"] {
     white-space: nowrap;
 }
 
-.table td:nth-last-child(-n + 3),
-.table th:nth-last-child(-n + 3) {
+.table td:nth-last-child(-n + 1),
+.table th:nth-last-child(-n + 1) {
     text-align: right;
     white-space: nowrap;
 }
 
 /* ======================
-   CATEGORY BADGE
+    CATEGORY BADGE
 ====================== */
 .kategoriWrap {
     display: flex;

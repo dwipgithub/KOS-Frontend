@@ -80,13 +80,19 @@ const LaporanArusKas = () => {
             return;
         }
 
+        if (!selectedProperti) {
+            setError("Silakan pilih properti.");
+            setRecords([]);
+            return;
+        }
+
         try {
             setLoading(true);
             setError("");
             const response = await getLaporanArusKas({
                 startDate,
                 endDate,
-                idProperti: selectedProperti?.value || undefined,
+                idProperti: selectedProperti.value,
             });
             setRecords(response?.data || []);
         } catch (err) {
@@ -108,6 +114,12 @@ const LaporanArusKas = () => {
             return;
         }
 
+        if (!selectedProperti) {
+            setError("Silakan pilih properti.");
+            setRecords([]);
+            return;
+        }
+
         try {
             setLoadingPdf(true);
             setError("");
@@ -123,6 +135,16 @@ const LaporanArusKas = () => {
         }
     };
 
+    const totalUangMasuk = records
+        .filter((item) => item.tipe === "Uang Masuk")
+        .reduce((sum, item) => sum + Number(item.totalBayar || 0), 0);
+
+    const totalUangKeluar = records
+        .filter((item) => item.tipe === "Uang Keluar")
+        .reduce((sum, item) => sum + Number(item.totalBayar || 0), 0);
+
+    const saldoAkhir = totalUangMasuk - totalUangKeluar;
+
     return (
         <div className={styles.page}>
             <div className={styles.header}>
@@ -133,7 +155,7 @@ const LaporanArusKas = () => {
             <div className={styles.filterCard}>
                 <div className={styles.filterGrid}>
                     <div className={styles.field}>
-                        <label htmlFor="startDate">Tanggal Mulai</label>
+                        <label htmlFor="startDate">Tanggal Mulai *</label>
                         <input
                             id="startDate"
                             type="date"
@@ -143,7 +165,7 @@ const LaporanArusKas = () => {
                         />
                     </div>
                     <div className={styles.field}>
-                        <label htmlFor="endDate">Tanggal Akhir</label>
+                        <label htmlFor="endDate">Tanggal Akhir *</label>
                         <input
                             id="endDate"
                             type="date"
@@ -153,7 +175,7 @@ const LaporanArusKas = () => {
                         />
                     </div>
                     <div className={styles.field}>
-                        <label>Properti (opsional)</label>
+                        <label>Properti *</label>
                         <Select
                             placeholder={loadingProperti ? "Memuat properti..." : "Pilih properti"}
                             options={propertiOptions}
@@ -244,7 +266,7 @@ const LaporanArusKas = () => {
                                                         : styles.badgeOut
                                                 }`}
                                             > */}
-                                                {item.tipe || "-"}
+                                            {item.tipe || "-"}
                                             {/* </span> */}
                                         </td>
                                         <td>
@@ -260,6 +282,44 @@ const LaporanArusKas = () => {
                     </div>
                 )}
             </div>
+
+            {hasSearched && records.length > 0 && (
+                <div className={styles.footerPlain}>
+                    <table className={styles.summaryTable}>
+                        <tbody>
+                            <tr>
+                                <td className={styles.positive}>Total Uang Masuk:</td>
+                                <td className={`${styles.summaryRight} ${styles.positive}`}>
+                                    {formatRupiah(totalUangMasuk)}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td className={styles.negative}>Total Uang Keluar:</td>
+                                <td className={`${styles.summaryRight} ${styles.negative}`}>
+                                    {formatRupiah(totalUangKeluar)}
+                                </td>
+                            </tr>
+
+                            <tr className={styles.summarySeparator}>
+                                <td colSpan="2">
+                                    <div className={styles.footerLine}></div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Saldo Akhir:</td>
+                                <td
+                                    className={`${styles.summaryRight} ${saldoAkhir >= 0 ? styles.positive : styles.negative
+                                        }`}
+                                >
+                                    {formatRupiah(saldoAkhir)}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 };

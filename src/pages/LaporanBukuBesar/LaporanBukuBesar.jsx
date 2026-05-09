@@ -79,8 +79,15 @@ const LaporanBukuBesar = () => {
             setReport(null);
             return;
         }
+
         if (new Date(endDate) < new Date(startDate)) {
             setError("Tanggal akhir tidak boleh lebih kecil dari tanggal mulai.");
+            setReport(null);
+            return;
+        }
+
+        if (!selectedProperti) {
+            setError("Silakan pilih properti.");
             setReport(null);
             return;
         }
@@ -110,6 +117,12 @@ const LaporanBukuBesar = () => {
 
         if (new Date(endDate) < new Date(startDate)) {
             setError("Tanggal akhir tidak boleh lebih kecil dari tanggal mulai.");
+            return;
+        }
+
+        if (!selectedProperti) {
+            setError("Silakan pilih properti.");
+            setReport(null);
             return;
         }
 
@@ -153,7 +166,7 @@ const LaporanBukuBesar = () => {
             <section className={styles.filterCard}>
                 <div className={styles.filterGrid}>
                     <div className={styles.field}>
-                        <label htmlFor="startDate">Tanggal Mulai</label>
+                        <label htmlFor="startDate">Tanggal Mulai *</label>
                         <input
                             id="startDate"
                             type="date"
@@ -163,7 +176,7 @@ const LaporanBukuBesar = () => {
                         />
                     </div>
                     <div className={styles.field}>
-                        <label htmlFor="endDate">Tanggal Akhir</label>
+                        <label htmlFor="endDate">Tanggal Akhir *</label>
                         <input
                             id="endDate"
                             type="date"
@@ -173,7 +186,7 @@ const LaporanBukuBesar = () => {
                         />
                     </div>
                     <div className={styles.field}>
-                        <label>Properti (opsional)</label>
+                        <label>Properti *</label>
                         <Select
                             placeholder={loadingProperti ? "Memuat properti..." : "Pilih properti"}
                             options={propertiOptions}
@@ -329,16 +342,7 @@ const LaporanBukuBesar = () => {
                                     <tr className={styles.summarySeparator}>
                                         <td colSpan="2"></td>
                                     </tr>
-                                    <tr>
-                                        <td>Periode</td>
-                                        <td className={styles.summaryRight}>
-                                            {report?.periode?.startDate} s/d {report?.periode?.endDate}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Properti</td>
-                                        <td className={styles.summaryRight}>{selectedProperti?.label || report?.filter?.idProperti || "-"}</td>
-                                    </tr>
+                                    
                                     <tr>
                                         <td>Jumlah Akun</td>
                                         <td className={styles.summaryRight}>{report?.totalAkun || 0}</td>

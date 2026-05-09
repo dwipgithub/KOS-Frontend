@@ -19,10 +19,10 @@ export const useKamar = () => {
         idProperti: "",
         idStatusKamar: "",
         catatan: "",
-        hargaPerHari: "0",
-        hargaPerMinggu: "0",
-        hargaPerBulan: "",
-        hargaPerTahun: ""
+        hargaPerHari: 0,
+        hargaPerMinggu: 0,
+        hargaPerBulan: 0,
+        hargaPerTahun: 0
     });
 
     const refreshKamar = useCallback(async (idProperti) => {
@@ -93,7 +93,7 @@ export const useKamar = () => {
                 hargaPerHari: 0,
                 hargaPerMinggu: 0,
                 hargaPerBulan: 0,
-                hargaPertahun: 0
+                hargaPerTahun: 0
             });
         } catch (err) {
             console.error(err);

@@ -78,8 +78,8 @@ export const usePengelolaanKamar = (idKamar) => {
         nama: "",
         hargaPerHari: 0,
         hargaPerMinggu: 0,
-        hargaPerBulan: "",
-        hargaPerTahun: "",
+        hargaPerBulan: 0,
+        hargaPerTahun: 0,
         catatan: "",
     });
 
