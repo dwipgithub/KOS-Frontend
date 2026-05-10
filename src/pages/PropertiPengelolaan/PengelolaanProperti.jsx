@@ -15,19 +15,6 @@ const formatAlamatLengkap = (d) => {
         .join(", ") || "—";
 };
 
-const statusClass = (status) => {
-    switch (status) {
-        case "Tersedia":
-            return styles.badgeHijau;
-        case "Sudah disewa":
-            return styles.badgeMerah;
-        case "Sudah dipesan":
-            return styles.badgeKuning;
-        default:
-            return styles.badgeNetral;
-    }
-};
-
 const PengelolaanProperti = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -49,8 +36,6 @@ const PengelolaanProperti = () => {
     } = usePengelolaanProperti(id);
 
     const handleBack = () => navigate("/properti");
-    const kamarList = propertiData?.kamar || [];
-    const jumlahKamar = kamarList.length;
 
     return (
         <div className={styles.page}>
@@ -116,35 +101,6 @@ const PengelolaanProperti = () => {
                                         <span className={styles.value}>{formatAlamatLengkap(propertiData)}</span>
                                     </div>
                                 </div>
-                            </article>
-
-                            <article className={styles.card}>
-                                <div className={styles.cardHead}>
-                                    <span className={styles.cardIcon} aria-hidden>{EMO.kamar}</span>
-                                    <div>
-                                        <h2 className={styles.cardTitle}>Kamar</h2>
-                                        <p className={styles.cardDesc}>Ringkasan status sewa per kamar</p>
-                                    </div>
-                                </div>
-
-                                {jumlahKamar === 0 ? (
-                                    <p className={styles.muted}>Belum ada kamar pada properti ini.</p>
-                                ) : (
-                                    <ul className={styles.kamarList}>
-                                        {kamarList.map((k) => (
-                                            <li key={k.id} className={styles.kamarRow}>
-                                                <span className={styles.kamarNama}>{k.nama}</span>
-                                                <span className={statusClass(k.statusSewa)}>
-                                                    {k.statusSewa}
-                                                </span>
-                                                <span className={styles.kamarHarga}>
-                                                    Rp {Number(k.hargaPerBulan || 0).toLocaleString("id-ID")}
-                                                    <span className={styles.per}> / bln</span>
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
                             </article>
                         </section>
 
