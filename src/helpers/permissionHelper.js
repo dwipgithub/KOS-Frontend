@@ -15,7 +15,16 @@ export const canAccess = (menuName, permissions) => {
     }
 
     // Untuk menu utama yang bukan laporan
-    if (menuName === 'properti' || menuName === 'kamar' || menuName === 'penyewa' || menuName === 'pengeluaran') {
+    if (
+        menuName === 'properti' ||
+        menuName === 'kamar' ||
+        menuName === 'penyewa' ||
+        menuName === 'pengeluaran' ||
+        menuName === 'kas_operasional'
+    ) {
+        if (menuName === 'kas_operasional') {
+            return permissions.pengeluaran === true;
+        }
         return permissions[menuName] === true;
     }
 
@@ -118,7 +127,8 @@ export const getAccessStatus = (permissions) => {
                 arus_kas: false,
                 laba_rugi: false,
                 buku_besar: false,
-                piutang: false
+                piutang: false,
+                mutasi_kas_operasional: false,
             }
         };
     }
@@ -135,7 +145,8 @@ export const getAccessStatus = (permissions) => {
             arus_kas: canAccessReport('arus_kas', permissions),
             laba_rugi: canAccessReport('laba_rugi', permissions),
             buku_besar: canAccessReport('buku_besar', permissions),
-            piutang: canAccessReport('piutang', permissions)
+            piutang: canAccessReport('piutang', permissions),
+            mutasi_kas_operasional: canAccessReport('mutasi_kas_operasional', permissions),
         }
     };
 };

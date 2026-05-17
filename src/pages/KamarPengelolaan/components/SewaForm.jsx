@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import styles from "./TabSewa.module.css";
 
-const DURASI_OPTIONS = ["Harian", "Mingguan", "Bulanan", "Tahunan"];
+const DURASI_OPTIONS = ["Bulanan", "Tahunan"];
 
 /**
  * @param {object} props

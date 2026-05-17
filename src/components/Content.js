@@ -9,9 +9,11 @@ import Penyewa from "../pages/Penyewa/Penyewa";
 import PengelolaanPenyewa from "../pages/PenyewaPengelola/PengelolaanPenyewa";
 import LaporanArusKas from "../pages/LaporanArusKas/LaporanArusKas";
 import Pengeluaran from "../pages/Pengeluaran/Pengeluaran";
+import KasOperasional from "../pages/KasOperasional/KasOperasional";
 import LaporanLabaRugi from "../pages/LaporanLabaRugi/LaporanLabaRugi";
 import LaporanBukuBesar from "../pages/LaporanBukuBesar/LaporanBukuBesar";
 import LaporanPiutang from "../pages/LaporanPiutang/LaporanPiutang";
+import LaporanMutasiKasOperasional from "../pages/LaporanMutasiKasOperasional/LaporanMutasiKasOperasional";
 import ChangePassword from "../pages/Pengguna/ChangePassword";
 import TambahPengguna from "../pages/Pengguna/Pengguna";
 import PermissionRoute from "../routes/PermissionRoute";
@@ -28,10 +30,12 @@ const Content = () => {
                 <Route path="/penyewa" element={<PermissionRoute permission="penyewa"><Penyewa/></PermissionRoute>} />
                 <Route path="/penyewa-pengelolaan/:id" element={<PermissionRoute permission="penyewa"><PengelolaanPenyewa/></PermissionRoute>} />
                 <Route path="/pengeluaran" element={<PermissionRoute permission="pengeluaran"><Pengeluaran/></PermissionRoute>} />
+                <Route path="/kas-operasional" element={<PermissionRoute permission="kas_operasional"><KasOperasional/></PermissionRoute>} />
                 <Route path="/laporan-arus-kas" element={<PermissionRoute permission="laporan_arus_kas"><LaporanArusKas/></PermissionRoute>} />
                 <Route path="/laporan-laba-rugi" element={<PermissionRoute permission="laporan_laba_rugi"><LaporanLabaRugi/></PermissionRoute>} />
                 <Route path="/laporan-buku-besar" element={<PermissionRoute permission="laporan_buku_besar"><LaporanBukuBesar/></PermissionRoute>} />
                 <Route path="/laporan-piutang" element={<PermissionRoute permission="laporan_piutang"><LaporanPiutang/></PermissionRoute>} />
+                <Route path="/laporan-mutasi-kas-operasional" element={<PermissionRoute permission="laporan_mutasi_kas_operasional"><LaporanMutasiKasOperasional/></PermissionRoute>} />
                 <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="/tambah-pengguna" element={<PermissionRoute permission="tambah_pengguna"><TambahPengguna/></PermissionRoute>} />
             </Routes>

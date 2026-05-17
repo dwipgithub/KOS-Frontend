@@ -279,10 +279,10 @@ const TabSewa = ({
                                     <span className={styles.value}>
                                         {sewaData?.tanggalMasuk
                                             ? new Date(sewaData.tanggalMasuk).toLocaleDateString("id-ID", {
-                                                  day: "numeric",
-                                                  month: "short",
-                                                  year: "numeric",
-                                              })
+                                                day: "numeric",
+                                                month: "short",
+                                                year: "numeric",
+                                            })
                                             : "-"}
                                     </span>
                                 </div>
@@ -292,10 +292,10 @@ const TabSewa = ({
                                     <span className={styles.value}>
                                         {sewaData?.tanggalKeluar
                                             ? new Date(sewaData.tanggalKeluar).toLocaleDateString("id-ID", {
-                                                  day: "numeric",
-                                                  month: "short",
-                                                  year: "numeric",
-                                              })
+                                                day: "numeric",
+                                                month: "short",
+                                                year: "numeric",
+                                            })
                                             : "-"}
                                     </span>
                                 </div>

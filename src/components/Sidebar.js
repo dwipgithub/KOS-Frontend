@@ -17,6 +17,7 @@ const Sidebar = () => {
         { name: "Kamar", path: "/kamar", icon: "🛏️", key: "kamar" },
         { name: "Penyewa", path: "/penyewa", icon: "🧑‍💼", key: "penyewa" },
         { name: "Pengeluaran", path: "/pengeluaran", icon: "🧾", key: "pengeluaran" },
+        { name: "Kas Operasional", path: "/kas-operasional", icon: "💵", key: "kas_operasional" },
         {
             name: "Laporan Keuangan",
             icon: "📊",
@@ -26,6 +27,12 @@ const Sidebar = () => {
                 { name: "Laba Rugi", path: "/laporan-laba-rugi", icon: "📉", key: "laba_rugi" },
                 { name: "Buku Besar", path: "/laporan-buku-besar", icon: "📖", key: "buku_besar" },
                 { name: "Piutang", path: "/laporan-piutang", icon: "💰", key: "piutang" },
+                {
+                    name: "Mutasi Kas Operasional",
+                    path: "/laporan-mutasi-kas-operasional",
+                    icon: "📒",
+                    key: "mutasi_kas_operasional",
+                },
             ],
         },
     ], []);
