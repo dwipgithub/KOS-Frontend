@@ -1,4 +1,4 @@
-import { createPenggunaApi, changePasswordApi } from "../api/pengguna"
+import { createPenggunaApi, changePasswordApi, getPenggunaAPI, showPenggunaAPI } from "../api/pengguna"
 
 export const createPengguna = async (data) => {
     try {
@@ -16,6 +16,26 @@ export const changePassword = async (data) => {
         return response.data;
     } catch (error) {
         console.error("Gagal mengubah password:", error);
+        throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
+    }
+}
+
+export const getPengguna = async () => {
+    try {
+        const response = await getPenggunaAPI();
+        return response.data;
+    } catch (error) {
+        console.error("Gagal mengambil data pengguna:", error);
+        throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
+    }
+}
+
+export const showPengguna = async (id) => {
+    try {
+        const response = await showPenggunaAPI(id);
+        return response.data;
+    } catch (error) {
+        console.error("Gagal mengambil data pengguna:", error);
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
     }
 }

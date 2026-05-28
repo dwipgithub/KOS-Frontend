@@ -1,4 +1,4 @@
-import { getTagihanApi, showTagihanApi, createTagihanApi } from "../api/tagihan";
+import { getTagihanApi, showTagihanApi, deleteTagihanApi, createTagihanApi } from "../api/tagihan";
 
 export const getTagihan = async (filters = {}) => {
     try {
@@ -10,7 +10,7 @@ export const getTagihan = async (filters = {}) => {
     } 
 }
 
-export const showSewa = async (id) => {
+export const showTagihan = async (id) => {
     try {
         const response = await showTagihanApi(id);
         return response.data;
@@ -20,7 +20,7 @@ export const showSewa = async (id) => {
     } 
 }
 
-export const createSewa = async (data) => {
+export const createTagihan = async (data) => {
     try {
         const response = await createTagihanApi(data);
         return response.data;
@@ -28,4 +28,14 @@ export const createSewa = async (data) => {
         console.error("Gagal membuat properti:", error);
         throw error.response?.data || { message: "Terjadi   kesalahan koneksi" };
     } 
+}
+
+export const deleteTagihan = async (id) => {
+    try {
+        const response = await deleteTagihanApi(id);
+        return response.data;
+    } catch (error) {
+        console.error("Gagal menghapus tagihan:", error);
+        throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
+    }
 }

@@ -100,7 +100,7 @@ const PengelolaanKamar = () => {
                             profesiList={props.profesiList}
                             onSimpanTransaksi={props.handleSimpanTransaksiSewa}
                             onDurasiChange={props.handleDurasiSewaChange}
-                            onJumlahDurasiChange={props.handleJumlahDurasiChange}
+                            onJumlahChange={props.handleJumlahChange}
                             loadingMasterPenyewa={props.loadingMasterPenyewa}
                             savingTransaksiSewa={props.savingTransaksiSewa}
                         />
@@ -112,7 +112,14 @@ const PengelolaanKamar = () => {
                             formPembayaran={props.formPembayaran}
                             setFormPembayaran={props.setFormPembayaran}
                             onSavePembayaran={props.handleSavePembayaran}
+                            formTagihan={props.formTagihan}
+                            setFormTagihan={props.setFormTagihan}
+                            onSaveTagihan={props.handleSaveTagihan}
+                            onDeleteTagihan={props.handleDeleteTagihan}
+                            sewaData={props.sewaData}
                             loading={props.loadingTagihan}
+                            savingTagihan={props.savingTagihan}
+                            deletingTagihanId={props.deletingTagihanId}
                         />
                     )}
 

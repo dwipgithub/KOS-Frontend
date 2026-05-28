@@ -26,3 +26,12 @@ export const createPengeluaranApi = async (data) => {
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
     }
 }
+
+export const deletePengeluaranApi = async (id) => {
+    try {
+        return axiosJWT.delete(`/api/v1/pengeluaran/${id}`);
+    } catch (error) {
+        console.error("Gagal menghapus pengeluaran:", error);
+        throw error.response?.data || { message: "Terjadi kesalahan koneksi" }; 
+    }
+}

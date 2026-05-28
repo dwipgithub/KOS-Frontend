@@ -22,18 +22,36 @@ const Penyewa = () => {
                 <PageLoading message="Memuat data penyewa…" />
             ) : (
                 <>
-                    <div className="mb-3">
+                    <div className="mb-3 d-flex justify-content-start gap-2">
                         <input
                             type="text"
                             className="form-control"
                             placeholder="Cari nama penyewa..."
                             value={props.search}
                             onChange={(e) => props.setSearch(e.target.value)}
+                            style={{ width: "300px" }}
                         />
+
+                        <button
+                            className="btn btn-primary"
+                            onClick={props.handleSearch}
+                        >
+                            🔍 Cari
+                        </button>
                     </div>
-                    {props.filteredPenyewa.length === 0 && (
-                        <div className="text-center text-muted mt-4">
-                            Data tidak ditemukan
+                    {!props.hasSearched && (
+                        <div className={styles.card}>
+                            <div className="h-100 d-flex align-items-center justify-content-center text-center text-muted">
+                                Silahkan ketik nama penyewa lalu klik tombol Cari
+                            </div>
+                        </div>
+                    )}
+
+                    {props.hasSearched && props.filteredPenyewa.length === 0 && (
+                        <div className={styles.card}>
+                            <div className="h-100 d-flex align-items-center justify-content-center text-center text-muted">
+                                Data penyewa tidak ditemukan
+                            </div>
                         </div>
                     )}
                     <div className="row">

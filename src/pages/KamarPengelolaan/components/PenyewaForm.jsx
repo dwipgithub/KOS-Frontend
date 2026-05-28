@@ -21,14 +21,13 @@ export function mapApiItemToPenyewaForm(item) {
         idPengenal: item.pengenal?.id || "",
         noPengenal: item.pengenal?.noPengenal || "",
         idJenisKelamin: item.jenisKelamin?.id || "",
-        idStatusPernikahan: item.statusPernikahan?.id || "",
-        idProfesi: item.profesi?.id || "",
+        profesi: item.profesi || "",
         noTelp: item.noTelp || "",
+        namaOrangTua: item.namaOrangTua || "",
+        noTelpOrangTua: item.noTelpOrangTua || "",
         alamat: item.alamat || "",
-        email: item.email || "",
         namaInstitusi: item.institusi?.nama || "",
         alamatInstitusi: item.institusi?.alamat || "",
-        noTelpInstitusi: item.institusi?.noTelp || "",
         dokumenFile: null,
     };
 }
@@ -241,9 +240,8 @@ const PenyewaForm = ({
                 aria-expanded={open}
             >
                 <span
-                    className={`${styles.sectionStatusDot} ${
-                        done ? styles.sectionStatusOk : styles.sectionStatusPending
-                    }`}
+                    className={`${styles.sectionStatusDot} ${done ? styles.sectionStatusOk : styles.sectionStatusPending
+                        }`}
                     title={done ? "Lengkap" : "Belum lengkap"}
                 />
                 <span className={styles.accordionHeaderText}>
@@ -371,7 +369,7 @@ const PenyewaForm = ({
                                     ))}
                                 </select>
                             </div>
-                            <div className={styles.formGroup}>
+                            {/* <div className={styles.formGroup}>
                                 <label className={styles.label}>Status pernikahan *</label>
                                 <select
                                     data-penyewa-field="idStatusPernikahan"
@@ -389,7 +387,7 @@ const PenyewaForm = ({
                                         </option>
                                     ))}
                                 </select>
-                            </div>
+                            </div> */}
                             <div className={styles.formGroup}>
                                 <label className={styles.label}>No. telepon *</label>
                                 <input
@@ -402,14 +400,25 @@ const PenyewaForm = ({
                                 />
                             </div>
                             <div className={styles.formGroup}>
-                                <label className={styles.label}>Email *</label>
+                                <label className={styles.label}>Nama orang tua *</label>
                                 <input
-                                    type="email"
-                                    data-penyewa-field="email"
+                                    type="text"
+                                    data-penyewa-field="namaOrangTua"
                                     className={styles.input}
-                                    value={form.email}
+                                    value={form.namaOrangTua}
                                     readOnly={ro}
-                                    onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                                    onChange={(e) => setForm((p) => ({ ...p, namaOrangTua: e.target.value }))}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>No. telepon orang tua *</label>
+                                <input
+                                    type="text"
+                                    data-penyewa-field="noTelpOrangTua"
+                                    className={styles.input}
+                                    value={form.noTelpOrangTua}
+                                    readOnly={ro}
+                                    onChange={(e) => setForm((p) => ({ ...p, noTelpOrangTua: e.target.value }))}
                                 />
                             </div>
                             <div className={`${styles.formGroup} ${styles.fullWidth}`}>
@@ -439,7 +448,7 @@ const PenyewaForm = ({
                         <div className={styles.newTenantGrid}>
                             <div className={styles.formGroup}>
                                 <label className={styles.label}>Profesi *</label>
-                                <select
+                                {/* <select
                                     data-penyewa-field="idProfesi"
                                     className={styles.select}
                                     value={form.idProfesi}
@@ -454,7 +463,21 @@ const PenyewaForm = ({
                                             {item.nama}
                                         </option>
                                     ))}
-                                </select>
+                                </select> */}
+                                <input
+                                    type="text"
+                                    data-penyewa-field="profesi"
+                                    className={styles.input}
+                                    value={form.profesi}
+                                    readOnly={ro}
+                                    onChange={(e) =>
+                                        setForm((p) => ({
+                                            ...p,
+                                            profesi: e.target.value
+                                        }))
+                                    }
+                                    placeholder="Ketik profesi"
+                                />
                             </div>
                             <div className={styles.formGroup}>
                                 <label className={styles.label}>Nama institusi *</label>
@@ -470,8 +493,8 @@ const PenyewaForm = ({
                                     placeholder="Ketik nama institusi"
                                 />
                             </div>
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>No. telp institusi *</label>
+                            {/* <div className={styles.formGroup}>
+                                <label className={styles.label}>No. telp institusi</label>
                                 <input
                                     type="text"
                                     data-penyewa-field="noTelpInstitusi"
@@ -482,9 +505,9 @@ const PenyewaForm = ({
                                         setForm((p) => ({ ...p, noTelpInstitusi: e.target.value }))
                                     }
                                 />
-                            </div>
+                            </div> */}
                             <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                                <label className={styles.label}>Alamat institusi *</label>
+                                <label className={styles.label}>Alamat institusi</label>
                                 <textarea
                                     data-penyewa-field="alamatInstitusi"
                                     className={styles.input}
@@ -511,38 +534,37 @@ const PenyewaForm = ({
                     <div className={styles.accordionBody}>
                         <div
                             data-penyewa-field="dokumenFile"
-                            className={`${styles.docFrame} ${!ro ? styles.docFrameInteractive : ""} ${
-                                dragOver ? styles.docFrameDragOver : ""
-                            }`}
+                            className={`${styles.docFrame} ${!ro ? styles.docFrameInteractive : ""} ${dragOver ? styles.docFrameDragOver : ""
+                                }`}
                             role={!ro ? "button" : undefined}
                             tabIndex={!ro ? 0 : undefined}
                             onDragOver={
                                 !ro
                                     ? (e) => {
-                                          e.preventDefault();
-                                          setDragOver(true);
-                                      }
+                                        e.preventDefault();
+                                        setDragOver(true);
+                                    }
                                     : undefined
                             }
                             onDragLeave={!ro ? () => setDragOver(false) : undefined}
                             onDrop={
                                 !ro
                                     ? (e) => {
-                                          e.preventDefault();
-                                          setDragOver(false);
-                                          const f = e.dataTransfer.files?.[0];
-                                          handleFile(f);
-                                      }
+                                        e.preventDefault();
+                                        setDragOver(false);
+                                        const f = e.dataTransfer.files?.[0];
+                                        handleFile(f);
+                                    }
                                     : undefined
                             }
                             onKeyDown={
                                 !ro
                                     ? (e) => {
-                                          if (e.key === "Enter" || e.key === " ") {
-                                              e.preventDefault();
-                                              fileInputRef.current?.click();
-                                          }
-                                      }
+                                        if (e.key === "Enter" || e.key === " ") {
+                                            e.preventDefault();
+                                            fileInputRef.current?.click();
+                                        }
+                                    }
                                     : undefined
                             }
                             onClick={!ro ? () => fileInputRef.current?.click() : undefined}

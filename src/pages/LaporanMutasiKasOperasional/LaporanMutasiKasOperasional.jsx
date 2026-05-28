@@ -1,5 +1,17 @@
-import { useMemo, useState } from "react";
-import { getLaporanMutasiKasOperasional, exportPdfMutasiKasOperasional } from "../../services/laporanMutasiKasOperasional";
+import { useMemo, useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { Trash2 } from "lucide-react";
+// import { getLaporanMutasiKasOperasional, exportPdfMutasiKasOperasional } from "../../services/laporanMutasiKasOperasional";
+import { getLaporanMutasiKasOperasional } from "../../services/laporanMutasiKasOperasional";
+import { getPengguna } from "../../services/pengguna";
+// import ModalTambahUangMasuk from "../../components/LaporanMutasiKasOperasional/ModalTambahUangMasuk";
+// import ModalTambahUangKeluar from "../../components/LaporanMutasiKasOperasional/ModalTambahUangKeluar";
+import { deletePemasukan } from "../../services/pemasukanService"
+import { deletePengeluaran } from "../../services/pengeluaranService"
+import ModalTambahUangMasuk from "./components/ModalTambahUangMasuk"
+import ModalTambahUangKeluar from "./components/ModalTambahUangKeluar"
+import ConfirmDialog from "../../components/ConfirmDialog/ConfirmDialog";
+
 import styles from "./LaporanMutasiKasOperasional.module.css";
 
 const getAwalBulan = () => {
@@ -54,8 +66,39 @@ const LaporanMutasiKasOperasional = () => {
     const [hasSearched, setHasSearched] = useState(false);
     const [startDate, setStartDate] = useState(() => getAwalBulan());
     const [endDate, setEndDate] = useState(() => getHariIni());
+    const [penggunaId, setPenggunaId] = useState("");
+    const [penggunaList, setPenggunaList] = useState([]);
+    const [loadingPengguna, setLoadingPengguna] = useState(false);
     const [report, setReport] = useState(null);
     const [loadingPdf, setLoadingPdf] = useState(false);
+    const [showModalUangMasuk, setShowModalUangMasuk] = useState(false);
+    const [showModalUangKeluar, setShowModalUangKeluar] = useState(false);
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+    const [selectedItemDelete, setSelectedItemDelete] = useState(null);
+    const [deletingItemId, setDeletingItemId] = useState(null);
+
+    // Fetch pengguna list
+    useEffect(() => {
+        const fetchPengguna = async () => {
+            try {
+                setLoadingPengguna(true);
+                const response = await getPengguna();
+                setPenggunaList(Array.isArray(response) ? response : response?.data || []);
+            } catch (err) {
+                console.error("Gagal memuat daftar pengguna:", err);
+                setPenggunaList([]);
+            } finally {
+                setLoadingPengguna(false);
+            }
+        };
+        fetchPengguna();
+    }, []);
+
+    useEffect(() => {
+        if (penggunaList.length === 1) {
+            setPenggunaId(penggunaList[0].id);
+        }
+    }, [penggunaList]);
 
     const rows = useMemo(() => (Array.isArray(report?.data) ? report.data : []), [report]);
 
@@ -87,7 +130,11 @@ const LaporanMutasiKasOperasional = () => {
         try {
             setLoading(true);
             setError("");
-            const response = await getLaporanMutasiKasOperasional({ startDate, endDate });
+            const params = { startDate, endDate };
+            if (penggunaId) {
+                params.penggunaId = penggunaId;
+            }
+            const response = await getLaporanMutasiKasOperasional(params);
             setReport(response?.data || null);
         } catch (err) {
             setError(err?.message || "Gagal memuat laporan mutasi kas operasional.");
@@ -97,44 +144,108 @@ const LaporanMutasiKasOperasional = () => {
         }
     };
 
-    const handleExportPdf = async () => {
+    // const handleExportPdf = async () => {
 
-        if (!startDate || !endDate) {
-            setError("Silakan pilih tanggal mulai dan tanggal selesai.");
-            return;
-        }
+    //     if (!startDate || !endDate) {
+    //         setError("Silakan pilih tanggal mulai dan tanggal selesai.");
+    //         return;
+    //     }
     
-        if (new Date(endDate) < new Date(startDate)) {
-            setError("Tanggal selesai tidak boleh lebih kecil dari tanggal mulai.");
-            return;
-        }
+    //     if (new Date(endDate) < new Date(startDate)) {
+    //         setError("Tanggal selesai tidak boleh lebih kecil dari tanggal mulai.");
+    //         return;
+    //     }
     
+    //     try {
+    //         setLoadingPdf(true);
+    //         setError("");
+    
+    //         const params = { startDate, endDate };
+    //         if (penggunaId) {
+    //             params.penggunaId = penggunaId;
+    //         }
+
+    //         await exportPdfMutasiKasOperasional(params);
+    
+    //     } catch (err) {
+    //         setError(
+    //             err?.message ||
+    //             "Gagal mengexport laporan mutasi kas operasional ke PDF."
+    //         );
+    //     } finally {
+    //         setLoadingPdf(false);
+    //     }
+    // };
+
+    const handleModalSuccess = async () => {
+        // Refresh data jika sudah ada search yang dilakukan
+        if (hasSearched) {
+            await handleTampilkan();
+        }
+    };
+
+    const handleConfirmDelete = (item) => {
+        setSelectedItemDelete(item);
+        setShowConfirmDelete(true);
+    };
+
+    const handleDeleteConfirmed = async () => {
+        if (!selectedItemDelete?.id) return;
+
         try {
-            setLoadingPdf(true);
-            setError("");
-    
-            await exportPdfMutasiKasOperasional({
-                startDate,
-                endDate
-            });
-    
+            setDeletingItemId(selectedItemDelete.id);
+            
+            // Tentukan apakah ini pemasukan atau pengeluaran
+            const isMasuk = Number(selectedItemDelete?.masuk || 0) > 0;
+            
+            if (isMasuk) {
+                await deletePemasukan(selectedItemDelete.id);
+            } else {
+                await deletePengeluaran(selectedItemDelete.id);
+            }
+
+            toast.success("Data berhasil dihapus.");
+            setShowConfirmDelete(false);
+            setSelectedItemDelete(null);
+
+            // Refresh data jika sudah ada search yang dilakukan
+            if (hasSearched) {
+                await handleTampilkan();
+            }
         } catch (err) {
-            setError(
-                err?.message ||
-                "Gagal mengexport laporan mutasi kas operasional ke PDF."
-            );
+            toast.error(err?.message || "Gagal menghapus data.");
         } finally {
-            setLoadingPdf(false);
+            setDeletingItemId(null);
         }
     };
 
     return (
         <div className={styles.page}>
             <div className={styles.header}>
-                <h2>Laporan Mutasi Kas Operasional</h2>
-                <p className={styles.subtitle}>
-                    Rekapitulasi mutasi kas operasional (masuk dan keluar) per periode.
-                </p>
+                <div>
+                    <h2>Laporan Mutasi Kas Operasional</h2>
+                    <p className={styles.subtitle}>
+                        Rekapitulasi mutasi kas operasional (masuk dan keluar) per periode.
+                    </p>
+                </div>
+                <div className={styles.headerActions}>
+                    <button
+                        type="button"
+                        className={`${styles.addButton} ${styles.addButtonMasuk}`}
+                        onClick={() => setShowModalUangMasuk(true)}
+                        disabled={loading || loadingPdf}
+                    >
+                        + Uang Masuk
+                    </button>
+                    <button
+                        type="button"
+                        className={`${styles.addButton} ${styles.addButtonKeluar}`}
+                        onClick={() => setShowModalUangKeluar(true)}
+                        disabled={loading || loadingPdf}
+                    >
+                        + Uang Keluar
+                    </button>
+                </div>
             </div>
 
             <section className={styles.filterCard}>
@@ -159,6 +270,25 @@ const LaporanMutasiKasOperasional = () => {
                             onChange={(e) => setEndDate(e.target.value)}
                         />
                     </div>
+                    <div className={styles.field}>
+                        <label htmlFor="lmkoPengguna">Pengguna</label>
+                        <select
+                            id="lmkoPengguna"
+                            className="form-control"
+                            value={penggunaId}
+                            onChange={(e) => setPenggunaId(e.target.value)}
+                            disabled={loadingPengguna}
+                        >
+                            {penggunaList.length > 1 && (
+                                <option value="">-- Semua Pengguna --</option>
+                            )}
+                            {penggunaList.map((pengguna) => (
+                                <option key={pengguna.id} value={pengguna.id}>
+                                    {pengguna.nama}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                     <div className={styles.actionWrap}>
                         <button
                             type="button"
@@ -169,14 +299,14 @@ const LaporanMutasiKasOperasional = () => {
                             {loading ? "Memuat..." : "🔍 Tampilkan"}
                         </button>
 
-                        <button
+                        {/* <button
                             type="button"
                             className="btn btn-success"
                             onClick={handleExportPdf}
                             disabled={loading || loadingPdf || !hasSearched}
                         >
                             {loadingPdf ? "Membuat PDF..." : "📥 Export PDF"}
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             </section>
@@ -220,6 +350,7 @@ const LaporanMutasiKasOperasional = () => {
                                     <th>Masuk</th>
                                     <th>Keluar</th>
                                     <th>Saldo</th>
+                                    <th style={{ width: "50px", textAlign: "center" }}>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -231,6 +362,21 @@ const LaporanMutasiKasOperasional = () => {
                                         <td className={styles.masukCol}>{formatMasukKeluar(item.masuk)}</td>
                                         <td className={styles.keluarCol}>{formatMasukKeluar(item.keluar)}</td>
                                         <td className={styles.saldoCol}>{formatRupiah(item.saldo)}</td>
+                                        <td style={{ textAlign: "center" }}>
+                                            <button
+                                                className={styles.iconDelete}
+                                                onClick={() => handleConfirmDelete(item)}
+                                                disabled={deletingItemId === item.id}
+                                                title="Hapus data"
+                                                type="button"
+                                            >
+                                                {deletingItemId === item.id ? (
+                                                    <span className={styles.spinnerSmall}></span>
+                                                ) : (
+                                                    <Trash2 size={16} strokeWidth={2.2} />
+                                                )}
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -238,6 +384,39 @@ const LaporanMutasiKasOperasional = () => {
                     </div>
                 ) : null}
             </section>
+
+            {showModalUangMasuk ? (
+                <ModalTambahUangMasuk
+                    onClose={() => setShowModalUangMasuk(false)}
+                    onSuccess={handleModalSuccess}
+                />
+            ) : null}
+
+            {showModalUangKeluar ? (
+                <ModalTambahUangKeluar
+                    onClose={() => setShowModalUangKeluar(false)}
+                    onSuccess={handleModalSuccess}
+                />
+            ) : null}
+
+            <ConfirmDialog
+                show={showConfirmDelete}
+                onClose={() => {
+                    setShowConfirmDelete(false);
+                    setSelectedItemDelete(null);
+                }}
+                title="Hapus Data?"
+                message={
+                    selectedItemDelete
+                        ? `Apakah Anda yakin ingin menghapus data ini? (Rp ${formatRupiah(selectedItemDelete.masuk > 0 ? selectedItemDelete.masuk : selectedItemDelete.keluar)})`
+                        : ""
+                }
+                confirmText="Hapus"
+                cancelText="Batal"
+                onConfirm={handleDeleteConfirmed}
+                isLoading={deletingItemId !== null}
+                isDanger={true}
+            />
         </div>
     );
 };

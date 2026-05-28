@@ -1,4 +1,4 @@
-import { getPengeluaranApi, showPengeluaranApi, createPengeluaranApi } from "../api/pengeluaran";
+import { getPengeluaranApi, showPengeluaranApi, deletePengeluaranApi, createPengeluaranApi } from "../api/pengeluaran";
 
 export const getPengeluaran = async (filters = {}) => {
     try {
@@ -28,4 +28,14 @@ export const createPengeluaran = async (data) => {
         console.error("Gagal membuat pengeluaran:", error);
         throw error.response?.data || { message: "Terjadi   kesalahan koneksi" };
     } 
+}
+
+export const deletePengeluaran = async (id) => {
+    try {
+        const response = await deletePengeluaranApi(id);
+        return response.data;
+    } catch (error) {
+        console.error("Gagal menghapus pengeluaran:", error);
+        throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
+    }
 }

@@ -17,3 +17,19 @@ export const changePasswordApi = async (data) => {
         throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
     }
 }
+
+export const getPenggunaAPI = async () => {
+    try {
+        return axiosJWT.get('/api/v1/pengguna')
+    } catch (error) {
+        throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
+    }
+}
+
+export const showPenggunaAPI = async (id) => {
+    try {
+        return axiosJWT.get(`/api/v1/pengguna/${id}`)
+    } catch (error) {
+        throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
+    }
+}

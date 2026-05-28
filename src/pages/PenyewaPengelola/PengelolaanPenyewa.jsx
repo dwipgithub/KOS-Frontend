@@ -34,9 +34,8 @@ const PengelolaanPenyewa = () => {
         form,
         setForm,
         jenisKelaminList,
-        statusPernikahanList,
         pengenalList,
-        profesiList,
+        // profesiList,
         loading,
         saving,
         docLoading,
@@ -76,10 +75,6 @@ const PengelolaanPenyewa = () => {
     const showLocalPdf = form.dokumenFile && form.dokumenFile.type === "application/pdf";
     const pengenalNama =
         pengenalList.find((p) => p.id === penyewaData?.pengenal?.id)?.nama || "—";
-    const profesiNama =
-        profesiList.find((profesi) => profesi.id === penyewaData?.profesi?.id)?.nama ||
-        penyewaData?.profesi?.nama ||
-        "—";
 
     return (
         <div className={styles.page}>
@@ -137,18 +132,11 @@ const PengelolaanPenyewa = () => {
                                     </div>
                                 </div>
                                 <div className={styles.infoGrid}>
-                                    <div className={styles.infoCell}>
-                                        <span className={styles.label}>Telepon</span>
-                                        <span className={styles.value}>{penyewaData.noTelp || "—"}</span>
-                                    </div>
-                                    <div className={styles.infoCell}>
-                                        <span className={styles.label}>Email</span>
-                                        <span className={styles.value}>{penyewaData.email || "—"}</span>
-                                    </div>
                                     <div className={`${styles.infoCell} ${styles.span2}`}>
                                         <span className={styles.label}>Alamat</span>
                                         <span className={styles.value}>{penyewaData.alamat || "—"}</span>
                                     </div>
+                                    
                                     <div className={styles.infoCell}>
                                         <span className={styles.label}>Jenis pengenal</span>
                                         <span className={styles.value}>{pengenalNama}</span>
@@ -160,25 +148,21 @@ const PengelolaanPenyewa = () => {
                                         </span>
                                     </div>
                                     <div className={styles.infoCell}>
-                                        <span className={styles.label}>Status pernikahan</span>
-                                        <span className={styles.value}>
-                                            {penyewaData.statusPernikahan?.nama || "—"}
-                                        </span>
+                                        <span className={styles.label}>No. telepon orang tua</span>
+                                        <span className={styles.value}>{penyewaData.noTelpOrangTua || "—"}</span>
+                                    </div>
+                                    <div className={styles.infoCell}>
+                                        <span className={styles.label}>Nama orang tua</span>
+                                        <span className={styles.value}>{penyewaData.namaOrangTua || "—"}</span>
                                     </div>
                                     <div className={styles.infoCell}>
                                         <span className={styles.label}>Profesi</span>
-                                        <span className={styles.value}>{profesiNama}</span>
+                                        <span className={styles.value}>{penyewaData.profesi || "—"}</span>
                                     </div>
                                     <div className={styles.infoCell}>
                                         <span className={styles.label}>Institusi</span>
                                         <span className={styles.value}>
                                             {penyewaData.institusi?.nama || "—"}
-                                        </span>
-                                    </div>
-                                    <div className={`${styles.infoCell}`}>
-                                        <span className={styles.label}>Kontak institusi</span>
-                                        <span className={styles.value}>
-                                            {penyewaData.institusi?.noTelp || "—"}
                                         </span>
                                     </div>
                                     <div className={`${styles.infoCell} ${styles.span2}`}>
@@ -283,7 +267,7 @@ const PengelolaanPenyewa = () => {
                                 </div>
 
                                 <div className={styles.formGrid}>
-                                    <label className={styles.field}>
+                                    <label className={`${styles.field} ${styles.span2}`}>
                                         <span className={styles.fieldLabel}>Nama lengkap</span>
                                         <input
                                             type="text"
@@ -317,24 +301,15 @@ const PengelolaanPenyewa = () => {
                                     </label>
 
                                     <label className={styles.field}>
-                                        <span className={styles.fieldLabel}>Status pernikahan</span>
-                                        <select
+                                        <span className={styles.fieldLabel}>No. telepon</span>
+                                        <input
+                                            type="text"
                                             className={styles.input}
-                                            value={form.idStatusPernikahan}
+                                            value={form.noTelp}
                                             onChange={(e) =>
-                                                setForm({
-                                                    ...form,
-                                                    idStatusPernikahan: e.target.value
-                                                })
+                                                setForm({ ...form, noTelp: e.target.value })
                                             }
-                                        >
-                                            <option value="">Pilih</option>
-                                            {statusPernikahanList.map((sp) => (
-                                                <option key={sp.id} value={sp.id}>
-                                                    {sp.nama}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        />
                                     </label>
 
                                     <label className={`${styles.field} ${styles.span2}`}>
@@ -383,25 +358,25 @@ const PengelolaanPenyewa = () => {
                                     </label>
 
                                     <label className={styles.field}>
-                                        <span className={styles.fieldLabel}>No. telepon</span>
+                                        <span className={styles.fieldLabel}>Nama orang tua</span>
                                         <input
                                             type="text"
                                             className={styles.input}
-                                            value={form.noTelp}
+                                            value={form.namaOrangTua}
                                             onChange={(e) =>
-                                                setForm({ ...form, noTelp: e.target.value })
+                                                setForm({ ...form, namaOrangTua: e.target.value })
                                             }
                                         />
                                     </label>
 
                                     <label className={styles.field}>
-                                        <span className={styles.fieldLabel}>Email</span>
+                                        <span className={styles.fieldLabel}>No. telepon orang tua</span>
                                         <input
-                                            type="email"
+                                            type="text"
                                             className={styles.input}
-                                            value={form.email}
+                                            value={form.noTelpOrangTua}
                                             onChange={(e) =>
-                                                setForm({ ...form, email: e.target.value })
+                                                setForm({ ...form, noTelpOrangTua: e.target.value })
                                             }
                                         />
                                     </label>
@@ -413,25 +388,20 @@ const PengelolaanPenyewa = () => {
                                                 Informasi profesi dan institusi disimpan sebagai satu profil kerja penyewa.
                                             </p>
                                             <div className={styles.formGridInner}>
-                                                <label className={styles.field}>
-                                                    <span className={styles.fieldLabel}>Profesi</span>
-                                                    <select
-                                                        className={styles.input}
-                                                        value={form.idProfesi}
-                                                        onChange={(e) =>
-                                                            setForm({
-                                                                ...form,
-                                                                idProfesi: e.target.value
-                                                            })
-                                                        }
-                                                    >
-                                                        <option value="">Pilih</option>
-                                                        {profesiList.map((profesi) => (
-                                                            <option key={profesi.id} value={profesi.id}>
-                                                                {profesi.nama}
-                                                            </option>
-                                                        ))}
-                                                    </select>
+                                            <label className={styles.field}>
+                                                <span className={styles.fieldLabel}>Profesi</span>
+                                                <input
+                                                    type="text"
+                                                    className={styles.input}
+                                                    value={form.profesi}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            profesi: e.target.value
+                                                        })
+                                                    }
+                                                    placeholder="Ketik profesi"
+                                                />
                                                 </label>
 
                                                 <label className={styles.field}>
@@ -446,19 +416,7 @@ const PengelolaanPenyewa = () => {
                                                     />
                                                 </label>
 
-                                                <label className={styles.field}>
-                                                    <span className={styles.fieldLabel}>No. telepon institusi</span>
-                                                    <input
-                                                        type="text"
-                                                        className={styles.input}
-                                                        value={form.noTelpInstitusi}
-                                                        onChange={(e) =>
-                                                            setForm({ ...form, noTelpInstitusi: e.target.value })
-                                                        }
-                                                    />
-                                                </label>
-
-                                                <label className={styles.field}>
+                                                <label className={`${styles.field} ${styles.span2}`}>
                                                     <span className={styles.fieldLabel}>Alamat institusi</span>
                                                     <textarea
                                                         className={styles.textarea}

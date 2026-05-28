@@ -4,7 +4,7 @@ import styles from "./TabSewa.module.css";
 import PenyewaForm, { SECTION_KEYS, validateDokumenFile } from "./PenyewaForm";
 import SewaForm from "./SewaForm";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function validatePenyewaFields(form, readOnly) {
     const t = (s) => (s || "").trim();
@@ -15,30 +15,17 @@ function validatePenyewaFields(form, readOnly) {
         return { section: "identity", field: "noPengenal", message: "Nomor pengenal wajib diisi." };
     if (!t(form.idJenisKelamin))
         return { section: "identity", field: "idJenisKelamin", message: "Jenis kelamin wajib dipilih." };
-    if (!t(form.idStatusPernikahan))
-        return {
-            section: "identity",
-            field: "idStatusPernikahan",
-            message: "Status pernikahan wajib dipilih.",
-        };
     if (!t(form.noTelp))
         return { section: "identity", field: "noTelp", message: "Nomor telepon wajib diisi." };
-    if (!t(form.email)) return { section: "identity", field: "email", message: "Email wajib diisi." };
-    if (!EMAIL_RE.test(t(form.email)))
-        return { section: "identity", field: "email", message: "Format email tidak valid." };
+    if (!t(form.namaOrangTua))
+        return { section: "identity", field: "namaOrangTua", message: "Nama orang tua wajib diisi." };
+    if (!t(form.noTelpOrangTua))
+        return { section: "identity", field: "noTelpOrangTua", message: "No. telepon orang tua wajib diisi." };
     if (!t(form.alamat)) return { section: "identity", field: "alamat", message: "Alamat wajib diisi." };
-    if (!t(form.idProfesi))
-        return { section: "profession", field: "idProfesi", message: "Profesi wajib dipilih." };
+    if (!t(form.profesi))
+        return { section: "profession", field: "profesi", message: "Profesi wajib diisi." };
     if (!t(form.namaInstitusi))
         return { section: "profession", field: "namaInstitusi", message: "Nama institusi wajib diisi." };
-    if (!t(form.noTelpInstitusi))
-        return {
-            section: "profession",
-            field: "noTelpInstitusi",
-            message: "Nomor telepon institusi wajib diisi.",
-        };
-    if (!t(form.alamatInstitusi))
-        return { section: "profession", field: "alamatInstitusi", message: "Alamat institusi wajib diisi." };
     if (!readOnly) {
         const docErr = validateDokumenFile(form.dokumenFile);
         if (docErr)
@@ -51,9 +38,9 @@ function validateSewaFields(formSewa) {
     if (!formSewa.tanggalMasuk)
         return { field: "tanggalMasuk", message: "Tanggal mulai wajib diisi." };
     if (!formSewa.tanggalKeluar)
-        return { field: "jumlahDurasi", message: "Lengkapi durasi dan tanggal mulai agar tanggal selesai terhitung." };
-    if (!formSewa.jumlahDurasi || formSewa.jumlahDurasi < 1)
-        return { field: "jumlahDurasi", message: "Jumlah durasi minimal 1." };
+        return { field: "jumlah", message: "Lengkapi durasi dan tanggal mulai agar tanggal selesai terhitung." };
+    if (!formSewa.jumlah || formSewa.jumlah < 1)
+        return { field: "jumlah", message: "Jumlah minimal 1." };
     return null;
 }
 
@@ -71,7 +58,7 @@ const TabSewa = ({
     profesiList,
     onSimpanTransaksi,
     onDurasiChange,
-    onJumlahDurasiChange,
+    onJumlahChange,
     loadingMasterPenyewa,
     savingTransaksiSewa,
 }) => {
@@ -99,16 +86,13 @@ const TabSewa = ({
                 !!t(f.idPengenal) &&
                 !!t(f.noPengenal) &&
                 !!t(f.idJenisKelamin) &&
-                !!t(f.idStatusPernikahan) &&
                 !!t(f.noTelp) &&
-                !!t(f.email) &&
-                EMAIL_RE.test(t(f.email)) &&
+                !!t(f.namaOrangTua) &&
+                !!t(f.noTelpOrangTua) &&
                 !!t(f.alamat),
             profession:
-                !!t(f.idProfesi) &&
-                !!t(f.namaInstitusi) &&
-                !!t(f.noTelpInstitusi) &&
-                !!t(f.alamatInstitusi),
+                !!t(f.profesi) &&
+                !!t(f.namaInstitusi),
             document:
                 penyewaReadOnly || validateDokumenFile(f.dokumenFile) === null,
         };
@@ -118,10 +102,10 @@ const TabSewa = ({
         return (
             !!formSewa.tanggalMasuk &&
             !!formSewa.tanggalKeluar &&
-            !!formSewa.jumlahDurasi &&
-            formSewa.jumlahDurasi >= 1
+            !!formSewa.jumlah &&
+            formSewa.jumlah >= 1
         );
-    }, [formSewa.tanggalMasuk, formSewa.tanggalKeluar, formSewa.jumlahDurasi]);
+    }, [formSewa.tanggalMasuk, formSewa.tanggalKeluar, formSewa.jumlah]);
 
     const progressPercent = useMemo(() => {
         const penyewaDone = SECTION_KEYS.filter((k) => penyewaSectionComplete[k]).length;
@@ -166,14 +150,13 @@ const TabSewa = ({
             idPengenal: "",
             noPengenal: "",
             idJenisKelamin: "",
-            idStatusPernikahan: "",
-            idProfesi: "",
+            profesi: "",
             noTelp: "",
+            namaOrangTua: "",
+            noTelpOrangTua: "",
             alamat: "",
-            email: "",
             namaInstitusi: "",
             alamatInstitusi: "",
-            noTelpInstitusi: "",
             dokumenFile: null,
         });
     }, [setFormPenyewaBaru, setFormSewa]);
@@ -195,6 +178,22 @@ const TabSewa = ({
     };
 
     if (isActive || isBooked) {
+        const rentBill = sewaData?.tagihan
+            ?.filter((x) => x.kode === "RENT")
+            ?.sort(
+                (a, b) =>
+                    new Date(a.tanggalTagihan) -
+                    new Date(b.tanggalTagihan)
+            )[0]
+
+        const dpBill = sewaData?.tagihan
+            ?.filter((x) => x.kode === "DP")
+            ?.sort(
+                (a, b) =>
+                    new Date(a.tanggalTagihan) -
+                    new Date(b.tanggalTagihan)
+            )[0]
+
         return (
             <div className={styles.container}>
                 <div className={styles.activeSewaContainer}>
@@ -271,7 +270,7 @@ const TabSewa = ({
 
                                 <div className={styles.infoBox}>
                                     <span className={styles.label}>Jumlah</span>
-                                    <span className={styles.value}>{sewaData?.jumlahDurasi || "-"}</span>
+                                    <span className={styles.value}>{rentBill?.jumlah|| "-"}</span>
                                 </div>
 
                                 <div className={styles.infoBox}>
@@ -303,14 +302,14 @@ const TabSewa = ({
                                 <div className={styles.infoBox}>
                                     <span className={styles.label}>Harga</span>
                                     <span className={styles.value}>
-                                        Rp {parseInt(sewaData?.hargaPerDurasi || 0).toLocaleString("id-ID")}
+                                        Rp {parseInt(rentBill?.hargaSatuan || 0).toLocaleString("id-ID")}
                                     </span>
                                 </div>
 
                                 <div className={styles.infoBox}>
                                     <span className={styles.label}>Uang Muka</span>
                                     <span className={styles.value}>
-                                        Rp {Number(sewaData?.uangMuka ?? 0).toLocaleString("id-ID")}
+                                        Rp {Number(dpBill?.total ?? 0).toLocaleString("id-ID")}
                                     </span>
                                 </div>
 
@@ -319,7 +318,7 @@ const TabSewa = ({
                                     <span className={styles.value}>
                                         Rp{" "}
                                         {parseInt(
-                                            sewaData?.hargaPerDurasi * parseInt(sewaData?.jumlahDurasi || 0)
+                                            rentBill?.hargaSatuan * parseInt(rentBill?.jumlah || 0)
                                         ).toLocaleString("id-ID")}
                                     </span>
                                 </div>
@@ -384,7 +383,7 @@ const TabSewa = ({
                         formSewa={formSewa}
                         setFormSewa={setFormSewa}
                         onDurasiChange={onDurasiChange}
-                        onJumlahDurasiChange={onJumlahDurasiChange}
+                        onJumlahChange={onJumlahChange}
                         sectionComplete={sewaSectionComplete}
                         sectionOpen={sewaSectionOpen}
                         setSectionOpen={setSewaSectionOpen}

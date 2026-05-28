@@ -23,8 +23,10 @@ const emptyForm = () => ({
     noPengenal: "",
     idJenisKelamin: "",
     idStatusPernikahan: "",
-    idProfesi: "",
+    profesi: "",
     noTelp: "",
+    namaOrangTua: "",
+    noTelpOrangTua: "",
     alamat: "",
     email: "",
     namaInstitusi: "",
@@ -83,8 +85,10 @@ export const usePengelolaanPenyewa = (id) => {
                 noPengenal: d.pengenal?.noPengenal ?? "",
                 idJenisKelamin: d.jenisKelamin?.id ?? "",
                 idStatusPernikahan: d.statusPernikahan?.id ?? "",
-                idProfesi: d.profesi?.id ?? "",
+                profesi: d.profesi ?? "",
                 noTelp: d.noTelp ?? "",
+                namaOrangTua: d.namaOrangTua ?? "",
+                noTelpOrangTua: d.noTelpOrangTua ?? "",
                 alamat: d.alamat ?? "",
                 email: d.email ?? "",
                 namaInstitusi: d.institusi?.nama ?? "",
@@ -151,12 +155,14 @@ export const usePengelolaanPenyewa = (id) => {
         fd.append("nama", f.nama ?? "");
         fd.append("alamat", f.alamat ?? "");
         fd.append("noTelp", f.noTelp ?? "");
+        fd.append("namaOrangTua", f.namaOrangTua ?? "");
+        fd.append("noTelpOrangTua", f.noTelpOrangTua ?? "");
         fd.append("email", f.email ?? "");
         fd.append("idPengenal", f.idPengenal ?? "");
         fd.append("noPengenal", f.noPengenal ?? "");
         fd.append("idJenisKelamin", f.idJenisKelamin ?? "");
         fd.append("idStatusPernikahan", f.idStatusPernikahan ?? "");
-        fd.append("idProfesi", f.idProfesi ?? "");
+        fd.append("profesi", f.profesi ?? "");
         fd.append("namaInstitusi", f.namaInstitusi ?? "");
         fd.append("alamatInstitusi", f.alamatInstitusi ?? "");
         fd.append("noTelpInstitusi", f.noTelpInstitusi ?? "");
@@ -175,12 +181,14 @@ export const usePengelolaanPenyewa = (id) => {
                     nama: form.nama,
                     alamat: form.alamat,
                     noTelp: form.noTelp,
+                    namaOrangTua: form.namaOrangTua,
+                    noTelpOrangTua: form.noTelpOrangTua,
                     email: form.email,
                     idPengenal: form.idPengenal,
                     noPengenal: form.noPengenal,
                     idJenisKelamin: form.idJenisKelamin,
                     idStatusPernikahan: form.idStatusPernikahan,
-                    idProfesi: form.idProfesi,
+                    profesi: form.profesi,
                     namaInstitusi: form.namaInstitusi,
                     alamatInstitusi: form.alamatInstitusi,
                     noTelpInstitusi: form.noTelpInstitusi

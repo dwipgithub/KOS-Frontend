@@ -16,6 +16,7 @@ export const usePenyewa = () => {
     const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
 
     const [form, setForm] = useState({
         nama: "",
@@ -33,14 +34,40 @@ export const usePenyewa = () => {
         dokumenFile: null
     });
 
+    // const refreshPenyewa = useCallback(async () => {
+    //     try {
+    //         const data = await getPenyewa();
+    //         setPenyewaList(data.data);
+    //     } catch (err) {
+    //         setError(err.message || "Gagal memuat data penyewa");
+    //     }
+    // }, []);
+
     const refreshPenyewa = useCallback(async () => {
         try {
-            const data = await getPenyewa();
-            setPenyewaList(data.data);
+
+            if (!search.trim()) {
+                toast.warning("Please enter tenant name");
+                return;
+            }
+
+            setLoading(true);
+
+            const data = await getPenyewa({
+                nama: search
+            });
+
+            setPenyewaList(data.data || []);
+
         } catch (err) {
-            setError(err.message || "Gagal memuat data penyewa");
+
+            setError(err.message || "Failed to load tenant data");
+
+        } finally {
+
+            setLoading(false);
         }
-    }, []);
+    }, [search]);
 
     useEffect(() => {
         let cancelled = false;
@@ -49,14 +76,14 @@ export const usePenyewa = () => {
             setError(null);
             try {
                 const [pRes, jkRes, spRes, pgRes, prRes] = await Promise.all([
-                    getPenyewa(),
+                    // getPenyewa(),
                     getJenisKelamin(),
                     getStatusPernikahan(),
                     getPengenal(),
                     getProfesi()
                 ]);
                 if (!cancelled) {
-                    setPenyewaList(pRes.data);
+                    // setPenyewaList(pRes.data);
                     setJenisKelaminList(jkRes.data);
                     setStatusPernikahanList(spRes.data);
                     setPengenalList(pgRes.data);
@@ -74,6 +101,11 @@ export const usePenyewa = () => {
             cancelled = true;
         };
     }, []);
+
+    const handleSearch = async () => {
+        setHasSearched(true);
+        await refreshPenyewa();
+    };
 
     const buildPenyewaFormData = (f) => {
         const fd = new FormData();
@@ -125,9 +157,11 @@ export const usePenyewa = () => {
         }
     };
 
-    const filteredPenyewa = penyewaList.filter((item) =>
-        item.nama.toLowerCase().includes(search.toLowerCase())
-    );
+    // const filteredPenyewa = penyewaList.filter((item) =>
+    //     item.nama.toLowerCase().includes(search.toLowerCase())
+    // );
+
+    const filteredPenyewa = [...penyewaList];
 
     const closeModal = () => {
         setShowModal(false);
@@ -150,5 +184,7 @@ export const usePenyewa = () => {
         setShowModal,
         closeModal,
         setSearch,
+        handleSearch,
+        hasSearched
     };
 };

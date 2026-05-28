@@ -9,7 +9,7 @@ const DURASI_OPTIONS = ["Bulanan", "Tahunan"];
  * @param {object} props.formSewa
  * @param {function} props.setFormSewa
  * @param {function} props.onDurasiChange
- * @param {function} props.onJumlahDurasiChange
+ * @param {function} props.onJumlahChange
  * @param {boolean} props.sectionComplete
  * @param {boolean} props.sectionOpen
  * @param {function} props.setSectionOpen
@@ -20,7 +20,7 @@ const SewaForm = ({
     formSewa,
     setFormSewa,
     onDurasiChange,
-    onJumlahDurasiChange,
+    onJumlahChange,
     sectionComplete,
     sectionOpen,
     setSectionOpen,
@@ -39,6 +39,31 @@ const SewaForm = ({
         Mingguan: "hargaPerMinggu",
         Bulanan: "hargaPerBulan",
         Tahunan: "hargaPerTahun",
+    };
+
+    // Hitung subtotal (jumlah × harga satuan)
+    const subtotal = (formSewa.jumlah || 0) * (formSewa.hargaSatuan || 0);
+
+    // Handle diskon persen
+    const handlediskonPersen = (value) => {
+        const persen = parseFloat(value) || 0;
+        const diskonNominal = (subtotal * persen) / 100;
+        setFormSewa((prev) => ({
+            ...prev,
+            diskonPersen: persen,
+            diskonNominal: Math.max(0, diskonNominal),
+        }));
+    };
+
+    // Handle diskon nominal
+    const handlediskonNominal = (value) => {
+        const nominal = Math.max(0, parseFloat(value) || 0);
+        const persen = subtotal > 0 ? (nominal / subtotal) * 100 : 0;
+        setFormSewa((prev) => ({
+            ...prev,
+            diskonNominal: nominal,
+            diskonPersen: persen,
+        }));
     };
 
     return (
@@ -131,11 +156,11 @@ const SewaForm = ({
                                 </label>
                                 <input
                                     type="number"
-                                    data-sewa-field="jumlahDurasi"
+                                    data-sewa-field="jumlah"
                                     className={styles.input}
-                                    value={formSewa.jumlahDurasi}
+                                    value={formSewa.jumlah}
                                     onChange={(e) =>
-                                        onJumlahDurasiChange(parseInt(e.target.value, 10) || 1)
+                                        onJumlahChange(parseInt(e.target.value, 10) || 1)
                                     }
                                     min="1"
                                 />
@@ -143,10 +168,35 @@ const SewaForm = ({
                             <div className={styles.formGroup}>
                                 <label className={styles.label}>Harga per {formSewa.durasiSewa}</label>
                                 <div className={styles.staticValue}>
-                                    Rp {parseInt(formSewa.hargaPerDurasi || 0, 10).toLocaleString("id-ID")}
+                                    Rp {parseInt(formSewa.hargaSatuan || 0, 10).toLocaleString("id-ID")}
                                 </div>
                             </div>
-                            <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>diskon (%)</label>
+                                <input
+                                    type="number"
+                                    className={styles.input}
+                                    min="0"
+                                    max="100"
+                                    step="0.01"
+                                    value={formSewa.diskonPersen ?? 0}
+                                    onChange={(e) => handlediskonPersen(e.target.value)}
+                                    placeholder="Masukkan persentase"
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>diskon (Rp)</label>
+                                <input
+                                    type="number"
+                                    className={styles.input}
+                                    min="0"
+                                    step="1000"
+                                    value={formSewa.diskonNominal ?? 0}
+                                    onChange={(e) => handlediskonNominal(e.target.value)}
+                                    placeholder="Masukkan jumlah"
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
                                 <label className={styles.label}>Uang muka</label>
                                 <input
                                     type="number"
@@ -164,11 +214,29 @@ const SewaForm = ({
                                     }}
                                 />
                             </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>Uang jaminan</label>
+                                <input
+                                    type="number"
+                                    className={styles.input}
+                                    min="0"
+                                    step="1000"
+                                    value={formSewa.uangJaminan ?? 0}
+                                    onChange={(e) => {
+                                        const v = e.target.value;
+                                        setFormSewa((prev) => ({
+                                            ...prev,
+                                            uangJaminan:
+                                                v === "" ? 0 : Math.max(0, parseFloat(v) || 0),
+                                        }));
+                                    }}
+                                />
+                            </div>
                         </div>
                         <div className={styles.totalPriceSection}>
                             <span className={styles.totalLabel}>Total harga</span>
                             <span className={styles.totalPrice}>
-                                Rp {parseInt(formSewa.hargaTotal || 0, 10).toLocaleString("id-ID")}
+                                Rp {parseInt((subtotal - (formSewa.diskonNominal || 0)) || 0, 10).toLocaleString("id-ID")}
                             </span>
                         </div>
                     </div>

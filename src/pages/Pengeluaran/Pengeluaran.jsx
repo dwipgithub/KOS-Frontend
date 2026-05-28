@@ -4,7 +4,6 @@ import { getProperti } from "../../services/propertiService";
 import { getKamar } from "../../services/kamarService";
 import { getKategoriPengeluaran } from "../../services/kategoriPengeluaranService";
 import { createPengeluaran, getPengeluaran } from "../../services/pengeluaranService";
-import { getKas } from "../../services/kasService"
 import styles from "./Pengeluaran.module.css";
 
 const BUKTI_ACCEPT = "application/pdf,image/jpeg,image/png,image/webp,image/gif";
@@ -27,7 +26,6 @@ const initialFilter = {
 const initialForm = {
     idProperti: "",
     idKamar: "",
-    idKas: "",
     idKategoriPengeluaran: "",
     tanggalPengeluaran: "",
     nama: "",
@@ -73,7 +71,6 @@ const Pengeluaran = () => {
     const [kategoriList, setKategoriList] = useState([]);
     const [filterKamarList, setFilterKamarList] = useState([]);
     const [formKamarList, setFormKamarList] = useState([]);
-    const [kasList, setKasList] = useState([]);
     const [loadingFilterKamar, setLoadingFilterKamar] = useState(false);
     const [loadingFormKamar, setLoadingFormKamar] = useState(false);
 
@@ -91,17 +88,15 @@ const Pengeluaran = () => {
         (async () => {
             try {
                 setLoadingMaster(true);
-                const [propertiRes, kategoriRes, kasRes] = await Promise.all([
+                const [propertiRes, kategoriRes] = await Promise.all([
                     getProperti({ limit: 200 }),
-                    getKategoriPengeluaran({ limit: 200 }),
-                    getKas({ limit: 200})
+                    getKategoriPengeluaran({ limit: 200 })
                 ]);
 
                 if (cancelled) return;
 
                 setPropertiList(Array.isArray(propertiRes?.data) ? propertiRes.data : []);
                 setKategoriList(Array.isArray(kategoriRes?.data) ? kategoriRes.data : []);
-                setKasList(Array.isArray(kasRes?.data) ? kasRes.data : []);
             } catch (err) {
                 if (!cancelled) {
                     toast.error(err?.message || "Gagal memuat data master pengeluaran.");
@@ -241,7 +236,6 @@ const Pengeluaran = () => {
     const validateForm = () => {
         const nextError = {};
         if (!form.idProperti) nextError.idProperti = "Properti wajib dipilih.";
-        if (!form.idKas) nextError.idKas = "Kas wajib dipilih.";
         if (!form.idKategoriPengeluaran) nextError.idKategoriPengeluaran = "Kategori pengeluaran wajib dipilih.";
         if (!form.tanggalPengeluaran) nextError.tanggalPengeluaran = "Tanggal pengeluaran wajib diisi.";
         if (!form.nama.trim()) nextError.nama = "Nama pengeluaran wajib diisi.";
@@ -262,7 +256,6 @@ const Pengeluaran = () => {
             setSaving(true);
             const payload = new FormData();
             payload.append("idProperti", form.idProperti);
-            payload.append("idKas", form.idKas);
             payload.append("idKategoriPengeluaran", form.idKategoriPengeluaran);
             payload.append("tanggalPengeluaran", form.tanggalPengeluaran);
             payload.append("nama", form.nama.trim());
@@ -447,7 +440,7 @@ const Pengeluaran = () => {
                             <div className={styles.body}>
                                 <div className={styles.section}>
                                     <div className={styles.sectionHeader}>
-                                        <span>Informasi Utama</span>
+                                        <span>Informasi Utama</span>f
                                     </div>
                                     <p className={styles.sectionDescription}>
                                         Pilih properti, kamar, kategori, dan tanggal transaksi.
@@ -500,31 +493,6 @@ const Pengeluaran = () => {
                                                     </option>
                                                 ))}
                                             </select>
-                                        </div>
-
-                                        <div className="col-md-6 mb-3">
-                                            <label>Pilih Kas *</label>
-                                            <select
-                                                className={`form-select ${formError.idKas ? "is-invalid" : ""}`}
-                                                value={form.idKas}
-                                                disabled={saving || loadingMaster}
-                                                onChange={(e) =>
-                                                    setForm((prev) => ({
-                                                        ...prev,
-                                                        idKas: e.target.value,
-                                                    }))
-                                                }
-                                            >
-                                                <option value="">-- Pilih kas --</option>
-                                                {kasList.map((item) => (
-                                                    <option key={item.id} value={item.id}>
-                                                        {item.nama}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            {formError.idKas ? (
-                                                <span className={styles.fieldError}>{formError.idKas}</span>
-                                            ) : null}
                                         </div>
 
                                         <div className="col-md-6 mb-3">
