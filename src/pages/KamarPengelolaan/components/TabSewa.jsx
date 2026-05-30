@@ -1,10 +1,22 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import styles from "./TabSewa.module.css";
 import PenyewaForm, { SECTION_KEYS, validateDokumenFile } from "./PenyewaForm";
 import SewaForm from "./SewaForm";
+import { fetchPrivateFileBlob } from "../../../services/penyewaService";
 
 // const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function inferMimeFromPath(path, blobType) {
+    if (blobType && blobType !== "application/octet-stream") return blobType;
+    const lower = (path || "").toLowerCase();
+    if (lower.endsWith(".pdf")) return "application/pdf";
+    if (lower.endsWith(".png")) return "image/png";
+    if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+    if (lower.endsWith(".webp")) return "image/webp";
+    if (lower.endsWith(".gif")) return "image/gif";
+    return blobType || "application/octet-stream";
+}
 
 function validatePenyewaFields(form, readOnly) {
     const t = (s) => (s || "").trim();
@@ -76,6 +88,10 @@ const TabSewa = ({
     const [sewaSectionOpen, setSewaSectionOpen] = useState(true);
     const [penyewaFocus, setPenyewaFocus] = useState({ key: null, nonce: 0 });
     const [sewaFocus, setSewaFocus] = useState({ key: null, nonce: 0 });
+    const [docObjectUrl, setDocObjectUrl] = useState(null);
+    const [docMime, setDocMime] = useState("");
+    const [docLoading, setDocLoading] = useState(false);
+    const docUrlRef = useRef(null);
 
     const penyewaSectionComplete = useMemo(() => {
         const f = formPenyewaBaru;
@@ -177,6 +193,49 @@ const TabSewa = ({
         await onSimpanTransaksi({ isExistingPenyewa: penyewaReadOnly });
     };
 
+    const revokeDocUrl = useCallback(() => {
+        if (docUrlRef.current) {
+            URL.revokeObjectURL(docUrlRef.current);
+            docUrlRef.current = null;
+        }
+        setDocObjectUrl(null);
+        setDocMime("");
+    }, []);
+
+    // Fetch document blob when penyewaData changes
+    useEffect(() => {
+        const path = penyewaData?.dokumenPengenal;
+        if (!path) {
+            revokeDocUrl();
+            return undefined;
+        }
+
+        let cancelled = false;
+        (async () => {
+            setDocLoading(true);
+            revokeDocUrl();
+            try {
+                const blob = await fetchPrivateFileBlob(path);
+                if (cancelled || !blob) return;
+                const mime = inferMimeFromPath(path, blob.type);
+                const url = URL.createObjectURL(blob);
+                docUrlRef.current = url;
+                setDocObjectUrl(url);
+                setDocMime(mime);
+            } catch {
+                if (!cancelled) {
+                    toast.error("Gagal memuat dokumen identitas", { position: "top-right" });
+                }
+            } finally {
+                if (!cancelled) setDocLoading(false);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [penyewaData?.dokumenPengenal, revokeDocUrl]);
+
     if (isActive || isBooked) {
         const rentBill = sewaData?.tagihan
             ?.filter((x) => x.kode === "RENT")
@@ -221,6 +280,7 @@ const TabSewa = ({
                             </div>
 
                             <div className={styles.infoGridModern}>
+                                {/* Data Identitas */}
                                 <div className={styles.infoBox}>
                                     <span className={styles.label}>
                                         ID {penyewaData?.pengenal?.id || "-"}
@@ -236,19 +296,89 @@ const TabSewa = ({
                                 </div>
 
                                 <div className={styles.infoBox}>
-                                    <span className={styles.label}>Telepon</span>
-                                    <span className={styles.value}>{penyewaData?.noTelp || "-"}</span>
+                                    <span className={styles.label}>Jenis Kelamin</span>
+                                    <span className={styles.value}>
+                                        {penyewaData?.jenisKelamin?.nama || "-"}
+                                    </span>
                                 </div>
 
                                 <div className={styles.infoBox}>
-                                    <span className={styles.label}>Email</span>
-                                    <span className={styles.value}>{penyewaData?.email || "-"}</span>
+                                    <span className={styles.label}>Telepon</span>
+                                    <span className={styles.value}>{penyewaData?.noTelp || "-"}</span>
                                 </div>
 
                                 <div className={`${styles.infoBox} ${styles.fullWidth}`}>
                                     <span className={styles.label}>Alamat</span>
                                     <span className={styles.value}>{penyewaData?.alamat || "-"}</span>
                                 </div>
+
+                                {/* Data Orang Tua */}
+                                <div className={styles.infoBox}>
+                                    <span className={styles.label}>Nama Orang Tua</span>
+                                    <span className={styles.value}>{penyewaData?.namaOrangTua || "-"}</span>
+                                </div>
+
+                                <div className={styles.infoBox}>
+                                    <span className={styles.label}>Telepon Orang Tua</span>
+                                    <span className={styles.value}>{penyewaData?.noTelpOrangTua || "-"}</span>
+                                </div>
+
+                                {/* Data Profesi & Institusi */}
+                                <div className={styles.infoBox}>
+                                    <span className={styles.label}>Profesi</span>
+                                    <span className={styles.value}>{penyewaData?.profesi || "-"}</span>
+                                </div>
+
+                                <div className={`${styles.infoBox} ${styles.fullWidth}`}>
+                                    <span className={styles.label}>Institusi</span>
+                                    <span className={styles.value}>
+                                        {penyewaData?.institusi?.nama || "-"}
+                                    </span>
+                                </div>
+
+                                <div className={`${styles.infoBox} ${styles.fullWidth}`}>
+                                    <span className={styles.label}>Alamat Institusi</span>
+                                    <span className={styles.value}>
+                                        {penyewaData?.institusi?.alamat || "-"}
+                                    </span>
+                                </div>
+
+                                {/* Dokumen Pengenal */}
+                                {penyewaData?.dokumenPengenal && (
+                                    <div className={`${styles.infoBox} ${styles.fullWidth}`}>
+                                        <span className={styles.label}>Dokumen Pengenal</span>
+                                        <div className={styles.docFrame}>
+                                            {docLoading && (
+                                                <div className={styles.docPlaceholder}>
+                                                    <div className={styles.spinnerSmall} />
+                                                    <span>Memuat dokumen…</span>
+                                                </div>
+                                            )}
+
+                                            {!docLoading && docObjectUrl && docMime.startsWith("image/") && (
+                                                <img
+                                                    src={docObjectUrl}
+                                                    alt="Dokumen pengenal"
+                                                    className={styles.docImage}
+                                                />
+                                            )}
+
+                                            {!docLoading && docObjectUrl && docMime === "application/pdf" && (
+                                                <iframe
+                                                    title="Dokumen PDF"
+                                                    src={docObjectUrl}
+                                                    className={styles.docIframe}
+                                                />
+                                            )}
+
+                                            {!docLoading && !docObjectUrl && (
+                                                <div className={styles.docPlaceholder}>
+                                                    <span>Gagal memuat dokumen. Muat ulang halaman atau coba lagi.</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
