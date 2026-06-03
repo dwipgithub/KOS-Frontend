@@ -1,4 +1,4 @@
-import { getSewaApi, showSewaApi, createSewaApi } from "../api/sewa";
+import { getSewaApi, showSewaApi, createSewaApi, destroySewaApi } from "../api/sewa";
 
 export const getSewa = async (filters = {}) => {
     try {
@@ -26,6 +26,16 @@ export const createSewa = async (data) => {
         return response.data;
     } catch (error) {
         console.error("Gagal membuat properti:", error);
+        throw error.response?.data || { message: "Terjadi   kesalahan koneksi" };
+    } 
+}
+
+export const destroySewa = async (id) => {
+    try {
+        const response = await destroySewaApi(id);
+        return response.data;
+    } catch (error) {
+        console.error("Gagal menghapus sewa:", error);
         throw error.response?.data || { message: "Terjadi   kesalahan koneksi" };
     } 
 }

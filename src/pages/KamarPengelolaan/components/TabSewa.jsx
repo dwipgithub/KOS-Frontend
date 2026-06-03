@@ -4,6 +4,8 @@ import styles from "./TabSewa.module.css";
 import PenyewaForm, { SECTION_KEYS, validateDokumenFile } from "./PenyewaForm";
 import SewaForm from "./SewaForm";
 import { fetchPrivateFileBlob } from "../../../services/penyewaService";
+import { destroySewa } from "../../../services/sewaService";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 
 // const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -91,6 +93,8 @@ const TabSewa = ({
     const [docObjectUrl, setDocObjectUrl] = useState(null);
     const [docMime, setDocMime] = useState("");
     const [docLoading, setDocLoading] = useState(false);
+    const [cancelingRent, setCancelingRent] = useState(false);
+    const [showCancelDialog, setShowCancelDialog] = useState(false);
     const docUrlRef = useRef(null);
 
     const penyewaSectionComplete = useMemo(() => {
@@ -201,6 +205,30 @@ const TabSewa = ({
         setDocObjectUrl(null);
         setDocMime("");
     }, []);
+
+    const handleOpenCancelDialog = useCallback(() => {
+        if (!sewaData?.id) {
+            toast.error("ID sewa tidak ditemukan", { position: "top-right" });
+            return;
+        }
+        setShowCancelDialog(true);
+    }, [sewaData?.id]);
+
+    const handleConfirmCancelSewa = useCallback(async () => {
+        try {
+            setCancelingRent(true);
+            await destroySewa(sewaData.id);
+            toast.success("Sewa berhasil dibatalkan", { position: "top-right" });
+            // Reload halaman atau panggil parent component untuk refresh data
+            window.location.reload();
+        } catch (error) {
+            const errorMsg = error?.message || "Gagal membatalkan sewa";
+            toast.error(errorMsg, { position: "top-right" });
+            console.error("Error membatalkan sewa:", error);
+        } finally {
+            setCancelingRent(false);
+        }
+    }, [sewaData?.id]);
 
     // Fetch document blob when penyewaData changes
     useEffect(() => {
@@ -453,9 +481,32 @@ const TabSewa = ({
                                     </span>
                                 </div>
                             </div>
+
+                            <div className={styles.cardFooterModern}>
+                                <button
+                                    type="button"
+                                    className={styles.cancelBtn}
+                                    onClick={handleOpenCancelDialog}
+                                    disabled={cancelingRent}
+                                >
+                                    {cancelingRent ? "Membatalkan…" : "❌ Batal Sewa"}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <ConfirmDialog
+                    show={showCancelDialog}
+                    onClose={() => setShowCancelDialog(false)}
+                    title="Batalkan Sewa"
+                    message={`Apakah Anda yakin ingin membatalkan sewa ${penyewaData?.nama}? Tindakan ini tidak dapat dibatalkan.`}
+                    confirmText="Ya, Batalkan"
+                    cancelText="Batal"
+                    onConfirm={handleConfirmCancelSewa}
+                    isLoading={cancelingRent}
+                    isDanger={true}
+                />
             </div>
         );
     }

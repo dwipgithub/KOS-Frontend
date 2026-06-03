@@ -1124,6 +1124,46 @@
     transform: none;
 }
 
+/* CARD FOOTER */
+.cardFooterModern {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #f0ece6;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* CANCEL BUTTON */
+.cancelBtn {
+    background: linear-gradient(135deg, #ff5252, #ff6b6b);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 82, 82, 0.3);
+}
+
+.cancelBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 82, 82, 0.4);
+    background: linear-gradient(135deg, #ff3b3b, #ff5252);
+}
+
+.cancelBtn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.cancelBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
 @media (max-width: 768px) {
     .formContainerWide {
         padding: 16px;
