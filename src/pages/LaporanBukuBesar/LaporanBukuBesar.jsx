@@ -150,7 +150,7 @@ const LaporanBukuBesar = () => {
         return {
             totalDebit,
             totalKredit,
-            netBalance: totalKredit - totalDebit,
+            netBalance: totalDebit - totalKredit,
         };
     }, [report]);
 
