@@ -1,8 +1,41 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import Select from "react-select";
+import { toast } from "react-toastify";
+import { FileText, X } from "lucide-react";
 import { getProperti } from "../../services/propertiService";
 import { getLaporanBukuBesar, exportPdfBukuBesar } from "../../services/laporanBukuBesar";
+import { fetchPrivateFileBlob } from "../../services/penyewaService";
 import styles from "./LaporanBukuBesar.module.css";
+
+const getAwalBulan = () => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    return `${y}-${m}-01`;
+};
+
+const getAkhirBulan = () => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = now.getMonth();
+
+    const lastDay = new Date(y, m + 1, 0);
+
+    return `${lastDay.getFullYear()}-${String(
+        lastDay.getMonth() + 1
+    ).padStart(2, "0")}-${String(lastDay.getDate()).padStart(2, "0")}`;
+};
+
+function inferMimeFromPath(path, blobType) {
+    if (blobType && blobType !== "application/octet-stream") return blobType;
+    const lower = (path || "").toLowerCase();
+    if (lower.endsWith(".pdf")) return "application/pdf";
+    if (lower.endsWith(".png")) return "image/png";
+    if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+    if (lower.endsWith(".webp")) return "image/webp";
+    if (lower.endsWith(".gif")) return "image/gif";
+    return blobType || "application/octet-stream";
+}
 
 const formatRupiah = (amount) =>
     new Intl.NumberFormat("id-ID", {
@@ -26,10 +59,10 @@ const selectStyles = {
     control: (base, state) => ({
         ...base,
         minHeight: 40,
-        borderColor: state.isFocused ? "#ff8c00" : "#d1d5db",
-        boxShadow: state.isFocused ? "0 0 0 3px rgba(255,140,0,0.15)" : "none",
+        borderColor: state.isFocused ? "#7c3aed" : "#d1d5db",
+        boxShadow: state.isFocused ? "0 0 0 3px rgba(124,58,237,0.15)" : "none",
         borderRadius: 10,
-        "&:hover": { borderColor: "#ff8c00" },
+        "&:hover": { borderColor: "#7c3aed" },
     }),
     menu: (base) => ({ ...base, zIndex: 30 }),
 };
@@ -44,8 +77,8 @@ const SkeletonCard = () => (
 );
 
 const LaporanBukuBesar = () => {
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
+    const [startDate, setStartDate] = useState(() => getAwalBulan());
+    const [endDate, setEndDate] = useState(() => getAkhirBulan());
     const [selectedProperti, setSelectedProperti] = useState(null);
     const [propertiOptions, setPropertiOptions] = useState([]);
     const [loadingProperti, setLoadingProperti] = useState(false);
@@ -54,6 +87,56 @@ const LaporanBukuBesar = () => {
     const [error, setError] = useState("");
     const [hasSearched, setHasSearched] = useState(false);
     const [report, setReport] = useState(null);
+
+    const [showProofModal, setShowProofModal] = useState(false);
+    const [proofLoading, setProofLoading] = useState(false);
+    const [proofObjectUrl, setProofObjectUrl] = useState(null);
+    const [proofMime, setProofMime] = useState("");
+    const [proofTitle, setProofTitle] = useState("Bukti Transaksi");
+    const proofUrlRef = useRef(null);
+
+    const revokeProofUrl = useCallback(() => {
+        if (proofUrlRef.current) {
+            URL.revokeObjectURL(proofUrlRef.current);
+            proofUrlRef.current = null;
+        }
+        setProofObjectUrl(null);
+        setProofMime("");
+    }, []);
+
+    useEffect(() => () => revokeProofUrl(), [revokeProofUrl]);
+
+    const handleCloseProofModal = () => {
+        setShowProofModal(false);
+        revokeProofUrl();
+    };
+
+    const handleViewProof = async (bukti, jenis) => {
+        if (!bukti) return;
+
+        setProofTitle(jenis === "PENDAPATAN" ? "Bukti Pembayaran" : "Bukti Pengeluaran");
+        setShowProofModal(true);
+        setProofLoading(true);
+        revokeProofUrl();
+
+        try {
+            const blob = await fetchPrivateFileBlob(bukti);
+            if (!blob) throw new Error("File tidak ditemukan");
+
+            const mime = inferMimeFromPath(bukti, blob.type);
+            const url = URL.createObjectURL(blob);
+            proofUrlRef.current = url;
+            setProofObjectUrl(url);
+            setProofMime(mime);
+        } catch (err) {
+            const message = err?.message || "Gagal memuat bukti transaksi";
+            toast.error(message, { position: "top-right" });
+            setShowProofModal(false);
+            revokeProofUrl();
+        } finally {
+            setProofLoading(false);
+        }
+    };
 
     const handleFocusProperti = async () => {
         if (propertiOptions.length > 0 || loadingProperti) return;
@@ -251,18 +334,20 @@ const LaporanBukuBesar = () => {
                             <div className="table-responsive">
                                 <table className={`table table-hover align-middle ${styles.table}`}>
                                     <colgroup>
-                                        <col style={{ width: "12%" }} />
-                                        <col style={{ width: "28%" }} />
-                                        <col style={{ width: "20%" }} />
+                                        <col style={{ width: "11%" }} />
+                                        <col style={{ width: "24%" }} />
+                                        <col style={{ width: "18%" }} />
+                                        <col style={{ width: "8%" }} />
                                         <col style={{ width: "13%" }} />
                                         <col style={{ width: "13%" }} />
-                                        <col style={{ width: "14%" }} />
+                                        <col style={{ width: "13%" }} />
                                     </colgroup>
                                     <thead>
                                         <tr>
                                             <th>Tanggal</th>
                                             <th>Keterangan</th>
                                             <th>Kategori</th>
+                                            <th className="text-center">Bukti</th>
                                             <th className="text-end">Debit</th>
                                             <th className="text-end">Kredit</th>
                                             <th className="text-end">Saldo</th>
@@ -285,6 +370,29 @@ const LaporanBukuBesar = () => {
                                                             {trx.kategori?.jenis || "-"}
                                                         </span> */}
                                                     </div>
+                                                </td>
+                                                <td className="text-center">
+                                                    {trx.bukti ? (
+                                                        <button
+                                                            type="button"
+                                                            className={styles.proofButton}
+                                                            onClick={() =>
+                                                                handleViewProof(
+                                                                    trx.bukti,
+                                                                    trx.kategori?.jenis
+                                                                )
+                                                            }
+                                                            title={
+                                                                trx.kategori?.jenis === "PENDAPATAN"
+                                                                    ? "Lihat bukti pembayaran"
+                                                                    : "Lihat bukti pengeluaran"
+                                                            }
+                                                        >
+                                                            <FileText size={16} strokeWidth={2} />
+                                                        </button>
+                                                    ) : (
+                                                        "-"
+                                                    )}
                                                 </td>
                                                 <td className="text-end">
                                                     {Number(trx.debit || 0) > 0 ? formatRupiah(trx.debit) : "-"}
@@ -352,6 +460,60 @@ const LaporanBukuBesar = () => {
                         </div>
                     </section>
                 </>
+            ) : null}
+
+            {showProofModal ? (
+                <div className={styles.proofOverlay} onClick={handleCloseProofModal}>
+                    <div
+                        className={styles.proofModal}
+                        onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={proofTitle}
+                    >
+                        <div className={styles.proofModalHeader}>
+                            <h4>{proofTitle}</h4>
+                            <button
+                                type="button"
+                                className={styles.proofCloseButton}
+                                onClick={handleCloseProofModal}
+                                aria-label="Tutup"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <div className={styles.proofModalBody}>
+                            {proofLoading && (
+                                <div className={styles.proofPlaceholder}>
+                                    <span>Memuat bukti…</span>
+                                </div>
+                            )}
+
+                            {!proofLoading && proofObjectUrl && proofMime.startsWith("image/") && (
+                                <img
+                                    src={proofObjectUrl}
+                                    alt={proofTitle}
+                                    className={styles.proofImage}
+                                />
+                            )}
+
+                            {!proofLoading && proofObjectUrl && proofMime === "application/pdf" && (
+                                <iframe
+                                    title={proofTitle}
+                                    src={proofObjectUrl}
+                                    className={styles.proofIframe}
+                                />
+                            )}
+
+                            {!proofLoading && !proofObjectUrl && (
+                                <div className={styles.proofPlaceholder}>
+                                    <span>Bukti tidak dapat ditampilkan.</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
             ) : null}
         </div>
     );

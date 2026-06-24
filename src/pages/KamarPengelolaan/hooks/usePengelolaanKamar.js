@@ -528,7 +528,7 @@ export const usePengelolaanKamar = (idKamar) => {
         }
     };
 
-    const handleSaveTagihan = async () => {
+    const handleSaveTagihan = async (calculatedTotal) => {
         try {
             if (!sewaData?.id) {
                 toast.error("Data sewa tidak tersedia");
@@ -538,15 +538,9 @@ export const usePengelolaanKamar = (idKamar) => {
                 toast.error("Deskripsi tagihan wajib dipilih");
                 return;
             }
-            // if (!formTagihan.tanggalTagihan) {
-            //     toast.error("Tanggal tagihan wajib diisi");
-            //     return;
-            // }
-            // if (!formTagihan.tanggalJatuhTempo) {
-            //     toast.error("Tanggal jatuh tempo wajib diisi");
-            //     return;
-            // }
-            if (!formTagihan.total || formTagihan.total <= 0) {
+            // Use calculated total passed from form component
+            const totalToUse = calculatedTotal || formTagihan.total;
+            if (!totalToUse || totalToUse <= 0) {
                 toast.error("Total tagihan harus lebih besar dari 0");
                 return;
             }
@@ -555,11 +549,20 @@ export const usePengelolaanKamar = (idKamar) => {
             const dataToSend = {
                 idSewa: sewaData.id,
                 idDeskripsiTagihan: formTagihan.deskripsiTagihan,
-                // tanggalTagihan: formTagihan.tanggalTagihan,
-                // tanggalJatuhTempo: formTagihan.tanggalJatuhTempo,
                 tanggalTagihan: new Date(),
                 tanggalJatuhTempo: new Date(),
-                hargaSatuan: formTagihan.total,
+                hargaSatuan: totalToUse,
+                total: totalToUse,
+                // Include conditional fields for Biaya Kamar
+                ...(formTagihan.durasi && { idDurasi: formTagihan.durasi }),
+                ...(formTagihan.tanggalMasuk && { tanggalMasuk: formTagihan.tanggalMasuk }),
+                ...(formTagihan.tanggalKeluar && { tanggalKeluar: formTagihan.tanggalKeluar }),
+                // Include discount fields
+                ...(formTagihan.diskonPersen && { diskonPersen: formTagihan.diskonPersen }),
+                ...(formTagihan.diskonRupiah && { diskonRupiah: formTagihan.diskonRupiah }),
+                // Include jumlah (qty)
+                ...(formTagihan.jumlah && { jumlah: formTagihan.jumlah }),
+                ...(formTagihan.hargaSatuan && { hargaSatuan: formTagihan.hargaSatuan }),
             };
 
             await createTagihan(dataToSend);
@@ -571,6 +574,15 @@ export const usePengelolaanKamar = (idKamar) => {
                 tanggalTagihan: "",
                 tanggalJatuhTempo: "",
                 total: 0,
+                // Reset calculation fields
+                jumlah: "",
+                hargaSatuan: "",
+                diskonPersen: 0,
+                diskonRupiah: 0,
+                // Reset conditional fields
+                durasi: "",
+                tanggalMasuk: "",
+                tanggalKeluar: "",
             });
 
             // Refresh data

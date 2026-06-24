@@ -22,7 +22,9 @@ const KamarCard = ({ card, idx, icon }) => {
             case "Sudah disewa":
                 return "bg-danger text-white";
             case "Sudah dipesan":
-                return "bg-warning text-dark"; // ⬅️ ini penting
+                return "bg-warning text-dark"; 
+            case "Tidak disewakan":
+                return styles.bgPurple;
             default:
                 return "bg-secondary text-white";
         }

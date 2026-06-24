@@ -4,7 +4,7 @@
     padding: 20px;
     min-height: 260px;
 
-    border: 1px solid rgba(255,140,0,0.3);
+    border: 1px solid rgba(124,58,237,0.3);
 
     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 
@@ -48,8 +48,8 @@
 
 .badge {
     font-size: 12px;
-    background: #FFE0B2;
-    color: #FF8C00;
+    background: #ede9fe;
+    color: #7c3aed;
     padding: 3px 8px;
     border-radius: 999px;
 }

@@ -96,7 +96,7 @@
 }
 
 .btnSave {
-    background: #ff8c00;
+    background: #7c3aed;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -108,7 +108,7 @@
 
 .btnSave:hover:not(:disabled) {
     background: #e67e00;
-    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
 }
 
 .btnSave:disabled {
@@ -172,7 +172,7 @@
 }
 
 .dropzoneActive {
-    border-color: #ff8c00;
+    border-color: #7c3aed;
     background: #fff7ed;
 }
 
@@ -208,9 +208,9 @@
     min-width: 56px;
     height: 56px;
     border-radius: 12px;
-    background: rgba(255, 140, 0, 0.12);
+    background: rgba(124, 58, 237, 0.12);
     color: #b45309;
-    border: 1px solid rgba(255, 140, 0, 0.25);
+    border: 1px solid rgba(124, 58, 237, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;

@@ -48,8 +48,8 @@
 }
 
 .backBtn:hover {
-    border-color: #ff8c00;
-    color: #ff8c00;
+    border-color: #7c3aed;
+    color: #7c3aed;
     transform: translateX(-2px);
 }
 
@@ -101,12 +101,12 @@
 }
 
 .tabBtn:hover {
-    color: #FF8C00;
-    background: rgba(255, 140, 0, 0.05);
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.05);
 }
 
 .tabBtn.active {
-    color: #FF8C00;
+    color: #7c3aed;
     background: white;
 }
 
@@ -117,7 +117,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #FF8C00, #ff9f1c);
+    background: linear-gradient(90deg, #7c3aed, #a78bfa);
     border-radius: 3px 3px 0 0;
 }
 

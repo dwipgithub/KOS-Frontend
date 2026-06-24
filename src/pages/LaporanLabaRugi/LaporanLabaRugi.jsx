@@ -4,6 +4,25 @@ import { getLaporanLabaRugi, exportPdfLabaRugi } from "../../services/laporanLab
 import { getProperti } from "../../services/propertiService";
 import styles from "./LaporanLabaRugi.module.css";
 
+const getAwalBulan = () => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    return `${y}-${m}-01`;
+};
+
+const getAkhirBulan = () => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = now.getMonth();
+
+    const lastDay = new Date(y, m + 1, 0);
+
+    return `${lastDay.getFullYear()}-${String(
+        lastDay.getMonth() + 1
+    ).padStart(2, "0")}-${String(lastDay.getDate()).padStart(2, "0")}`;
+};
+
 const formatRupiah = (amount) =>
     new Intl.NumberFormat("id-ID", {
         style: "currency",
@@ -15,9 +34,9 @@ const customSelectStyles = {
     control: (base, state) => ({
         ...base,
         minHeight: 40,
-        borderColor: state.isFocused ? "#ff8c00" : "#d1d5db",
-        boxShadow: state.isFocused ? "0 0 0 3px rgba(255, 140, 0, 0.15)" : "none",
-        "&:hover": { borderColor: "#ff8c00" },
+        borderColor: state.isFocused ? "#7c3aed" : "#d1d5db",
+        boxShadow: state.isFocused ? "0 0 0 3px rgba(124, 58, 237, 0.15)" : "none",
+        "&:hover": { borderColor: "#7c3aed" },
         borderRadius: 10,
     }),
     menu: (base) => ({
@@ -69,8 +88,8 @@ const LaporanLabaRugi = () => {
     const [loadingProperti, setLoadingProperti] = useState(false);
     const [error, setError] = useState("");
     const [hasSearched, setHasSearched] = useState(false);
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
+    const [startDate, setStartDate] = useState(() => getAwalBulan());
+    const [endDate, setEndDate] = useState(() => getAkhirBulan());
     const [selectedProperti, setSelectedProperti] = useState(null);
     const [propertiOptions, setPropertiOptions] = useState([]);
     const [report, setReport] = useState(null);

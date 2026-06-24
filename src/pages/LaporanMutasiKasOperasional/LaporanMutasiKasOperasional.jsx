@@ -1,9 +1,10 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
-import { Trash2 } from "lucide-react";
+import { Trash2, FileText, X } from "lucide-react";
 // import { getLaporanMutasiKasOperasional, exportPdfMutasiKasOperasional } from "../../services/laporanMutasiKasOperasional";
 import { getLaporanMutasiKasOperasional } from "../../services/laporanMutasiKasOperasional";
 import { getPengguna } from "../../services/pengguna";
+import { fetchPrivateFileBlob } from "../../services/penyewaService";
 // import ModalTambahUangMasuk from "../../components/LaporanMutasiKasOperasional/ModalTambahUangMasuk";
 // import ModalTambahUangKeluar from "../../components/LaporanMutasiKasOperasional/ModalTambahUangKeluar";
 import { deletePemasukan } from "../../services/pemasukanService"
@@ -53,6 +54,17 @@ const formatMasukKeluar = (amount) => {
     return formatRupiah(num);
 };
 
+const inferMimeFromPath = (path, blobType) => {
+    if (blobType && blobType !== "application/octet-stream") return blobType;
+    const lower = (path || "").toLowerCase();
+    if (lower.endsWith(".pdf")) return "application/pdf";
+    if (lower.endsWith(".png")) return "image/png";
+    if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+    if (lower.endsWith(".webp")) return "image/webp";
+    if (lower.endsWith(".gif")) return "image/gif";
+    return blobType || "application/octet-stream";
+};
+
 const SummaryCard = ({ label, value, tone = "" }) => (
     <div className={`${styles.summaryCard} ${tone ? styles[tone] : ""}`}>
         <span className={styles.summaryLabel}>{label}</span>
@@ -77,6 +89,13 @@ const LaporanMutasiKasOperasional = () => {
     const [selectedItemDelete, setSelectedItemDelete] = useState(null);
     const [deletingItemId, setDeletingItemId] = useState(null);
 
+    const [showProofModal, setShowProofModal] = useState(false);
+    const [proofLoading, setProofLoading] = useState(false);
+    const [proofObjectUrl, setProofObjectUrl] = useState(null);
+    const [proofMime, setProofMime] = useState("");
+    const [proofTitle, setProofTitle] = useState("Bukti Transaksi");
+    const proofUrlRef = useRef(null);
+
     // Fetch pengguna list
     useEffect(() => {
         const fetchPengguna = async () => {
@@ -99,6 +118,49 @@ const LaporanMutasiKasOperasional = () => {
             setPenggunaId(penggunaList[0].id);
         }
     }, [penggunaList]);
+
+    const revokeProofUrl = useCallback(() => {
+        if (proofUrlRef.current) {
+            URL.revokeObjectURL(proofUrlRef.current);
+            proofUrlRef.current = null;
+        }
+        setProofObjectUrl(null);
+        setProofMime("");
+    }, []);
+
+    useEffect(() => () => revokeProofUrl(), [revokeProofUrl]);
+
+    const handleCloseProofModal = () => {
+        setShowProofModal(false);
+        revokeProofUrl();
+    };
+
+    const handleViewProof = async (bukti, tipe) => {
+        if (!bukti) return;
+
+        setProofTitle(tipe === "MASUK" ? "Bukti Pemasukan" : "Bukti Pengeluaran");
+        setShowProofModal(true);
+        setProofLoading(true);
+        revokeProofUrl();
+
+        try {
+            const blob = await fetchPrivateFileBlob(bukti);
+            if (!blob) throw new Error("File tidak ditemukan");
+
+            const mime = inferMimeFromPath(bukti, blob.type);
+            const url = URL.createObjectURL(blob);
+            proofUrlRef.current = url;
+            setProofObjectUrl(url);
+            setProofMime(mime);
+        } catch (err) {
+            const message = err?.message || "Gagal memuat bukti transaksi";
+            toast.error(message, { position: "top-right" });
+            setShowProofModal(false);
+            revokeProofUrl();
+        } finally {
+            setProofLoading(false);
+        }
+    };
 
     const rows = useMemo(() => (Array.isArray(report?.data) ? report.data : []), [report]);
 
@@ -346,10 +408,11 @@ const LaporanMutasiKasOperasional = () => {
                                 <tr>
                                     <th>Tanggal</th>
                                     <th>Keterangan</th>
-                                    <th>Nama Properti</th>
+                                    {/* <th>Nama Properti</th> */}
                                     <th>Masuk</th>
                                     <th>Keluar</th>
                                     <th>Saldo</th>
+                                    <th className="text-center">Bukti</th>
                                     <th style={{ width: "50px", textAlign: "center" }}>Aksi</th>
                                 </tr>
                             </thead>
@@ -358,10 +421,28 @@ const LaporanMutasiKasOperasional = () => {
                                     <tr key={item.id}>
                                         <td>{formatTanggal(item.tanggalMutasiKas)}</td>
                                         <td className={styles.keteranganCol}>{item.keterangan || "-"}</td>
-                                        <td>{item.properti?.nama || "-"}</td>
+                                        {/* <td>{item.properti?.nama || "-"}</td> */}
                                         <td className={styles.masukCol}>{formatMasukKeluar(item.masuk)}</td>
                                         <td className={styles.keluarCol}>{formatMasukKeluar(item.keluar)}</td>
                                         <td className={styles.saldoCol}>{formatRupiah(item.saldo)}</td>
+                                        <td className="text-center">
+                                            {item.bukti ? (
+                                                <button
+                                                    type="button"
+                                                    className={styles.proofButton}
+                                                    onClick={() => handleViewProof(item.bukti, item.tipe)}
+                                                    title={
+                                                        item.tipe === "MASUK"
+                                                            ? "Lihat bukti pemasukan"
+                                                            : "Lihat bukti pengeluaran"
+                                                    }
+                                                >
+                                                    <FileText size={16} strokeWidth={2} />
+                                                </button>
+                                            ) : (
+                                                "-"
+                                            )}
+                                        </td>
                                         <td style={{ textAlign: "center" }}>
                                             <button
                                                 className={styles.iconDelete}
@@ -397,6 +478,60 @@ const LaporanMutasiKasOperasional = () => {
                     onClose={() => setShowModalUangKeluar(false)}
                     onSuccess={handleModalSuccess}
                 />
+            ) : null}
+
+            {showProofModal ? (
+                <div className={styles.proofOverlay} onClick={handleCloseProofModal}>
+                    <div
+                        className={styles.proofModal}
+                        onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={proofTitle}
+                    >
+                        <div className={styles.proofModalHeader}>
+                            <h4>{proofTitle}</h4>
+                            <button
+                                type="button"
+                                className={styles.proofCloseButton}
+                                onClick={handleCloseProofModal}
+                                aria-label="Tutup"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <div className={styles.proofModalBody}>
+                            {proofLoading && (
+                                <div className={styles.proofPlaceholder}>
+                                    <span>Memuat bukti…</span>
+                                </div>
+                            )}
+
+                            {!proofLoading && proofObjectUrl && proofMime.startsWith("image/") && (
+                                <img
+                                    src={proofObjectUrl}
+                                    alt={proofTitle}
+                                    className={styles.proofImage}
+                                />
+                            )}
+
+                            {!proofLoading && proofObjectUrl && proofMime === "application/pdf" && (
+                                <iframe
+                                    title={proofTitle}
+                                    src={proofObjectUrl}
+                                    className={styles.proofIframe}
+                                />
+                            )}
+
+                            {!proofLoading && !proofObjectUrl && (
+                                <div className={styles.proofPlaceholder}>
+                                    <span>Bukti tidak dapat ditampilkan.</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
             ) : null}
 
             <ConfirmDialog

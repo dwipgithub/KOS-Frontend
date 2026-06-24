@@ -12,7 +12,7 @@
 }
 
 .modal {
-    width: 560px;
+    width: 800px;
     max-width: 95%;
     max-height: 80vh;
     background: #fff;
@@ -80,8 +80,23 @@
     border: 1px solid #f2e5bd;
 }
 
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #3a342b;
+}
+
+.sectionDescription {
+    margin: 0 0 14px;
+    font-size: 0.83rem;
+    color: #7b7468;
+}
+
 .btnSave {
-    background: #ff8c00;
+    background: #7c3aed;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -93,7 +108,7 @@
 
 .btnSave:hover:not(:disabled) {
     background: #e67e00;
-    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
 }
 
 .btnSave:disabled {
@@ -137,9 +152,143 @@
     gap: 1rem;
 }
 
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.dropzone {
+    border: 2px dashed #d6cfc4;
+    border-radius: 14px;
+    min-height: 170px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #faf8f5;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.dropzoneActive {
+    border-color: #7c3aed;
+    background: #fff7ed;
+}
+
+.dropPlaceholder {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    color: #6b7280;
+    gap: 0.25rem;
+}
+
+.preview {
+    width: 92px;
+    height: 92px;
+    border-radius: 12px;
+    object-fit: contain;
+    background: #ffffff;
+    border: 1px solid #efe6d4;
+}
+
+.filePicked {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.95rem;
+    border: 1px solid #ebdfc7;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fffdfa, #fff7ec);
+}
+
+.pdfBadge {
+    min-width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: rgba(124, 58, 237, 0.12);
+    color: #b45309;
+    border: 1px solid rgba(124, 58, 237, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.fileInput {
+    display: none;
+}
+
+.fileMeta {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.fileName {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fileSize {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.btnRemoveFile {
+    border: 1px solid #f5c993;
+    background: #fff4e6;
+    color: #b45309;
+    border-radius: 10px;
+    padding: 0.42rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btnRemoveFile:hover:not(:disabled) {
+    background: #ffe8cc;
+}
+
+.btnRemoveFile:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.hintText {
+    margin-top: 0.25rem;
+    display: block;
+    color: #92400e;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
 .fieldError {
     display: flex;
     margin-top: 0.35rem;
     color: #dc2626;
     font-size: 0.8rem;
+}
+
+@media (max-width: 992px) {
+    .modal {
+        width: 95%;
+    }
+}
+
+@media (max-width: 640px) {
+    .modal {
+        width: 100%;
+        max-height: 95vh;
+    }
 }

@@ -45,7 +45,24 @@ export const updatePenyewaApi = async (id, data) => {
 export const fetchPrivateFileBlobApi = async (pathFromApi) => {
     if (!pathFromApi) return null;
     try {
-        const path = pathFromApi.startsWith("/") ? pathFromApi : `/${pathFromApi}`;
+        const raw = String(pathFromApi).trim();
+        let path = raw;
+
+        if (raw.startsWith("/api/v1/files/")) {
+            path = raw;
+        } else if (raw.startsWith("/api/files/")) {
+            path = raw.replace("/api/files/", "/api/v1/files/");
+        } else {
+            const clean = raw.replace(/^\/+/, "");
+            if (clean.startsWith("pembayaran/") || clean.startsWith("penyewa/") || clean.startsWith("pengeluaran/")) {
+                path = `/api/v1/files/${clean}`;
+            } else if (raw.startsWith("/")) {
+                path = raw;
+            } else {
+                path = `/${raw}`;
+            }
+        }
+
         return axiosJWT.get(path, { responseType: "blob" });
     } catch (error) {
         console.error("Gagal mengambil file pribadi:", error);

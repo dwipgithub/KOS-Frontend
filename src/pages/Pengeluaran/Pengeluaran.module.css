@@ -25,10 +25,10 @@
     border: none;
     border-radius: 12px;
     padding: 0.65rem 1rem;
-    background: linear-gradient(135deg, #ff7a18, #ffb347);
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
     color: #fff;
     font-weight: 600;
-    box-shadow: 0 10px 24px rgba(255, 122, 24, 0.25);
+    box-shadow: 0 10px 24px rgba(124, 58, 237, 0.25);
 }
 
 .card {
@@ -195,7 +195,7 @@
 }
 
 .btnSave {
-    background: #FF8C00;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -278,7 +278,7 @@
     padding: 1rem;
     /* background: linear-gradient(135deg, #ffffff 0%, #fffaf2 100%); */
     background: white;
-    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
 }
 
 .formCardHeader {
@@ -320,8 +320,8 @@
 }
 
 .dropzoneActive {
-    border-color: #ff8c00;
-    background: #fff7ed;
+    border-color: #7c3aed;
+    background: #faf5ff;
 }
 
 .dropPlaceholder {
@@ -356,9 +356,9 @@
     min-width: 56px;
     height: 56px;
     border-radius: 12px;
-    background: rgba(255, 140, 0, 0.12);
-    color: #b45309;
-    border: 1px solid rgba(255, 140, 0, 0.25);
+    background: rgba(124, 58, 237, 0.12);
+    color: #6d28d9;
+    border: 1px solid rgba(124, 58, 237, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;

@@ -40,12 +40,32 @@ export const updatePenyewa = async (id, data) => {
     } 
 }
 
-export const fetchPrivateFileBlob = async(pathFromApi) => {
+export const fetchPrivateFileBlob = async (pathFromApi) => {
     try {
         const response = await fetchPrivateFileBlobApi(pathFromApi);
-        return response.data;
+        const blob = response.data;
+
+        if (!blob || blob.size === 0) {
+            throw new Error("File kosong atau tidak ditemukan");
+        }
+
+        if (blob.type === "application/json") {
+            const text = await blob.text();
+            let message = "Gagal mengambil file";
+            try {
+                const parsed = JSON.parse(text);
+                message = parsed?.message || message;
+            } catch {
+                // keep default message
+            }
+            throw new Error(message);
+        }
+
+        return blob;
     } catch (error) {
         console.error("Gagal mengambil file privat:", error);
-        throw error.response?.data || { message: "Gagal mengambil file" };
+        throw error?.message
+            ? error
+            : error.response?.data || { message: "Gagal mengambil file" };
     }
 }

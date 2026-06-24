@@ -1,9 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { toast } from "react-toastify";
 import BayarModal from "../../../components/BayarModal/BayarModal";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
+import CreateInvoiceForm from "./CreateInvoiceForm";
 import { getDeskripsiTagihan } from "../../../services/deskripsiTagihan";
+import { fetchPrivateFileBlob } from "../../../services/penyewaService";
 import styles from "./TabTagihan.module.css";
-import { CreditCard, Trash2 } from "lucide-react";
+import { CreditCard, Trash2, FileText, X, History, Plus, Calendar, LogIn, LogOut } from "lucide-react";
+
+function inferMimeFromPath(path, blobType) {
+    if (blobType && blobType !== "application/octet-stream") return blobType;
+    const lower = (path || "").toLowerCase();
+    if (lower.endsWith(".pdf")) return "application/pdf";
+    if (lower.endsWith(".png")) return "image/png";
+    if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+    if (lower.endsWith(".webp")) return "image/webp";
+    if (lower.endsWith(".gif")) return "image/gif";
+    return blobType || "application/octet-stream";
+}
+
+const formatTanggal = (value) => {
+    if (!value) return "-";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "-";
+    return new Intl.DateTimeFormat("id-ID", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    }).format(date);
+};
 
 const TabTagihan = ({
     tagihanList,
@@ -23,6 +48,7 @@ const TabTagihan = ({
     // =========================
     // STATE
     // =========================
+    const [activeTab, setActiveTab] = useState("riwayat"); // "riwayat" | "baru"
     const [showModal, setShowModal] = useState(false);
     const [selectedTagihan, setSelectedTagihan] = useState(null);
 
@@ -30,6 +56,59 @@ const TabTagihan = ({
     const [selectedTagihanDelete, setSelectedTagihanDelete] = useState(null);
 
     const [deskripsiOptions, setDeskripsiOptions] = useState([]);
+
+    const [showProofModal, setShowProofModal] = useState(false);
+    const [proofLoading, setProofLoading] = useState(false);
+    const [proofObjectUrl, setProofObjectUrl] = useState(null);
+    const [proofMime, setProofMime] = useState("");
+    const proofUrlRef = useRef(null);
+
+    const revokeProofUrl = useCallback(() => {
+        if (proofUrlRef.current) {
+            URL.revokeObjectURL(proofUrlRef.current);
+            proofUrlRef.current = null;
+        }
+        setProofObjectUrl(null);
+        setProofMime("");
+    }, []);
+
+    useEffect(() => () => revokeProofUrl(), [revokeProofUrl]);
+
+    const handleCloseProofModal = () => {
+        setShowProofModal(false);
+        revokeProofUrl();
+    };
+
+    const handleViewProof = async (buktiBayar) => {
+        if (!buktiBayar) return;
+
+        setShowProofModal(true);
+        setProofLoading(true);
+        revokeProofUrl();
+
+        try {
+            const blob = await fetchPrivateFileBlob(buktiBayar);
+            if (!blob) {
+                throw new Error("File tidak ditemukan");
+            }
+
+            const mime = inferMimeFromPath(buktiBayar, blob.type);
+            const url = URL.createObjectURL(blob);
+            proofUrlRef.current = url;
+            setProofObjectUrl(url);
+            setProofMime(mime);
+        } catch (err) {
+            const message =
+                err?.message ||
+                err?.response?.data?.message ||
+                "Gagal memuat bukti pembayaran";
+            toast.error(message, { position: "top-right" });
+            setShowProofModal(false);
+            revokeProofUrl();
+        } finally {
+            setProofLoading(false);
+        }
+    };
 
     // =========================
     // LOAD DESKRIPSI TAGIHAN
@@ -80,6 +159,7 @@ const TabTagihan = ({
         );
     }
 
+    const isNotRentable = sewaData?.kamar?.bisa_disewakan === false;
     const tagihanArray = Array.isArray(tagihanList)
         ? tagihanList
         : [];
@@ -134,172 +214,94 @@ const TabTagihan = ({
         <div className={styles.container}>
 
             {/* ========================= */}
-            {/* FORM BUAT TAGIHAN */}
+            {/* TAB MENU */}
             {/* ========================= */}
             {sewaData?.id && (
-                <div className={styles.formCreateTagihanCard}>
-
-                    <div className={styles.formHeader}>
-                        <h3 className={styles.formTitle}>
-                            📝 Buat Tagihan Baru
-                        </h3>
-
-                        <p className={styles.formSubtitle}>
-                            Tambahkan tagihan untuk penyewa aktif
-                        </p>
-                    </div>
-
-                    <div className={styles.formGrid}>
-
-                        {/* DESKRIPSI */}
-                        <div className={styles.formGroup}>
-                            <label className={styles.label}>
-                                Deskripsi Tagihan *
-                            </label>
-
-                            <select
-                                className={styles.select}
-                                value={formTagihan.deskripsiTagihan}
-                                onChange={(e) =>
-                                    setFormTagihan((prev) => ({
-                                        ...prev,
-                                        deskripsiTagihan: e.target.value,
-                                    }))
-                                }
-                            >
-                                <option value="">
-                                    -- Pilih deskripsi --
-                                </option>
-
-                                {deskripsiOptions.map((item) => (
-                                    <option
-                                        key={item.id}
-                                        value={item.id}
-                                    >
-                                        {item.nama}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* TANGGAL TAGIHAN */}
-                        {/* <div className={styles.formGroup}>
-                            <label className={styles.label}>
-                                Tanggal Tagihan *
-                            </label>
-
-                            <input
-                                type="date"
-                                className={styles.input}
-                                value={formTagihan.tanggalTagihan}
-                                onChange={(e) =>
-                                    setFormTagihan((prev) => ({
-                                        ...prev,
-                                        tanggalTagihan: e.target.value,
-                                    }))
-                                }
-                            />
-                        </div> */}
-
-                        {/* JATUH TEMPO */}
-                        {/* <div className={styles.formGroup}>
-                            <label className={styles.label}>
-                                Tanggal Jatuh Tempo *
-                            </label>
-
-                            <input
-                                type="date"
-                                className={styles.input}
-                                value={formTagihan.tanggalJatuhTempo}
-                                onChange={(e) =>
-                                    setFormTagihan((prev) => ({
-                                        ...prev,
-                                        tanggalJatuhTempo: e.target.value,
-                                    }))
-                                }
-                            />
-                        </div> */}
-
-                        {/* TOTAL */}
-                        <div className={styles.formGroup}>
-                            <label className={styles.label}>
-                                Total *
-                            </label>
-
-                            <input
-                                type="number"
-                                className={styles.input}
-                                min="1"
-                                step="1000"
-                                value={formTagihan.total ?? 0}
-                                onChange={(e) =>
-                                    setFormTagihan((prev) => ({
-                                        ...prev,
-                                        total:
-                                            parseInt(
-                                                e.target.value,
-                                                10
-                                            ) || 0,
-                                    }))
-                                }
-                                placeholder="Masukkan total tagihan"
-                            />
-                        </div>
-                    </div>
-
-                    <div className={styles.formActions}>
+                <div className={styles.tabContainer}>
+                    <div className={styles.tabMenu}>
                         <button
-                            className={styles.btnSubmit}
-                            onClick={onSaveTagihan}
-                            disabled={savingTagihan}
+                            className={`${styles.tabButton} ${
+                                activeTab === "riwayat" ? styles.tabActive : ""
+                            }`}
+                            onClick={() => setActiveTab("riwayat")}
                         >
-                            {savingTagihan
-                                ? "Menyimpan..."
-                                : "💾 Buat Tagihan"}
+                            <History size={18} />
+                            <span>Riwayat Tagihan</span>
+                        </button>
+
+                        <button
+                            className={`${styles.tabButton} ${
+                                activeTab === "baru" ? styles.tabActive : ""
+                            }`}
+                            onClick={() => setActiveTab("baru")}
+                        >
+                            <Plus size={18} />
+                            <span>Tagihan Baru</span>
                         </button>
                     </div>
                 </div>
             )}
 
             {/* ========================= */}
-            {/* SUMMARY */}
+            {/* TAB CONTENT: TAGIHAN BARU */}
             {/* ========================= */}
-            <div className={styles.summaryGrid}>
-                <div className={styles.summaryCard}>
-                    <div className={styles.summaryIcon}>
-                        💰
-                    </div>
-
-                    <div className={styles.summaryContent}>
-                        <span className={styles.summaryLabel}>
-                            Total Tagihan
-                        </span>
-
-                        <span className={styles.summaryValue}>
-                            Rp{" "}
-                            {parseInt(totalTagihan)
-                                .toLocaleString("id-ID")}
-                        </span>
-                    </div>
-                </div>
-            </div>
+            {sewaData?.id && activeTab === "baru" && (
+                <CreateInvoiceForm
+                    deskripsiOptions={deskripsiOptions}
+                    formTagihan={formTagihan}
+                    setFormTagihan={setFormTagihan}
+                    onSaveTagihan={onSaveTagihan}
+                    savingTagihan={savingTagihan}
+                />
+            )}
 
             {/* ========================= */}
-            {/* LIST TAGIHAN */}
+            {/* TAB CONTENT: RIWAYAT TAGIHAN */}
             {/* ========================= */}
-            <div className={styles.tagihanListContainer}>
+            {activeTab === "riwayat" && !isNotRentable && (
+                <>
+                    {/* ========================= */}
+                    {/* SUMMARY */}
+                    {/* ========================= */}
+                    {tagihanArray.length > 0 && (
+                        <div className={styles.summaryGrid}>
+                            <div className={styles.summaryCard}>
+                                <div className={styles.summaryIcon}>
+                                    💰
+                                </div>
 
-                <div className={styles.listHeader}>
-                    <h3 className={styles.listTitle}>
-                        📋 Daftar Tagihan
-                    </h3>
+                                <div className={styles.summaryContent}>
+                                    <span className={styles.summaryLabel}>
+                                        Total Tagihan
+                                    </span>
 
-                    <span className={styles.itemCount}>
-                        {tagihanList.length} tagihan
-                    </span>
-                </div>
+                                    <span className={styles.summaryValue}>
+                                        Rp{" "}
+                                        {parseInt(totalTagihan)
+                                            .toLocaleString("id-ID")}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
-                <div className={styles.tagihanList}>
+                    {/* ========================= */}
+                    {/* LIST TAGIHAN */}
+                    {/* ========================= */}
+                    {tagihanArray.length > 0 ? (
+                        <div className={styles.tagihanListContainer}>
+
+                            <div className={styles.listHeader}>
+                                <h3 className={styles.listTitle}>
+                                    📋 Daftar Tagihan
+                                </h3>
+
+                                <span className={styles.itemCount}>
+                                    {tagihanList.length} tagihan
+                                </span>
+                            </div>
+
+                            <div className={styles.tagihanList}>
 
                     {tagihanList.map((tagihan, index) => (
 
@@ -327,11 +329,10 @@ const TabTagihan = ({
                                         </span>
 
                                         <span
-                                            className={`${styles.statusBadge} ${
-                                                tagihan.statusTagihan.nama === "Lunas"
-                                                    ? styles.statusLunas
-                                                    : styles.statusBelumLunas
-                                            }`}
+                                            className={`${styles.statusBadge} ${tagihan.statusTagihan.nama === "Lunas"
+                                                ? styles.statusLunas
+                                                : styles.statusBelumLunas
+                                                }`}
                                         >
                                             {tagihan.statusTagihan.nama}
                                         </span>
@@ -387,33 +388,99 @@ const TabTagihan = ({
                                         </span>
                                     </div>
 
-                                    {tagihan.tanggalJatuhTempo && (
-                                        <div className={styles.detailItem}>
-                                            <span className={styles.detailLabel}>
-                                                Jatuh Tempo
-                                            </span>
-
-                                            <span className={styles.detailValue}>
-                                                {new Date(
-                                                    tagihan.tanggalJatuhTempo
-                                                ).toLocaleDateString(
-                                                    "id-ID",
-                                                    {
-                                                        year: "numeric",
-                                                        month: "long",
-                                                        day: "numeric",
-                                                    }
+                                    {/* Tanggal Masuk & Keluar */}
+                                    {(tagihan.tanggalMasukTagihan || tagihan.tanggalKeluarTagihan) && (
+                                        <div className={styles.detailItemDate}>
+                                            <div className={styles.dateSection}>
+                                                {tagihan.tanggalMasukTagihan && (
+                                                    <div className={styles.dateItem}>
+                                                        <div className={styles.dateIcon}>
+                                                            <LogIn size={14} />
+                                                        </div>
+                                                        <div className={styles.dateContent}>
+                                                            <span className={styles.dateLabel}>
+                                                                Masuk
+                                                            </span>
+                                                            <span className={styles.dateValue}>
+                                                                {formatTanggal(tagihan.tanggalMasukTagihan)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 )}
-                                            </span>
+
+                                                {tagihan.tanggalKeluarTagihan && (
+                                                    <div className={styles.dateItem}>
+                                                        <div className={styles.dateIcon}>
+                                                            <LogOut size={14} />
+                                                        </div>
+                                                        <div className={styles.dateContent}>
+                                                            <span className={styles.dateLabel}>
+                                                                Keluar
+                                                            </span>
+                                                            <span className={styles.dateValue}>
+                                                                {formatTanggal(tagihan.tanggalKeluarTagihan)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
+
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.detailLabel}>
+                                            Tanggal Bayar
+                                        </span>
+
+                                        <span className={styles.detailValue}>
+                                            {tagihan.pembayaran?.tanggalBayar
+                                                ? formatTanggal(tagihan.pembayaran.tanggalBayar)
+                                                : '-'}
+                                        </span>
+                                    </div>
+
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.detailLabel}>
+                                            Metode Bayar
+                                        </span>
+
+                                        <div className={styles.paymentMethodContainer}>
+                                            <span className={styles.detailValue}>
+                                                {tagihan.pembayaran?.idMetodeBayar || ''}
+                                            </span>
+
+                                            {tagihan.pembayaran?.buktiBayar && (
+                                                <button
+                                                    className={styles.proofButton}
+                                                    onClick={() => handleViewProof(tagihan.pembayaran.buktiBayar)}
+                                                    title="Lihat bukti pembayaran"
+                                                >
+                                                    <FileText size={16} strokeWidth={2} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
 
                                 </div>
                             </div>
                         </div>
                     ))}
-                </div>
-            </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={styles.emptyStateTab}>
+                            <div className={styles.emptyIcon}>📋</div>
+                            <h3 className={styles.emptyTitle}>
+                                Belum Ada Tagihan
+                            </h3>
+                            <p className={styles.emptySubtitle}>
+                                Tidak ada tagihan untuk sewa ini.
+                                Buat tagihan baru di tab "Tagihan Baru"
+                            </p>
+                        </div>
+                    )}
+                </>
+            )}
 
             {/* ========================= */}
             {/* MODAL BAYAR */}
@@ -450,6 +517,61 @@ const TabTagihan = ({
                 isLoading={deletingTagihanId !== null}
                 isDanger={true}
             />
+
+            {showProofModal ? (
+                <div className={styles.proofOverlay} onClick={handleCloseProofModal}>
+                    <div
+                        className={styles.proofModal}
+                        onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Bukti pembayaran"
+                    >
+                        <div className={styles.proofModalHeader}>
+                            <h4>Bukti Pembayaran</h4>
+                            <button
+                                type="button"
+                                className={styles.proofCloseButton}
+                                onClick={handleCloseProofModal}
+                                aria-label="Tutup"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <div className={styles.proofModalBody}>
+                            {proofLoading && (
+                                <div className={styles.proofPlaceholder}>
+                                    <div className={styles.spinnerSmall} />
+                                    <span>Memuat bukti pembayaran…</span>
+                                </div>
+                            )}
+
+                            {!proofLoading && proofObjectUrl && proofMime.startsWith("image/") && (
+                                <img
+                                    src={proofObjectUrl}
+                                    alt="Bukti pembayaran"
+                                    className={styles.proofImage}
+                                />
+                            )}
+
+                            {!proofLoading && proofObjectUrl && proofMime === "application/pdf" && (
+                                <iframe
+                                    title="Bukti pembayaran PDF"
+                                    src={proofObjectUrl}
+                                    className={styles.proofIframe}
+                                />
+                            )}
+
+                            {!proofLoading && !proofObjectUrl && (
+                                <div className={styles.proofPlaceholder}>
+                                    <span>Bukti pembayaran tidak dapat ditampilkan.</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ) : null}
         </div>
     );
 };

@@ -14,9 +14,9 @@
     gap: 16px;
     margin-bottom: 24px;
     padding: 20px;
-    background: linear-gradient(135deg, rgba(255, 140, 0, 0.1), rgba(255, 159, 28, 0.1));
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(167, 139, 250, 0.1));
     border-radius: 16px;
-    border-left: 4px solid #FF8C00;
+    border-left: 4px solid #7c3aed;
 }
 
 .statusIcon {
@@ -48,7 +48,7 @@
     border-radius: 16px;
     padding: 20px;
     border: 2px solid #f2e5bd;
-    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
 }
 
 .cardHeader {
@@ -84,7 +84,7 @@
     font-size: 12px;
     font-weight: 700;
     color: #fff;
-    background: #ff8c00;
+    background: #7c3aed;
     text-transform: uppercase;
     letter-spacing: 0.6px;
 }
@@ -139,7 +139,7 @@
 
 .valueHighlight {
     font-size: 18px;
-    color: #FF8C00;
+    color: #7c3aed;
     font-weight: 700;
 }
 
@@ -149,7 +149,7 @@
     border-radius: 16px;
     padding: 24px;
     border: 2px solid #f2e5bd;
-    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
     max-width: 800px;
 }
 
@@ -193,7 +193,7 @@
     padding: 16px;
     background: #f9f8f6;
     border-radius: 12px;
-    border-left: 4px solid #FF8C00;
+    border-left: 4px solid #7c3aed;
 }
 
 .sectionTitle {
@@ -232,10 +232,10 @@
 }
 
 .modeBtnActive {
-    background: linear-gradient(135deg, #ff8c00, #ff9f1c);
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
     border-color: transparent;
     color: #fff;
-    box-shadow: 0 8px 16px rgba(255, 140, 0, 0.25);
+    box-shadow: 0 8px 16px rgba(124, 58, 237, 0.25);
 }
 
 .newTenantCard {
@@ -304,8 +304,8 @@
 .input:focus,
 .select:focus {
     outline: none;
-    border-color: #FF8C00;
-    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
     background: #fffaf5;
 }
 
@@ -348,14 +348,14 @@
 }
 
 .durasiBtn:hover {
-    border-color: #FF8C00;
+    border-color: #7c3aed;
     background: #fffaf5;
 }
 
 .durasiBtn.active {
-    border-color: #FF8C00;
-    background: linear-gradient(135deg, rgba(255, 140, 0, 0.1), rgba(255, 159, 28, 0.1));
-    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
+    border-color: #7c3aed;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(167, 139, 250, 0.1));
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
 .durasisiBtnText {
@@ -366,7 +366,7 @@
 
 .durasiPrice {
     font-size: 12px;
-    color: #FF8C00;
+    color: #7c3aed;
     font-weight: 700;
 }
 
@@ -384,7 +384,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    /* background: linear-gradient(135deg, #FF8C00, #ff9f1c); */
+    /* background: linear-gradient(135deg, #7c3aed, #a78bfa); */
     border: 2px solid #e0dbd3;
     background: white;
     border-radius: 12px;
@@ -408,7 +408,7 @@
     width: fit-content;
     align-self: flex-start;
     padding: 12px 16px;
-    background: linear-gradient(135deg, #FF8C00, #ff9f1c);
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
     color: white;
     border: none;
     border-radius: 10px;
@@ -425,7 +425,7 @@
 
 .saveBtn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(255, 140, 0, 0.3);
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
 }
 
 .saveBtn:active {
@@ -482,8 +482,8 @@
     }
 
     :global(.custom-select__control--is-focused) {
-        border-color: #FF8C00;
-        box-shadow: 0 0 0 3px rgba(255,140,0,0.1);
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
     }
 
     :global(.custom-select__option) {
@@ -496,7 +496,7 @@
     }
 
     :global(.custom-select__option--is-selected) {
-        background-color: #FF8C00;
+        background-color: #7c3aed;
         color: white;
     }
 
@@ -557,7 +557,7 @@
     border-radius: 18px;
     padding: 20px;
     border: 2px solid #f2e5bd;
-    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
     transition: 0.3s;
 }
 
@@ -592,7 +592,7 @@
 
 .infoBox:hover {
     background: #fffaf5;
-    border-color: #FF8C00;
+    border-color: #7c3aed;
 }
 
 /* TOTAL BOX (highlight) */
@@ -606,7 +606,7 @@
 .totalValue {
     font-size: 20px;
     font-weight: 700;
-    color: #FF8C00;
+    color: #7c3aed;
 }
 
 /* —— Transaksi sewa: layout lebar, progress, accordion, modal, dropzone —— */
@@ -615,7 +615,7 @@
     border-radius: 16px;
     padding: 24px;
     border: 2px solid #f2e5bd;
-    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
     max-width: 920px;
 }
 
@@ -641,7 +641,7 @@
 
 .progressFill {
     height: 100%;
-    background: linear-gradient(90deg, #ff8c00, #ff9f1c);
+    background: linear-gradient(90deg, #7c3aed, #a78bfa);
     border-radius: 999px;
     transition: width 0.35s ease;
 }
@@ -778,7 +778,7 @@
     padding: 10px 18px;
     border-radius: 10px;
     border: 1px solid #fbbf24;
-    background: linear-gradient(135deg, #ff8c00, #ff9f1c);
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
     color: #fff;
     font-weight: 700;
     font-size: 13px;
@@ -852,7 +852,7 @@
     padding: 10px 16px;
     border-radius: 10px;
     border: none;
-    background: #ff8c00;
+    background: #7c3aed;
     color: #fff;
     font-weight: 700;
     cursor: pointer;
@@ -887,7 +887,7 @@
 }
 
 .searchResultBtn:hover {
-    border-color: #ff8c00;
+    border-color: #7c3aed;
     background: #fffaf5;
 }
 
@@ -914,12 +914,12 @@
 .dropzone:hover,
 .dropzone:focus {
     outline: none;
-    border-color: #ff8c00;
+    border-color: #7c3aed;
     background: #fffaf5;
 }
 
 .dropzoneActive {
-    border-color: #ff8c00;
+    border-color: #7c3aed;
     background: #fff7ed;
 }
 
@@ -967,7 +967,7 @@
 }
 
 .docFrameDragOver {
-    border-color: #ff8c00;
+    border-color: #7c3aed;
     background: #fff7ed;
 }
 
@@ -996,7 +996,7 @@
     height: 18px;
     border-radius: 50%;
     border: 2px solid rgba(0, 0, 0, 0.1);
-    border-top-color: rgba(255, 140, 0, 0.9);
+    border-top-color: rgba(124, 58, 237, 0.9);
     animation: spin 0.8s linear infinite;
 }
 
@@ -1036,9 +1036,9 @@
     font-weight: 800;
     padding: 10px 18px;
     border-radius: 12px;
-    background: rgba(255, 140, 0, 0.12);
+    background: rgba(124, 58, 237, 0.12);
     color: #b45309;
-    border: 1px solid rgba(255, 140, 0, 0.25);
+    border: 1px solid rgba(124, 58, 237, 0.25);
 }
 
 .pdfName {
@@ -1094,7 +1094,7 @@
 
 .ghostBtn:hover {
     background: #fafafa;
-    border-color: #ff8c00;
+    border-color: #7c3aed;
 }
 
 .fileName {

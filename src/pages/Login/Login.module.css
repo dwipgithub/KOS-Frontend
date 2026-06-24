@@ -31,7 +31,7 @@
 .page::after {
     width: min(380px, 85vw);
     height: min(380px, 85vw);
-    background: radial-gradient(circle, #ff8c00 0%, transparent 70%);
+    background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
     bottom: -15%;
     left: -10%;
 }
@@ -140,8 +140,8 @@
 }
 
 .input:focus {
-    border-color: rgba(255, 140, 0, 0.65);
-    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+    border-color: rgba(124, 58, 237, 0.65);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
     background: rgba(255, 255, 255, 0.12);
 }
 
@@ -170,18 +170,18 @@
     padding: 12px 20px;
     font-size: 1rem;
     font-weight: 600;
-    color: #1a1a2e;
-    background: linear-gradient(135deg, #ff8c00 0%, #ffb347 100%);
+    color: white;
+    background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
     border: none;
     border-radius: 12px;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
-    box-shadow: 0 4px 20px rgba(255, 140, 0, 0.35);
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.35);
 }
 
 .submitBtn:hover:not(:disabled) {
     filter: brightness(1.06);
-    box-shadow: 0 6px 28px rgba(255, 140, 0, 0.45);
+    box-shadow: 0 6px 28px rgba(124, 58, 237, 0.45);
     transform: translateY(-1px);
 }
 
@@ -194,4 +194,17 @@
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+}
+
+.footerCredit {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: white;
+    letter-spacing: 0.3px;
+}
+
+.footerCredit strong {
+    color: white;
+    font-weight: 600;
 }

@@ -81,7 +81,7 @@
 }
 
 .btnSave {
-    background: #ff8c00;
+    background: #7c3aed;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -93,7 +93,7 @@
 
 .btnSave:hover:not(:disabled) {
     background: #e67e00;
-    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
 }
 
 .btnSave:disabled {

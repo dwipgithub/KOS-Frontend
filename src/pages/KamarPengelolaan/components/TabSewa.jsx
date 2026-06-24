@@ -49,6 +49,8 @@ function validatePenyewaFields(form, readOnly) {
 }
 
 function validateSewaFields(formSewa) {
+    if (!formSewa.durasiSewa || (formSewa.durasiSewa !== "Bulanan" && formSewa.durasiSewa !== "Tahunan"))
+        return { field: "durasiSewa", message: "Pilih durasi sewa (Bulanan atau Tahunan)." };
     if (!formSewa.tanggalMasuk)
         return { field: "tanggalMasuk", message: "Tanggal mulai wajib diisi." };
     if (!formSewa.tanggalKeluar)
@@ -191,7 +193,15 @@ const TabSewa = ({
         const sErr = validateSewaFields(formSewa);
         if (sErr) {
             toast.error(sErr.message);
-            focusSewa(sErr.field);
+            if (sErr.field === "durasiSewa") {
+                setSewaSectionOpen(true);
+                requestAnimationFrame(() => {
+                    const el = document.querySelector(`.${styles.durasiGrid}`);
+                    el?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+                });
+            } else {
+                focusSewa(sErr.field);
+            }
             return;
         }
         await onSimpanTransaksi({ isExistingPenyewa: penyewaReadOnly });

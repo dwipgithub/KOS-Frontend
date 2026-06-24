@@ -226,22 +226,26 @@ const Sidebar = () => {
             <style>{`
 
                 .sidebar-menu{
-                    transition: transform .15s ease, filter .15s ease;
+                    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
                 }
 
                 .sidebar-menu:hover{
-                    filter: brightness(1.06);
+                    filter: brightness(1.08);
                     transform: translateX(6px);
+                    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
                 }
 
                 .sidebar-submenu{
-                    transition: transform .15s ease, background-color .15s ease;
+                    transition: transform .15s ease, background-color .15s ease, box-shadow .15s ease;
                     font-size: 0.84rem;
+                    color: #334155;
                 }
 
                 .sidebar-submenu:hover{
-                    background: rgba(255,122,24,0.12);
+                    background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(167,139,250,0.08));
                     transform: translateX(6px);
+                    border-left: 3px solid #7c3aed;
+                    padding-left: 7px;
                 }
 
                 .submenu{
@@ -292,10 +296,12 @@ const Sidebar = () => {
                                     className="btn w-100 text-start sidebar-menu"
                                     onClick={() => toggleMenu(i)}
                                     style={{
-                                        background: "linear-gradient(90deg,#ff7a18,#ffb347)",
+                                        background: "linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%)",
                                         color: "#fff",
                                         borderRadius: "8px",
                                         fontWeight: 600,
+                                        border: "none",
+                                        boxShadow: "0 4px 12px rgba(124, 58, 237, 0.2)",
                                     }}
                                 >
                                     {menu.icon} {menu.name}
@@ -309,7 +315,8 @@ const Sidebar = () => {
                                     <ul
                                         className="nav flex-column ms-3 mt-2"
                                         style={{
-                                            borderLeft: "2px dotted #ff7a18",
+                                            borderLeft: "2px solid #7c3aed",
+                                            background: "linear-gradient(90deg, transparent, rgba(124,58,237,0.02))",
                                             paddingLeft: "10px",
                                         }}
                                     >
@@ -332,7 +339,8 @@ const Sidebar = () => {
                                                             <ul
                                                                 className="nav flex-column ms-3"
                                                                 style={{
-                                                                    borderLeft: "2px dotted #ff7a18",
+                                                                    borderLeft: "2px solid #a78bfa",
+                                                                    background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.02))",
                                                                 }}
                                                             >
 
@@ -345,45 +353,39 @@ const Sidebar = () => {
                                                                             className="nav-link sidebar-submenu"
                                                                             style={{
                                                                                 ...(isPathActive(ss.path) && {
-                                                                                    background: "rgba(255,122,24,0.12)",
+                                                                                    background: "linear-gradient(135deg, rgba(124,58,237,0.15), rgba(167,139,250,0.1))",
                                                                                     fontWeight: "bold",
+                                                                                    borderLeft: "3px solid #7c3aed",
+                                                                                    paddingLeft: "7px",
                                                                                 }),
                                                                             }}
                                                                         >
                                                                             {ss.icon} {ss.name}
                                                                         </Link>
-
                                                                     </li>
-
                                                                 ))}
-
                                                             </ul>
-
                                                         </div>
                                                     </>
                                                 ) : (
-
                                                     <Link
                                                         to={sub.path}
                                                         className="nav-link sidebar-submenu"
                                                         style={{
                                                             ...(isPathActive(sub.path) && {
-                                                                background: "rgba(255,122,24,0.12)",
+                                                                background: "linear-gradient(135deg, rgba(124,58,237,0.15), rgba(167,139,250,0.1))",
                                                                 fontWeight: "bold",
+                                                                borderLeft: "3px solid #7c3aed",
+                                                                paddingLeft: "7px",
                                                             }),
                                                         }}
                                                     >
                                                         {sub.icon} {sub.name}
                                                     </Link>
-
                                                 )}
-
                                             </li>
-
                                         ))}
-
                                     </ul>
-
                                 </div>
                             </>
                         ) : (
@@ -391,22 +393,21 @@ const Sidebar = () => {
                                 to={menu.path}
                                 className="nav-link sidebar-menu"
                                 style={{
-                                    background: "linear-gradient(90deg,#ff7a18,#ffb347)",
+                                    background: "linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%)",
                                     color: "#fff",
                                     borderRadius: "8px",
                                     fontWeight: 600,
+                                    border: "none",
+                                    boxShadow: "0 4px 12px rgba(124, 58, 237, 0.2)",
+                                    textDecoration: "none",
                                 }}
                             >
                                 {menu.icon} {menu.name}
                             </Link>
                         )}
-
                     </li>
-
                 ))}
-
             </ul>
-
         </div>
     );
 };

@@ -56,7 +56,7 @@
 .totalBox {
     background: linear-gradient(135deg, #f5f5f5, #fafafa);
     border: 2px solid #f2e5bd;
-    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
     border-radius: 14px;
     padding: 12px;
     text-align: center;
@@ -172,15 +172,15 @@
 
 .dropZone:hover,
 .dropZone:focus-visible {
-    border-color: #ff8c00;
-    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.12);
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
 }
 
 .dropZoneActive {
-    border-color: #ff8c00;
+    border-color: #7c3aed;
     border-style: solid;
     background: #fff9f2;
-    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.18);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
 }
 
 .dropZoneFilled {
@@ -208,8 +208,8 @@
     width: 48px;
     height: 48px;
     border-radius: 12px;
-    background: rgba(255, 140, 0, 0.12);
-    color: #c45f00;
+    background: rgba(124, 58, 237, 0.12);
+    color: #6d28d9;
 }
 
 .dropTitle {

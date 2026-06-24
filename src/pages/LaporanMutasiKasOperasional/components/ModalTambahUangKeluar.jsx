@@ -239,7 +239,7 @@ const ModalTambahUangKeluar = ({ onClose, onSuccess }) => {
                                 </div>
 
                                 <div className="col-md-6 mb-3">
-                                    <label>Pilih Kamar (opsional)</label>
+                                    <label>Pilih Lokasi (opsional)</label>
                                     <select
                                         className="form-select"
                                         value={form.idKamar}

@@ -152,7 +152,7 @@
     padding: 10px 20px;
     border-radius: 8px;
     border: none;
-    background: linear-gradient(135deg, #FF8C00, #ff9f1c);
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
     color: white;
     font-size: 13px;
     font-weight: 700;
@@ -162,7 +162,7 @@
 
 .btnConfirm:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(255, 140, 0, 0.3);
+    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
 }
 
 .btnConfirm:disabled {

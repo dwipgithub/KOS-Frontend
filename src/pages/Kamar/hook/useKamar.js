@@ -31,7 +31,7 @@ export const useKamar = () => {
                 setKamarList([]);
                 return;
             }
-            const data = await getKamar({ id_properti: idProperti });
+            const data = await getKamar({ id_properti: idProperti, tipe: "kamar" });
             setKamarList(data.data);
         } catch (err) {
             console.error(err);
@@ -61,7 +61,7 @@ export const useKamar = () => {
         setError(null);
         setLoading(true);
         try {
-            const kRes = await getKamar({ id_properti: properti.id });
+            const kRes = await getKamar({ id_properti: properti.id, tipe: "kamar" });
             setKamarList(kRes.data);
         } catch (err) {
             setError(err.message || "Gagal memuat data kamar");

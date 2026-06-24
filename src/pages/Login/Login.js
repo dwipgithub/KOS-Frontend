@@ -167,6 +167,10 @@ const Login = () => {
                             )}
                         </button>
                     </form>
+
+                    <div className={styles.footerCredit}>
+                        Designed by <strong>Dwi Prihantono, S.Kom., M.Kom.</strong>
+                    </div>
                 </div>
             </div>
         </div>
