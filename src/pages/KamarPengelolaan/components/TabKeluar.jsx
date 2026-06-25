@@ -22,6 +22,32 @@ const TabKeluar = ({
         );
     }
 
+    const isNotRentable = kamarData?.bisaDisewakan === 0;
+
+    if (isNotRentable) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.notRentableBanner}>
+                    <div className={styles.notRentableIcon}>
+                        🚫
+                    </div>
+
+                    <div>
+                        <h4 className={styles.notRentableTitle}>
+                            Kamar Tidak Dapat Disewakan
+                        </h4>
+
+                        <p className={styles.notRentableText}>
+                            Kamar ini ditandai sebagai tidak dapat disewakan sehingga
+                            proses check-out tidak tersedia.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+
     const statusId = sewaData?.statusSewa?.id;
     const hasSewa = Boolean(sewaData?.id && (statusId === "ACTIVE" || statusId === "BOOKED"));
 

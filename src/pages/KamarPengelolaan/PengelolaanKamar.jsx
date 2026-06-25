@@ -108,6 +108,7 @@ const PengelolaanKamar = () => {
 
                     {props.activeTab === "tagihan" && (
                         <TabTagihan
+                            kamarData={props.kamarData}
                             tagihanList={props.tagihanList}
                             formPembayaran={props.formPembayaran}
                             setFormPembayaran={props.setFormPembayaran}

@@ -80,6 +80,7 @@ const TabSewa = ({
 }) => {
     const isActive = sewaData?.statusSewa?.id === "ACTIVE";
     const isBooked = sewaData?.statusSewa?.id === "BOOKED";
+    const isNotRentable = kamarData?.bisaDisewakan === 0;
 
     const [penyewaReadOnly, setPenyewaReadOnly] = useState(false);
     const [existingDokumenHint, setExistingDokumenHint] = useState("");
@@ -239,6 +240,10 @@ const TabSewa = ({
             setCancelingRent(false);
         }
     }, [sewaData?.id]);
+
+    useEffect(() => {
+        console.log("kamarData updated:", kamarData);
+    }, [kamarData]);
 
     // Fetch document blob when penyewaData changes
     useEffect(() => {
@@ -438,7 +443,7 @@ const TabSewa = ({
 
                                 <div className={styles.infoBox}>
                                     <span className={styles.label}>Jumlah</span>
-                                    <span className={styles.value}>{rentBill?.jumlah|| "-"}</span>
+                                    <span className={styles.value}>{rentBill?.jumlah || "-"}</span>
                                 </div>
 
                                 <div className={styles.infoBox}>
@@ -523,74 +528,94 @@ const TabSewa = ({
 
     return (
         <div className={styles.container}>
-            <div className={styles.formContainerWide}>
-                <div className={styles.formHeader}>
-                    <span className={styles.formIcon}>📝</span>
+            {isNotRentable && (
+                <div className={styles.notRentableBanner}>
+                    <div className={styles.notRentableIcon}>
+                        🚫
+                    </div>
+
                     <div>
-                        <h3 className={styles.formHeaderTitle}>Sewa Baru</h3>
-                        <p className={styles.formHeaderSubtitle}>
-                            Satu alur untuk data penyewa dan kontrak sewa kamar
+                        <h4 className={styles.notRentableTitle}>
+                            Kamar Tidak Dapat Disewakan
+                        </h4>
+
+                        <p className={styles.notRentableText}>
+                            Kamar ini ditandai sebagai tidak dapat disewakan sehingga
+                            pembuatan data penyewa dan transaksi sewa dinonaktifkan.
                         </p>
                     </div>
                 </div>
+            )}
 
-                <div className={styles.progressWrap}>
-                    <div className={styles.progressLabels}>
-                        <span>Progress pengisian</span>
-                        <span>{progressPercent}%</span>
+            {!isNotRentable && (
+                <div className={styles.formContainerWide} >
+                    <div className={styles.formHeader}>
+                        <span className={styles.formIcon}>📝</span>
+                        <div>
+                            <h3 className={styles.formHeaderTitle}>Sewa Baru</h3>
+                            <p className={styles.formHeaderSubtitle}>
+                                Satu alur untuk data penyewa dan kontrak sewa kamar
+                            </p>
+                        </div>
                     </div>
-                    <div className={styles.progressTrack}>
-                        <div
-                            className={styles.progressFill}
-                            style={{ width: `${progressPercent}%` }}
+
+                    <div className={styles.progressWrap}>
+                        <div className={styles.progressLabels}>
+                            <span>Progress pengisian</span>
+                            <span>{progressPercent}%</span>
+                        </div>
+                        <div className={styles.progressTrack}>
+                            <div
+                                className={styles.progressFill}
+                                style={{ width: `${progressPercent}%` }}
+                            />
+                        </div>
+                    </div>
+                    <div className={styles.formContent}>
+                        <div className={styles.formSection}>
+                            <div className={styles.sectionTitle}>👤 Penyewa</div>
+                            <PenyewaForm
+                                form={formPenyewaBaru}
+                                setForm={setFormPenyewaBaru}
+                                readOnly={penyewaReadOnly}
+                                onExistingPenyewaSelected={handleExistingPenyewaSelected}
+                                onRequestManualEntry={handleRequestManualEntry}
+                                loadingMaster={loadingMasterPenyewa}
+                                jenisKelaminList={jenisKelaminList}
+                                statusPernikahanList={statusPernikahanList}
+                                pengenalList={pengenalList}
+                                profesiList={profesiList}
+                                openSections={openSections}
+                                setOpenSections={setOpenSections}
+                                sectionComplete={penyewaSectionComplete}
+                                focusTrigger={penyewaFocus}
+                                existingDokumenLabel={existingDokumenHint}
+                            />
+                        </div>
+
+                        <SewaForm
+                            kamarData={kamarData}
+                            formSewa={formSewa}
+                            setFormSewa={setFormSewa}
+                            onDurasiChange={onDurasiChange}
+                            onJumlahChange={onJumlahChange}
+                            sectionComplete={sewaSectionComplete}
+                            sectionOpen={sewaSectionOpen}
+                            setSectionOpen={setSewaSectionOpen}
+                            focusTrigger={sewaFocus}
                         />
+
+                        <button
+                            type="button"
+                            className={styles.saveBtn}
+                            onClick={handleSimpanTransaksiClick}
+                            disabled={savingTransaksiSewa}
+                        >
+                            {savingTransaksiSewa ? "Menyimpan…" : "💾 Simpan"}
+                        </button>
                     </div>
                 </div>
-
-                <div className={styles.formContent}>
-                    <div className={styles.formSection}>
-                        <div className={styles.sectionTitle}>👤 Penyewa</div>
-                        <PenyewaForm
-                            form={formPenyewaBaru}
-                            setForm={setFormPenyewaBaru}
-                            readOnly={penyewaReadOnly}
-                            onExistingPenyewaSelected={handleExistingPenyewaSelected}
-                            onRequestManualEntry={handleRequestManualEntry}
-                            loadingMaster={loadingMasterPenyewa}
-                            jenisKelaminList={jenisKelaminList}
-                            statusPernikahanList={statusPernikahanList}
-                            pengenalList={pengenalList}
-                            profesiList={profesiList}
-                            openSections={openSections}
-                            setOpenSections={setOpenSections}
-                            sectionComplete={penyewaSectionComplete}
-                            focusTrigger={penyewaFocus}
-                            existingDokumenLabel={existingDokumenHint}
-                        />
-                    </div>
-
-                    <SewaForm
-                        kamarData={kamarData}
-                        formSewa={formSewa}
-                        setFormSewa={setFormSewa}
-                        onDurasiChange={onDurasiChange}
-                        onJumlahChange={onJumlahChange}
-                        sectionComplete={sewaSectionComplete}
-                        sectionOpen={sewaSectionOpen}
-                        setSectionOpen={setSewaSectionOpen}
-                        focusTrigger={sewaFocus}
-                    />
-
-                    <button
-                        type="button"
-                        className={styles.saveBtn}
-                        onClick={handleSimpanTransaksiClick}
-                        disabled={savingTransaksiSewa}
-                    >
-                        {savingTransaksiSewa ? "Menyimpan…" : "💾 Simpan"}
-                    </button>
-                </div>
-            </div>
+            )}
         </div>
     );
 };

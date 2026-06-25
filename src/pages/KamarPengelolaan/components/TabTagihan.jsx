@@ -31,6 +31,7 @@ const formatTanggal = (value) => {
 };
 
 const TabTagihan = ({
+    kamarData,
     tagihanList,
     formPembayaran,
     setFormPembayaran,
@@ -71,6 +72,10 @@ const TabTagihan = ({
         setProofObjectUrl(null);
         setProofMime("");
     }, []);
+
+    useEffect(() => {
+        console.log("kamarData:", kamarData);
+    }, [kamarData]);
 
     useEffect(() => () => revokeProofUrl(), [revokeProofUrl]);
 
@@ -159,7 +164,31 @@ const TabTagihan = ({
         );
     }
 
-    const isNotRentable = sewaData?.kamar?.bisa_disewakan === false;
+    const isNotRentable = kamarData?.bisaDisewakan === 0;
+    
+    if (isNotRentable) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.formContainerWide}>
+                    <div className={styles.notRentableBanner}>
+                        <div className={styles.notRentableIcon}>🚫</div>
+
+                        <div>
+                            <h4 className={styles.notRentableTitle}>
+                                Kamar Tidak Dapat Disewakan
+                            </h4>
+
+                            <p className={styles.notRentableText}>
+                                Kamar ini ditandai sebagai tidak dapat disewakan sehingga
+                                seluruh fitur tagihan dinonaktifkan.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     const tagihanArray = Array.isArray(tagihanList)
         ? tagihanList
         : [];
@@ -258,7 +287,7 @@ const TabTagihan = ({
             {/* ========================= */}
             {/* TAB CONTENT: RIWAYAT TAGIHAN */}
             {/* ========================= */}
-            {activeTab === "riwayat" && !isNotRentable && (
+            {activeTab === "riwayat" && (
                 <>
                     {/* ========================= */}
                     {/* SUMMARY */}

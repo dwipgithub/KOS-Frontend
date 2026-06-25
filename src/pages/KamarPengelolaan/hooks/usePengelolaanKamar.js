@@ -229,8 +229,8 @@ export const usePengelolaanKamar = (idKamar) => {
                 nama: kamar.nama || "",
                 hargaPerHari: kamar.hargaPerHari || 0,
                 hargaPerMinggu: kamar.hargaPerMinggu || 0,
-                hargaPerBulan: kamar.hargaPerBulan || "",
-                hargaPerTahun: kamar.hargaPerTahun || "",
+                hargaPerBulan: kamar.hargaPerBulan || 0,
+                hargaPerTahun: kamar.hargaPerTahun || 0,
                 catatan: kamar.catatan || "",
             });
 
