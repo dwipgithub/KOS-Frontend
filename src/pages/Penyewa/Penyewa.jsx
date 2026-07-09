@@ -9,7 +9,7 @@ const Penyewa = () => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
+            {/* <div className={styles.header}>
                 <h2 className={styles.title}>Penyewa</h2>
                 <button
                     className={styles.addButton}
@@ -17,7 +17,7 @@ const Penyewa = () => {
                 >
                     ➕ Tambah
                 </button>
-            </div>
+            </div> */}
             {props.loading ? (
                 <PageLoading message="Memuat data penyewa…" />
             ) : (

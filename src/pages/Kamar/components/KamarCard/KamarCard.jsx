@@ -32,6 +32,25 @@ const KamarCard = ({ card, idx, icon }) => {
 
     const isNotRentable = card.bisaDisewakan === 0;
 
+    const toTitleCase = (text = "") => {
+        return text
+            .toLowerCase()
+            .split(" ")
+            .filter(Boolean)
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+    };
+
+    const truncateText = (text, maxLength) => {
+        if (!text) return "";
+
+        const formattedText = toTitleCase(text);
+
+        return formattedText.length > maxLength
+            ? formattedText.substring(0, maxLength) + "..."
+            : formattedText;
+    };
+
     return (
         <div className="col-md-4 mb-4">
             <div
@@ -41,47 +60,25 @@ const KamarCard = ({ card, idx, icon }) => {
                 style={{ animationDelay: `${idx * 100}ms` }}
                 onClick={handleCardClick}
             >
-                {/* Status Bersih/Kotor */}
-                <div className={styles.statusArea}>
-                    {!isNotRentable && (
-                        <div
-                            className={styles.statusBadge}
-                            style={{
-                                background:
-                                    card.statusKamar?.nama === "Bersih"
-                                        ? "#2f9e44"
-                                        : "#e74c3c",
-                            }}
-                        >
-                            ✨ {card.statusKamar?.nama}
-                        </div>
-                    )}
-
-                    {isNotRentable && (
-                        <div className={styles.hangingRibbon}>
-                            <div className={styles.ribbonRing}></div>
-
-                            <div className={styles.ribbonContent}>
-                                <div className={styles.ribbonIcon}>🚫</div>
-
-                                <div className={styles.ribbonText}>
-                                    NOT
-                                    <br />
-                                    FOR RENT
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                
-
                 {/* Header */}
                 <div className={styles.cardHeader}>
-                    <div className={styles.cardIcon}>{icon}</div>
-                    <h3 className={styles.cardTitle}>
-                        {card.nama} - {card.properti?.nama}
-                    </h3>
+                    <div className={styles.cardHeaderLeft}>
+                        <div className={styles.cardIcon}>{icon}</div>
+
+                        <h3 className={styles.cardTitle}>
+                            {card.nama}
+                        </h3>
+                    </div>
+
+                    <div className={styles.cardPrice}>
+                        <div className={styles.priceValue}>
+                            Rp {card.hargaPerBulan?.toLocaleString("id-ID")}
+                        </div>
+
+                        <div className={styles.priceUnit}>
+                            / bulan
+                        </div>
+                    </div>
                 </div>
 
                 {/* Info */}
@@ -105,11 +102,11 @@ const KamarCard = ({ card, idx, icon }) => {
                             <>
                                 <span className={styles.tenantIcon}>👤</span>
                                 <span className={styles.tenantName}>
-                                    {card.sewa.penyewa.nama}
+                                    {truncateText(card.sewa.penyewa.nama, 21)}
                                 </span>
                                 <span className={styles.tenantSeparator}>•</span>
                                 <span className={styles.tenantPhone}>
-                                    {card.sewa.penyewa.noTelp}
+                                    📞 {card.sewa.penyewa.noTelp}
                                 </span>
                             </>
                         ) : (
@@ -119,11 +116,74 @@ const KamarCard = ({ card, idx, icon }) => {
                         )}
                     </div>
 
-                    {/* Harga */}
-                    <div className={styles.cardPrice}>
-                        Rp {card.hargaPerBulan?.toLocaleString("id-ID")}
-                        <span className={styles.per}> / bulan</span>
-                    </div>
+                    {card.sewa && (
+                        <div className={styles.cardPeriod}>
+                            <div className={styles.periodLeft}>
+                                <span className={styles.periodIcon}>📅</span>
+                                <span className={styles.periodText}>
+                                    {new Date(card.sewa.tagihan.tanggalMasuk).toLocaleDateString("id-ID", {
+                                        day: "2-digit",
+                                        month: "short",
+                                        year: "numeric",
+                                    })}
+                                </span>
+
+                                <span className={styles.periodArrow}>→</span>
+
+                                <span className={styles.periodText}>
+                                    {new Date(card.sewa.tagihan.tanggalKeluar).toLocaleDateString("id-ID", {
+                                        day: "2-digit",
+                                        month: "short",
+                                        year: "numeric",
+                                    })}
+                                </span>
+                            </div>
+                            {card.sewa?.tagihan?.status && (
+                                <span className={styles.paymentStatus}>
+                                    💰 {card.sewa.tagihan.status}
+                                </span>
+                            )}
+                        </div>
+                    )}
+
+                    {card.sewa?.isSewaKadaluarsa && (
+                        <div className={styles.expiredAlert}>
+                            <div className={styles.expiredIcon}>
+                                ⚠️
+                            </div>
+
+                            <div className={styles.expiredContent}>
+                                <div className={styles.expiredTitle}>
+                                    Masa sewa berakhir
+                                </div>
+
+                                <div className={styles.expiredSubtitle}>
+                                    Terlambat{" "}
+                                    <strong>
+                                        {card.sewa.hariTerlambat} hari
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {card.sewa?.notifikasi && (
+                        <div
+                            className={`${styles.notificationText} ${
+                                card.sewa.notifikasi.jenis === "OVERDUE"
+                                    ? styles.notificationDanger
+                                    : styles.notificationWarning
+                            }`}
+                        >
+                            <span className={styles.notificationEmoji}>
+                                {card.sewa.notifikasi.jenis === "OVERDUE"
+                                    ? "🚨"
+                                    : "⏳"}
+                            </span>
+
+                            {card.sewa.notifikasi.pesan}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

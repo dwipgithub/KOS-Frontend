@@ -39,6 +39,57 @@
     margin-top: 20px;
 }
 
+.viewToggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toggleLabel {
+    color: #495057;
+    font-weight: 600;
+}
+
+.toggleSwitch {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 140px;
+    border: 1px solid #ced4da;
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: #ffffff;
+    transition: border-color 150ms ease, background-color 150ms ease;
+    cursor: pointer;
+}
+
+.toggleSwitch:hover {
+    border-color: #7c3aed;
+}
+
+.toggleCard {
+    border-color: #7c3aed;
+    background: #f5f3ff;
+}
+
+.toggleTable {
+    border-color: #0d6efd;
+    background: #e7f1ff;
+}
+
+.toggleKnob {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #7c3aed;
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+
+.toggleText {
+    color: #212529;
+    font-weight: 700;
+}
+
 .propertiCard {
     background: #fff;
     border-radius: 18px;

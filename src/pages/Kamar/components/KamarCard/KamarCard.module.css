@@ -28,7 +28,7 @@
     pointer-events: auto;
     user-select: none;
 
-    overflow: visible;
+    overflow:hidden;
 }
 
 .card:hover {
@@ -45,6 +45,53 @@
 
     border-color: rgba(124,58,237,0.6);
     background: #fff8ea;
+}
+
+/* ===========================
+RENT PERIOD
+=========================== */
+
+.cardPeriod {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-top: 4px;
+
+    font-size: 12px;
+    color: #666;
+}
+
+.periodLeft{
+    display:flex;
+    align-items:center;
+
+    gap:6px;
+}
+
+.paymentStatus{
+    flex-shrink:0;
+
+    font-size:12px;
+    font-weight:700;
+
+    color:#666;
+
+    white-space:nowrap;
+}
+
+.periodIcon {
+    font-size: 13px;
+}
+
+.periodText {
+    font-weight: 600;
+    color: #444;
+}
+
+.periodArrow {
+    color: #999;
+    font-weight: 700;
 }
 
 /* ===========================
@@ -226,13 +273,71 @@
 
 .cardHeader {
     display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    margin-bottom: 3px;
+}
+
+.cardHeaderLeft {
+    display: flex;
     align-items: center;
+    gap: 8px;
 
-    gap: 4px;
+    flex: 1;
+}
 
-    margin-bottom: 10px;
+.cardPrice {
+    text-align: right;
+    line-height: 1.1;
 
-    padding-right: 110px;
+    flex-shrink: 0;
+}
+
+.notificationText{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+
+    gap:8px;
+
+    margin-top:4px;      /* sebelumnya 10px */
+    margin-bottom:2px;
+
+    text-align:right;
+
+    font-size:15px;
+    font-weight:700;
+
+    line-height:1.4;
+
+    width:100%;
+}
+
+.notificationEmoji{
+    font-size:18px;
+    flex-shrink:0;
+}
+
+.notificationWarning{
+    color:#b7791f;
+}
+
+.notificationDanger{
+    color:#dc2626;
+    font-weight:800;
+    animation: blinkText 1.8s ease-in-out infinite;
+}
+
+.priceValue {
+    font-size: 18px;
+    font-weight: 700;
+    color: #7c3aed;
+}
+
+.priceUnit {
+    font-size: 11px;
+    color: #888;
 }
 
 .cardIcon {
@@ -260,11 +365,10 @@
 =========================== */
 
 .cardInfo {
-    margin-top: 14px;
-
-    display: grid;
-
-    gap: 8px;
+    margin-top:10px;
+    display:flex;
+    flex-direction:column;
+    gap:7px;
 }
 
 .cardStatus {
@@ -310,6 +414,48 @@
 .tenantPhone {
     color: #111;
     font-weight: 600;
+}
+
+/* ===========================
+   EXPIRED ALERT
+=========================== */
+
+.expiredAlert {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-top: 10px;
+
+    padding: 8px 12px;
+
+    border-radius: 12px;
+
+    background: linear-gradient(
+        90deg,
+        #fff4e5,
+        #fff9f2
+    );
+
+    border-left: 4px solid #ff9800;
+
+    color: #8a5200;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    animation: fadeExpired .5s ease;
+}
+
+.expiredIcon {
+    font-size: 18px;
+
+    animation: pulseWarning 1.8s infinite;
+}
+
+.expiredAlert strong {
+    color: #d35400;
 }
 
 .emptyTenant {

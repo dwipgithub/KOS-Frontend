@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { useKamar } from "./hook/useKamar";
 import KamarModal from "./components/KamarModal/KamarModal";
 import KamarCard from "./components/KamarCard/KamarCard";
+import KamarTable from "./components/KamarTable/KamarTable";
 
 import PageLoading from "../../components/PageLoading/PageLoading";
 import styles from "./Kamar.module.css";
 
 const Kamar = () => {
     const props = useKamar();
+    const [viewMode, setViewMode] = useState("card");
 
     const formatAlamat = (card) => {
         return [
@@ -110,7 +113,7 @@ const Kamar = () => {
                         </>
                     ) : (
                         <>
-                            <div className="mb-3">
+                            <div className="mb-3 d-flex flex-column flex-md-row gap-3 align-items-start align-items-md-center">
                                 <input
                                     type="text"
                                     className="form-control"
@@ -118,17 +121,36 @@ const Kamar = () => {
                                     value={props.search}
                                     onChange={(e) => props.setSearch(e.target.value)}
                                 />
+                                <div className={styles.viewToggle}>
+                                    <span className={styles.toggleLabel}>Tampilan</span>
+                                    <button
+                                        type="button"
+                                        className={`${styles.toggleSwitch} ${viewMode === "table" ? styles.toggleTable : styles.toggleCard}`}
+                                        onClick={() => setViewMode((current) => (current === "card" ? "table" : "card"))}
+                                        aria-pressed={viewMode === "table"}
+                                        aria-label="Toggle tampilan kamar"
+                                    >
+                                        <span className={styles.toggleKnob} />
+                                        <span className={styles.toggleText}>
+                                            {viewMode === "card" ? "Card" : "Tabel"}
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
-                            {props.filteredKamar.length === 0 && (
+
+                            {props.filteredKamar.length === 0 ? (
                                 <div className="text-center text-muted mt-4">
                                     Data kamar tidak ditemukan
                                 </div>
+                            ) : viewMode === "table" ? (
+                                <KamarTable kamarList={props.filteredKamar} />
+                            ) : (
+                                <div className="row">
+                                    {props.filteredKamar.map((card, idx) => (
+                                        <KamarCard key={card.id || idx} card={card} idx={idx} />
+                                    ))}
+                                </div>
                             )}
-                            <div className="row">
-                                {props.filteredKamar.map((card, idx) => (
-                                    <KamarCard key={card.id || idx} card={card} idx={idx} />
-                                ))}
-                            </div>
                         </>
                     )}
                 </>
