@@ -51,6 +51,8 @@ const KamarCard = ({ card, idx, icon }) => {
             : formattedText;
     };
 
+    const progress = card.sewa?.tagihan?.progress;
+
     return (
         <div className="col-md-4 mb-4">
             <div
@@ -143,6 +145,41 @@ const KamarCard = ({ card, idx, icon }) => {
                                     💰 {card.sewa.tagihan.status}
                                 </span>
                             )}
+                        </div>
+                    )}
+
+                    {progress && (
+                        <div className={styles.progressWrapper}>
+
+                            <div className={styles.progressBar}>
+                                <div
+                                    className={styles.progressFill}
+                                    style={{
+                                        width: `${progress.percent}%`,
+                                        backgroundColor:
+                                            progress.color === "danger"
+                                                ? "#ef4444"
+                                                : progress.color === "warning"
+                                                ? "#f59e0b"
+                                                : "#22c55e"
+                                    }}
+                                />
+                            </div>
+
+                            <div className={styles.progressInfo}>
+
+                                <span>
+                                    {progress.elapsedDays} / {progress.totalDays} hari
+                                </span>
+
+                                <span>
+                                    {progress.remainingDays > 0
+                                        ? `${progress.remainingDays} hari lagi`
+                                        : "Selesai"}
+                                </span>
+
+                            </div>
+
                         </div>
                     )}
 
