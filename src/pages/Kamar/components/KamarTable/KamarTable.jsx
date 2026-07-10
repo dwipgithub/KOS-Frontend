@@ -75,6 +75,7 @@ const KamarTable = ({ kamarList }) => {
                             <th scope="col">Penyewa</th>
                             <th scope="col">Periode</th>
                             <th scope="col">Tagihan</th>
+                            <th scope="col">Progress Sewa</th>
                             <th scope="col">Notifikasi</th>
                         </tr>
                     </thead>
@@ -92,6 +93,7 @@ const KamarTable = ({ kamarList }) => {
                                 ? `${formatDate(card.sewa.tagihan.tanggalMasuk)} → ${formatDate(card.sewa.tagihan.tanggalKeluar)}`
                                 : "-";
                             const tagihanStatus = card.sewa?.tagihan?.status || "-";
+                            const progress = card.sewa?.tagihan?.progress;
                             const notificationText = card.sewa?.isSewaKadaluarsa
                                 ? `Masa sewa berakhir • Terlambat ${card.sewa.hariTerlambat || 0} hari`
                                 : card.sewa?.notifikasi
@@ -118,6 +120,38 @@ const KamarTable = ({ kamarList }) => {
                                     </td>
                                     <td>{periode}</td>
                                     <td>{tagihanStatus}</td>
+                                    <td>
+                                        {progress ? (
+                                            <div className={styles.progressContainer}>
+                                                <div className={styles.progressBar}>
+                                                    <div
+                                                        className={styles.progressFill}
+                                                        style={{
+                                                            width: `${progress.percent}%`,
+                                                            backgroundColor:
+                                                                progress.color === "danger"
+                                                                    ? "#ef4444"
+                                                                    : progress.color === "warning"
+                                                                    ? "#f59e0b"
+                                                                    : "#22c55e"
+                                                        }}
+                                                    />
+                                                </div>
+                                                <div className={styles.progressInfo}>
+                                                    <span className={styles.progressDays}>
+                                                        {progress.elapsedDays} / {progress.totalDays} hari
+                                                    </span>
+                                                    <span className={styles.progressRemaining}>
+                                                        {progress.remainingDays > 0
+                                                            ? `${progress.remainingDays} hari lagi`
+                                                            : "Selesai"}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            "-"
+                                        )}
+                                    </td>
                                     <td>
                                         <span className={styles.notificationText}>{notificationText}</span>
                                     </td>
