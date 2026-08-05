@@ -10,6 +10,17 @@ export const createPembayaranApi = async (data) => {
     }
 }
 
+export const downloadKwitansiApi = async (id) => {
+    try {
+        return axiosJWT.get(`/api/v1/pembayaran/${id}/kwitansi`, {
+            responseType: "blob"
+        });
+    } catch (error) {
+        console.error("Gagal mengunduh kwitansi:", error);
+        throw error.response?.data || { message: "Terjadi kesalahan koneksi" };
+    }
+}
+
 // axiosJWT.interceptors.request.use(
 //     async (config) => {
 //         const response = await tokenUser(); // ✅ tunggu token dulu

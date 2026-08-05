@@ -5,8 +5,9 @@ import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import CreateInvoiceForm from "./CreateInvoiceForm";
 import { getDeskripsiTagihan } from "../../../services/deskripsiTagihan";
 import { fetchPrivateFileBlob } from "../../../services/penyewaService";
+import { downloadKwitansi } from "../../../services/pembayaranService";
 import styles from "./TabTagihan.module.css";
-import { CreditCard, Trash2, FileText, X, History, Plus, Calendar, LogIn, LogOut } from "lucide-react";
+import { CreditCard, Trash2, FileText, X, History, Plus, LogIn, LogOut } from "lucide-react";
 
 function inferMimeFromPath(path, blobType) {
     if (blobType && blobType !== "application/octet-stream") return blobType;
@@ -60,6 +61,7 @@ const TabTagihan = ({
 
     const [showProofModal, setShowProofModal] = useState(false);
     const [proofLoading, setProofLoading] = useState(false);
+    const [downloadingKwitansiId, setDownloadingKwitansiId] = useState(null);
     const [proofObjectUrl, setProofObjectUrl] = useState(null);
     const [proofMime, setProofMime] = useState("");
     const proofUrlRef = useRef(null);
@@ -147,6 +149,28 @@ const TabTagihan = ({
 
             setShowConfirmDelete(false);
             setSelectedTagihanDelete(null);
+        }
+    };
+
+    const handleDownloadKwitansi = async (tagihan) => {
+        if (!tagihan?.pembayaran?.id) {
+            toast.error("Kwitansi tidak tersedia.");
+            return;
+        }
+
+        setDownloadingKwitansiId(tagihan.id);
+
+        try {
+            await downloadKwitansi(tagihan.pembayaran.id);
+            toast.success("Kwitansi berhasil diunduh.");
+        } catch (error) {
+            const message =
+                error?.message ||
+                error?.response?.data?.message ||
+                "Gagal mengunduh kwitansi.";
+            toast.error(message, { position: "top-right" });
+        } finally {
+            setDownloadingKwitansiId(null);
         }
     };
 
@@ -376,6 +400,24 @@ const TabTagihan = ({
                                                     size={16}
                                                     strokeWidth={2.2}
                                                 />
+                                            </button>
+                                        )}
+
+                                        {tagihan.statusTagihan.nama === "Lunas" && tagihan.pembayaran?.id && (
+                                            <button
+                                                className={styles.iconDownload}
+                                                onClick={() => handleDownloadKwitansi(tagihan)}
+                                                disabled={downloadingKwitansiId === tagihan.id}
+                                                title="Download kwitansi"
+                                            >
+                                                {downloadingKwitansiId === tagihan.id ? (
+                                                    <span className={styles.spinnerSmall}></span>
+                                                ) : (
+                                                    <FileText
+                                                        size={16}
+                                                        strokeWidth={2.2}
+                                                    />
+                                                )}
                                             </button>
                                         )}
 

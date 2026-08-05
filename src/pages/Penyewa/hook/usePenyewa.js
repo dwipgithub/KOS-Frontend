@@ -75,8 +75,7 @@ export const usePenyewa = () => {
             setLoading(true);
             setError(null);
             try {
-                const [pRes, jkRes, spRes, pgRes, prRes] = await Promise.all([
-                    // getPenyewa(),
+                const [jkRes, spRes, pgRes, prRes] = await Promise.all([
                     getJenisKelamin(),
                     getStatusPernikahan(),
                     getPengenal(),

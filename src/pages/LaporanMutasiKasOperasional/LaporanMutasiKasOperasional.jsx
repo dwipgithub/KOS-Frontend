@@ -1,8 +1,8 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import { Trash2, FileText, X } from "lucide-react";
-// import { getLaporanMutasiKasOperasional, exportPdfMutasiKasOperasional } from "../../services/laporanMutasiKasOperasional";
-import { getLaporanMutasiKasOperasional } from "../../services/laporanMutasiKasOperasional";
+// import { exportPdfMutasiKasOperasional } from "../../services/laporanMutasiKasOperasional";
+import { getLaporanMutasiKasOperasional, exportPdfMutasiKasOperasional } from "../../services/laporanMutasiKasOperasional";
 import { getPengguna } from "../../services/pengguna";
 import { fetchPrivateFileBlob } from "../../services/penyewaService";
 // import ModalTambahUangMasuk from "../../components/LaporanMutasiKasOperasional/ModalTambahUangMasuk";
@@ -175,6 +175,12 @@ const LaporanMutasiKasOperasional = () => {
     );
 
     const handleTampilkan = async () => {
+        if (!penggunaId) {
+            setError("Silakan pilih pengguna.");
+            setReport(null);
+            return;
+        }
+
         setHasSearched(true);
 
         if (!startDate || !endDate) {
@@ -206,38 +212,42 @@ const LaporanMutasiKasOperasional = () => {
         }
     };
 
-    // const handleExportPdf = async () => {
+    const handleExportPdf = async () => {
+        if (!penggunaId) {
+            setError("Silakan pilih pengguna.");
+            return;
+        }
 
-    //     if (!startDate || !endDate) {
-    //         setError("Silakan pilih tanggal mulai dan tanggal selesai.");
-    //         return;
-    //     }
+        if (!startDate || !endDate) {
+            setError("Silakan pilih tanggal mulai dan tanggal selesai.");
+            return;
+        }
     
-    //     if (new Date(endDate) < new Date(startDate)) {
-    //         setError("Tanggal selesai tidak boleh lebih kecil dari tanggal mulai.");
-    //         return;
-    //     }
+        if (new Date(endDate) < new Date(startDate)) {
+            setError("Tanggal selesai tidak boleh lebih kecil dari tanggal mulai.");
+            return;
+        }
     
-    //     try {
-    //         setLoadingPdf(true);
-    //         setError("");
+        try {
+            setLoadingPdf(true);
+            setError("");
     
-    //         const params = { startDate, endDate };
-    //         if (penggunaId) {
-    //             params.penggunaId = penggunaId;
-    //         }
+            const params = { startDate, endDate };
+            if (penggunaId) {
+                params.penggunaId = penggunaId;
+            }
 
-    //         await exportPdfMutasiKasOperasional(params);
+            await exportPdfMutasiKasOperasional(params);
     
-    //     } catch (err) {
-    //         setError(
-    //             err?.message ||
-    //             "Gagal mengexport laporan mutasi kas operasional ke PDF."
-    //         );
-    //     } finally {
-    //         setLoadingPdf(false);
-    //     }
-    // };
+        } catch (err) {
+            setError(
+                err?.message ||
+                "Gagal mengexport laporan mutasi kas operasional ke PDF."
+            );
+        } finally {
+            setLoadingPdf(false);
+        }
+    };
 
     const handleModalSuccess = async () => {
         // Refresh data jika sudah ada search yang dilakukan
@@ -342,7 +352,7 @@ const LaporanMutasiKasOperasional = () => {
                             disabled={loadingPengguna}
                         >
                             {penggunaList.length > 1 && (
-                                <option value="">-- Semua Pengguna --</option>
+                                <option value="">-- Pilih Pengguna --</option>
                             )}
                             {penggunaList.map((pengguna) => (
                                 <option key={pengguna.id} value={pengguna.id}>
@@ -356,19 +366,19 @@ const LaporanMutasiKasOperasional = () => {
                             type="button"
                             className="btn btn-primary"
                             onClick={handleTampilkan}
-                            disabled={loading || loadingPdf}
+                            disabled={loading || loadingPdf || !penggunaId}
                         >
                             {loading ? "Memuat..." : "🔍 Tampilkan"}
                         </button>
 
-                        {/* <button
+                        <button
                             type="button"
                             className="btn btn-success"
                             onClick={handleExportPdf}
-                            disabled={loading || loadingPdf || !hasSearched}
+                            disabled={loading || loadingPdf || !hasSearched || !penggunaId}
                         >
                             {loadingPdf ? "Membuat PDF..." : "📥 Export PDF"}
-                        </button> */}
+                        </button>
                     </div>
                 </div>
             </section>

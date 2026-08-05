@@ -162,6 +162,7 @@ TABLE
     margin: 0;
     border-collapse: separate;
     border-spacing: 0 5px; /* ini jarak antar baris */
+    table-layout: fixed;
 }
 
 .table th {
@@ -169,6 +170,39 @@ TABLE
     color: #4b5563;
     font-size: 0.84rem;
     white-space: nowrap;
+}
+
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    min-width: 120px;
+    width: 120px;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    min-width: 360px;
+    width: 360px;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3),
+.table th:nth-child(4),
+.table td:nth-child(4),
+.table th:nth-child(5),
+.table td:nth-child(5) {
+    min-width: 140px;
+}
+
+.table th:nth-child(6),
+.table td:nth-child(6) {
+    max-width: 70px;
+    width: 70px;
+}
+
+.table th:nth-child(7),
+.table td:nth-child(7) {
+    max-width: 50px;
+    width: 50px;
 }
 
 /* Row ganjil */
@@ -240,6 +274,7 @@ TABLE
 .keteranganCol {
     font-weight: 600;
     color: #111827;
+    white-space: normal;
 }
 
 .stateText {
